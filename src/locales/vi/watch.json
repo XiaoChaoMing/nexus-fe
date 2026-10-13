@@ -1,0 +1,13 @@
+{
+  "notFound": "Không tìm thấy buổi phát",
+  "loadFailed": "Không tải được buổi phát",
+  "ended": "Buổi phát đã kết thúc",
+  "replay": "Xem lại",
+  "noReplay": "Buổi phát này không có bản xem lại.",
+  "replayProcessing": "Bản xem lại đang được xử lý…",
+  "chat": {
+    "title": "Chat",
+    "comingSoon": "Chat sẽ có ở giai đoạn 3."
+  },
+  "follow": "Theo dõi"
+}

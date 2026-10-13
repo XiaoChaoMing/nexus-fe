@@ -1,0 +1,29 @@
+{
+  "play": "Phát",
+  "pause": "Tạm dừng",
+  "mute": "Tắt tiếng",
+  "unmute": "Bật tiếng",
+  "volume": "Âm lượng",
+  "live": "LIVE",
+  "goLive": "Về trực tiếp",
+  "quality": "Chất lượng",
+  "qualityValue": "Chất lượng: {{value}}",
+  "auto": "Auto",
+  "theater": "Chế độ rạp hát",
+  "exitTheater": "Thoát chế độ rạp hát",
+  "fullscreen": "Toàn màn hình",
+  "exitFullscreen": "Thoát toàn màn hình",
+  "seek": "Thanh thời gian",
+  "tapToUnmute": "Bấm để bật tiếng",
+  "overlay": {
+    "reconnecting": "Đang kết nối lại…",
+    "interrupted": "Streamer sẽ quay lại ngay",
+    "interruptedHint": "Tín hiệu từ streamer tạm gián đoạn. Video sẽ tự tiếp tục khi có lại.",
+    "error": "Không phát được video",
+    "retry": "Thử lại",
+    "matureTitle": "Nội dung dành cho người từ 18 tuổi",
+    "matureBody": "Buổi phát này được Creator đánh dấu có nội dung người lớn.",
+    "matureAccept": "Tôi đủ 18 tuổi, tiếp tục xem",
+    "ended": "Buổi phát đã kết thúc"
+  }
+}

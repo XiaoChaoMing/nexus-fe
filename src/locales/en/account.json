@@ -1,0 +1,76 @@
+{
+  "title": "Account settings",
+  "profile": {
+    "title": "Profile",
+    "description": "Display name, birth date, language and time zone.",
+    "username": "Username",
+    "joined": "Joined",
+    "displayName": "Display name",
+    "displayNameHint": "1–50 characters.",
+    "birthDate": "Birth date",
+    "birthDateHint": "Optional; can only be set once.",
+    "birthDateLocked": "set, cannot be changed",
+    "locale": "Language",
+    "timezone": "Time zone",
+    "save": "Save changes",
+    "saved": "Profile saved"
+  },
+  "email": {
+    "title": "Email",
+    "verified": "Verified",
+    "unverified": "Not verified"
+  },
+  "password": {
+    "title": "Change password",
+    "description": "Other devices are signed out; this one stays signed in.",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "submit": "Change password",
+    "changed": "Password changed. Other devices were signed out."
+  },
+  "validation": {
+    "displayName": "Display names need 1–50 characters.",
+    "birthDate": "Invalid birth date.",
+    "timezone": "Invalid time zone."
+  },
+  "verifyBanner": {
+    "text": "Verify {{email}} to apply as a Creator. Check your inbox.",
+    "resend": "Resend",
+    "resendIn_one": "Resend in {{count}}s",
+    "resendIn_other": "Resend in {{count}}s",
+    "sent": "Verification email sent again.",
+    "alreadyVerified": "Your email is already verified.",
+    "dismiss": "Hide notice"
+  },
+  "verify": {
+    "verifying": "Verifying your email…",
+    "successTitle": "Email verified",
+    "successBody": "Thank you! You can now apply to become a Creator.",
+    "toCreator": "Apply as a Creator",
+    "login": "Sign in",
+    "invalidTitle": "This link has expired",
+    "invalidBody": "The verification link is invalid, already used or expired.",
+    "errorTitle": "Verification failed",
+    "errorBody": "Something went wrong. Open the link from the email again to retry.",
+    "resend": "Resend verification email",
+    "alreadyVerified": "Your email is already verified.",
+    "loginToResend": "Sign in to resend"
+  },
+  "forgot": {
+    "title": "Forgot password",
+    "subtitle": "Enter your account email and we will send a reset link.",
+    "submit": "Send link",
+    "sent": "If the email exists, we have sent password reset instructions. The link is valid for 30 minutes.",
+    "backToLogin": "Back to sign in"
+  },
+  "reset": {
+    "title": "Reset password",
+    "subtitle": "Choose a new password. Every signed-in device will be signed out.",
+    "password": "New password",
+    "submit": "Reset password",
+    "invalidTitle": "This link has expired",
+    "invalidBody": "The password reset link is invalid, already used or expired.",
+    "requestNew": "Send a new link"
+  }
+}

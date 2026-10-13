@@ -1,0 +1,57 @@
+{
+  "title": "Become a Creator",
+  "subtitle": "Stream live on NexusLive. Applications are reviewed by an administrator; once approved, your channel is created automatically.",
+  "loadFailed": "Could not load your application status.",
+  "unverified": "Verify your email before applying.",
+  "cancelledBefore": "Your previous application was cancelled. You can apply again.",
+  "form": {
+    "handle": "Your channel handle will be @{{handle}} (from your username).",
+    "legalName": "Legal name",
+    "legalNameHint": "2–100 characters, as on your ID.",
+    "birthDate": "Birth date",
+    "birthDateHint": "You must be 18 or older.",
+    "note": "Note for the administrator (optional)",
+    "terms": "I agree to the <b>Creator Terms</b> and confirm the details above are true.",
+    "submit": "Submit application",
+    "resubmit": "Resubmit",
+    "submitted": "Application submitted, please wait for review."
+  },
+  "validation": {
+    "legalName": "Legal names need 2–100 characters.",
+    "birthDate": "Invalid birth date.",
+    "birthFuture": "The birth date cannot be in the future.",
+    "underage": "You must be 18 or older to become a Creator.",
+    "note": "Notes are limited to 500 characters.",
+    "terms": "Please accept the Creator Terms."
+  },
+  "pending": {
+    "title": "Application under review",
+    "body": "An administrator will review your application. This page updates when there is a decision.",
+    "submittedAt": "Submitted",
+    "cancel": "Cancel application",
+    "cancelTitle": "Cancel your Creator application?",
+    "cancelBody": "It will no longer be reviewed. You can apply again later.",
+    "cancelConfirm": "Cancel application",
+    "cancelled": "Application cancelled."
+  },
+  "rejected": {
+    "title": "Your previous application was rejected",
+    "reason": "Reason: {{reason}}",
+    "resubmit": "You can edit the details and resubmit right away."
+  },
+  "creating": {
+    "title": "Approved — creating your channel…",
+    "body": "Your channel is being created. The Studio opens by itself when it is ready."
+  },
+  "already": {
+    "title": "You are a Creator",
+    "body": "Your channel is ready. Open the Studio to create a stream key and go live.",
+    "openStudio": "Open Studio"
+  },
+  "cta": {
+    "title": "Become a Streamer",
+    "body": "Get your own channel, stream with OBS and grow your community.",
+    "action": "Get started",
+    "dismiss": "Hide for 30 days"
+  }
+}

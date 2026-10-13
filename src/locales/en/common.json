@@ -1,0 +1,88 @@
+{
+  "brand": "NexusLive",
+  "loading": "Loading",
+  "nav": {
+    "main": "Main navigation",
+    "mobile": "Navigation",
+    "home": "Home",
+    "studio": "Studio",
+    "accountSettings": "Account settings",
+    "account": "Account",
+    "skipToContent": "Skip to content",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "goLive": "Go live",
+    "breadcrumb": "Breadcrumb",
+    "browse": "Browse",
+    "following": "Following",
+    "search": "Search",
+    "profile": "Profile",
+    "searchPlaceholder": "Search channels, streams…"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "copy": "Copy",
+    "copied": "Copied",
+    "show": "Show",
+    "hide": "Hide",
+    "share": "Share",
+    "linkCopied": "Link copied",
+    "backHome": "Back to home"
+  },
+  "status": {
+    "live": "Live",
+    "interrupted": "Interrupted",
+    "ended": "Ended",
+    "offline": "Offline",
+    "mature": "18+"
+  },
+  "elapsed": "Live for {{time}}",
+  "language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "sidebar": {
+    "suggested": "Suggested channels",
+    "noSuggestions": "No channel is live right now.",
+    "loginInvite": "Sign in to follow your favorite channels and hear when they go live.",
+    "following": "Followed channels",
+    "followingEmpty": "You do not follow any channel yet. Following arrives in phase 4."
+  },
+  "notifications": {
+    "label": "Notifications",
+    "labelCount": "Notifications: {{count}} unread",
+    "empty": "No notifications yet."
+  },
+  "auth": {
+    "login": "Sign in"
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Some details are invalid, please check them.",
+    "UNAUTHORIZED": "Please sign in to continue.",
+    "FORBIDDEN": "You are not allowed to do this.",
+    "NOT_FOUND": "Nothing was found.",
+    "CONFLICT": "The data just changed. Reload and try again.",
+    "RATE_LIMITED": "You are going too fast, please try again later.",
+    "rateLimitedWait_one": "You are going too fast, try again in {{count}} second.",
+    "rateLimitedWait_other": "You are going too fast, try again in {{count}} seconds.",
+    "INTERNAL_ERROR": "Something went wrong, please try again.",
+    "SERVICE_UNAVAILABLE": "The service is not responding right now, please try again later.",
+    "NETWORK_ERROR": "Cannot reach the server. Check your connection and try again.",
+    "INVALID_CREDENTIALS": "Wrong email/username or password.",
+    "SESSION_EXPIRED": "Your session has expired. Please sign in again.",
+    "ACCOUNT_LOCKED": "This account is locked. Contact support if you think this is a mistake.",
+    "EMAIL_NOT_VERIFIED": "Verify your email before applying to become a Creator.",
+    "USERNAME_TAKEN": "This username is already taken.",
+    "EMAIL_TAKEN": "This email is already registered.",
+    "TOKEN_INVALID": "This link is invalid or has expired.",
+    "WRONG_PASSWORD": "Your current password is wrong.",
+    "APPLICATION_PENDING": "You already have a Creator application waiting for review.",
+    "ALREADY_CREATOR": "You are already a Creator.",
+    "UNDERAGE": "You must be 18 or older to become a Creator.",
+    "INVALID_STATE": "This action is no longer valid. Reload to see the current state.",
+    "NOT_CREATOR": "You need a Creator channel to use the Studio.",
+    "fallback": "Something went wrong, please try again."
+  }
+}

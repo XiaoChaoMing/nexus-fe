@@ -1,0 +1,87 @@
+{
+  "brand": "NexusLive",
+  "loading": "Đang tải",
+  "nav": {
+    "main": "Điều hướng chính",
+    "mobile": "Điều hướng",
+    "home": "Trang chủ",
+    "studio": "Studio",
+    "accountSettings": "Cài đặt tài khoản",
+    "account": "Tài khoản",
+    "skipToContent": "Bỏ qua tới nội dung",
+    "expandSidebar": "Mở rộng thanh bên",
+    "collapseSidebar": "Thu gọn thanh bên",
+    "goLive": "Phát trực tiếp",
+    "breadcrumb": "Vị trí",
+    "browse": "Khám phá",
+    "following": "Đang theo dõi",
+    "search": "Tìm kiếm",
+    "profile": "Hồ sơ",
+    "searchPlaceholder": "Tìm kênh, buổi phát…"
+  },
+  "actions": {
+    "cancel": "Hủy",
+    "retry": "Thử lại",
+    "copy": "Sao chép",
+    "copied": "Đã chép",
+    "show": "Hiện",
+    "hide": "Ẩn",
+    "share": "Chia sẻ",
+    "linkCopied": "Đã chép link",
+    "backHome": "Về trang chủ"
+  },
+  "status": {
+    "live": "Live",
+    "interrupted": "Tạm gián đoạn",
+    "ended": "Đã kết thúc",
+    "offline": "Offline",
+    "mature": "18+"
+  },
+  "elapsed": "Đã phát {{time}}",
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "sidebar": {
+    "suggested": "Kênh đề xuất",
+    "noSuggestions": "Chưa có kênh nào đang phát.",
+    "loginInvite": "Đăng nhập để theo dõi kênh yêu thích và nhận thông báo khi họ phát.",
+    "following": "Kênh đang theo dõi",
+    "followingEmpty": "Bạn chưa theo dõi kênh nào. Tính năng theo dõi sẽ có ở giai đoạn 4."
+  },
+  "notifications": {
+    "label": "Thông báo",
+    "labelCount": "Thông báo: {{count}} chưa đọc",
+    "empty": "Chưa có thông báo nào."
+  },
+  "auth": {
+    "login": "Đăng nhập"
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Thông tin chưa hợp lệ, vui lòng kiểm tra lại.",
+    "UNAUTHORIZED": "Bạn cần đăng nhập để tiếp tục.",
+    "FORBIDDEN": "Bạn không có quyền thực hiện thao tác này.",
+    "NOT_FOUND": "Không tìm thấy nội dung.",
+    "CONFLICT": "Dữ liệu vừa thay đổi. Tải lại rồi thử lại.",
+    "RATE_LIMITED": "Bạn thao tác quá nhanh, vui lòng thử lại sau.",
+    "rateLimitedWait_other": "Bạn thao tác quá nhanh, thử lại sau {{count}} giây.",
+    "INTERNAL_ERROR": "Đã có lỗi xảy ra, vui lòng thử lại.",
+    "SERVICE_UNAVAILABLE": "Dịch vụ tạm thời không phản hồi, vui lòng thử lại sau.",
+    "NETWORK_ERROR": "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.",
+    "INVALID_CREDENTIALS": "Email/tên người dùng hoặc mật khẩu không đúng.",
+    "SESSION_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "ACCOUNT_LOCKED": "Tài khoản đang bị khóa. Liên hệ hỗ trợ nếu bạn cho rằng đây là nhầm lẫn.",
+    "EMAIL_NOT_VERIFIED": "Bạn cần xác minh email trước khi nộp đơn Creator.",
+    "USERNAME_TAKEN": "Tên người dùng này đã có người dùng.",
+    "EMAIL_TAKEN": "Email này đã được đăng ký.",
+    "TOKEN_INVALID": "Liên kết không hợp lệ hoặc đã hết hạn.",
+    "WRONG_PASSWORD": "Mật khẩu hiện tại không đúng.",
+    "APPLICATION_PENDING": "Bạn đã có một đơn Creator đang chờ duyệt.",
+    "ALREADY_CREATOR": "Bạn đã là Creator.",
+    "UNDERAGE": "Bạn cần đủ 18 tuổi để trở thành Creator.",
+    "INVALID_STATE": "Thao tác không còn hợp lệ ở trạng thái hiện tại. Tải lại để xem trạng thái mới.",
+    "NOT_CREATOR": "Bạn cần có kênh Creator để dùng Studio.",
+    "fallback": "Có lỗi xảy ra, vui lòng thử lại."
+  }
+}

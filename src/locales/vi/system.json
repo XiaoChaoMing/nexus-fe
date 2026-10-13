@@ -1,0 +1,19 @@
+{
+  "offline": "Bạn đang offline. Nội dung đã tải vẫn hiển thị; trang sẽ tự cập nhật khi có mạng.",
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "body": "Trang bạn tìm không tồn tại hoặc đã bị gỡ.",
+    "browse": "Khám phá kênh"
+  },
+  "serverError": {
+    "title": "Đã có lỗi xảy ra",
+    "body": "Máy chủ gặp sự cố khi xử lý yêu cầu. Vui lòng thử lại."
+  },
+  "sessionExpired": {
+    "title": "Phiên đăng nhập đã hết hạn",
+    "body": "Vì lý do bảo mật, bạn cần đăng nhập lại để tiếp tục.",
+    "toast": "Phiên đăng nhập đã hết hạn. Bạn vẫn xem tiếp được; đăng nhập lại để dùng các tính năng cá nhân.",
+    "login": "Đăng nhập lại",
+    "continue": "Tiếp tục"
+  }
+}

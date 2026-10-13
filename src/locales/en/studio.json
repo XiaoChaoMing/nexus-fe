@@ -1,0 +1,152 @@
+{
+  "breadcrumb": {
+    "studio": "Creator Studio",
+    "streamManager": "Stream Manager"
+  },
+  "title": "Go live",
+  "loadFailed": "Could not load Studio. Retrying automatically.",
+  "header": {
+    "watch": "Watch stream",
+    "end": "End stream",
+    "endConfirmTitle": "End the stream?",
+    "endConfirm": "End",
+    "endConfirmBody": "OBS is disconnected and a replay is created. Viewers who rewound can keep watching to the end.",
+    "endFailed": "Could not end the stream, try again."
+  },
+  "preview": {
+    "label": "Preview · a few seconds behind OBS",
+    "emptyTitle": "The preview appears when OBS starts streaming",
+    "emptyBody": "Open OBS and press \"Start Streaming\" — the status updates by itself, no reload needed.",
+    "checklist": "Ready to go live",
+    "hasKey": "Stream key ready",
+    "noKey": "No stream key yet",
+    "settingsSaved": "Stream info saved",
+    "settingsNotSaved": "Stream info not saved",
+    "waitingObs": "Waiting for OBS signal…"
+  },
+  "health": {
+    "title": "Stream health",
+    "stable": "Stable",
+    "attention": "Needs attention",
+    "waitingData": "Waiting for data",
+    "updated_one": "Updated {{count}} second ago",
+    "updated_other": "Updated {{count}} seconds ago",
+    "interrupted": "Lost the OBS signal. The stream ends in <b>{{seconds}}s</b> unless it reconnects.",
+    "noData": "No data yet",
+    "bitrate": "Ingest bitrate",
+    "bitrateTarget": "Target ≤ {{target}}",
+    "fps": "Processed FPS",
+    "fpsNote": "Frames per second processed by the server",
+    "speed": "Speed",
+    "speedOk": "Keeping up with real time",
+    "speedSlow": "Slower than real time",
+    "dropped": "Dropped frames",
+    "droppedUnit": "frames",
+    "droppedNone": "No dropped frames",
+    "droppedTotal": "Total since the stream started",
+    "startedAt": "Started",
+    "elapsed": "Live for",
+    "uploadErrors": "Storage upload errors",
+    "replay": "Replay",
+    "replayAuto": "Created when you end",
+    "justEnded": "Ended. Press \"Stop Streaming\" in OBS; you can go live again in 30 seconds.",
+    "idle": "Metrics appear when OBS starts sending.",
+    "warnings": {
+      "slow": "The server is falling behind (speed {{speed}}x) — lower the resolution or bitrate in OBS.",
+      "bitrate": "Bitrate {{bitrate}} kbps is above the recommended {{target}} kbps.",
+      "upload_one": "{{count}} storage upload error.",
+      "upload_other": "{{count}} storage upload errors."
+    }
+  },
+  "key": {
+    "title": "OBS connection",
+    "subtitle": "RTMP · 1 source at a time",
+    "connected": "Connected",
+    "signalLost": "Signal lost",
+    "waiting": "Waiting for signal",
+    "server": "Server",
+    "streamKey": "Stream key",
+    "justCreated": "Just created",
+    "createdAt": "Created {{date}}",
+    "hidden": "Stream key hidden",
+    "none": "You have no stream key yet. Create one to stream with OBS.",
+    "saveNow": "Save this key now: for security it will not be shown again. Never share your key.",
+    "securityNote": "The key is shown only once when created and stored only as a hash. Never share your key.",
+    "regenerate": "Regenerate key",
+    "create": "Create stream key",
+    "obsGuide": "OBS guide",
+    "createdToast": "New stream key created",
+    "createdToastBody": "Copy it into OBS now: it will not be shown again.",
+    "createFailed": "Could not create the key, try again.",
+    "regenerateTitle": "Regenerate the stream key?",
+    "regenerateConfirm": "Create new key",
+    "regenerateBody": "The old key stops working right away. OBS using the old key cannot stream until you paste the new one."
+  },
+  "settings": {
+    "title": "Stream info",
+    "appliesNow": "Applies right away to the current stream",
+    "appliesNext": "Applies to your next stream",
+    "titleLabel": "Title",
+    "tags": "Tags",
+    "tagsHint": "Enter or comma to add · up to {{max}} characters per tag",
+    "addTag": "Add a tag…",
+    "removeTag": "Remove tag {{tag}}",
+    "language": "Language",
+    "mature": "18+ content",
+    "matureHint": "Viewers must confirm their age before watching",
+    "save": "Save changes",
+    "savedAt": "Saved at {{time}}",
+    "savedToast": "Stream info saved",
+    "saveFailed": "Could not save, try again.",
+    "validation": {
+      "titleRequired": "Enter a title",
+      "titleMax": "Up to {{titleMax}} characters",
+      "tagMax": "Up to {{tagMax}} characters per tag",
+      "tagsMax": "Up to {{tagsMax}} tags"
+    }
+  },
+  "streamLanguages": {
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "guide": {
+    "title": "Recommended OBS settings",
+    "subtitle": "Matches the 720p / 480p / 360p ladder · 2-second GOP",
+    "steps": {
+      "stream": {
+        "title": "Settings → Stream",
+        "body": "Service: Custom… then paste the Server and Stream key above."
+      },
+      "output": {
+        "title": "Output (Advanced)",
+        "body": "Encoder x264 or NVENC H.264, Rate control CBR."
+      },
+      "video": {
+        "title": "Video",
+        "body": "Output 1280×720 or 1920×1080, 30 FPS."
+      },
+      "stop": {
+        "title": "Stop for real",
+        "body": "Press \"Stop Streaming\" in OBS: if you only press End here, OBS may reconnect by itself."
+      },
+      "noVideo": {
+        "title": "No picture?",
+        "body": "Check the key, and that only one source streams to the channel at a time."
+      }
+    },
+    "specs": {
+      "encoder": "Encoder",
+      "rateControl": "Rate control",
+      "bitrate": "Bitrate",
+      "keyframe": "Keyframe Interval",
+      "audio": "Audio",
+      "resolution": "Resolution"
+    }
+  },
+  "notCreator": {
+    "title": "You do not have a Creator channel yet",
+    "body": "The Studio is for Creators. Apply to become one; once approved, your channel is created automatically and the Studio opens.",
+    "apply": "Apply as a Creator",
+    "preparing": "Your channel is being prepared, the Studio opens in a moment…"
+  }
+}

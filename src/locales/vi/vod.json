@@ -1,0 +1,17 @@
+{
+  "replayBadge": "Xem lại",
+  "streamedOn": "Phát ngày {{date}}",
+  "duration": "Thời lượng {{time}}",
+  "expiresIn_other": "Hết hạn sau {{count}} ngày",
+  "expiresToday": "Hết hạn hôm nay",
+  "gone": "Bản xem lại không còn",
+  "goneBody": "Bản xem lại đã hết hạn hoặc không tồn tại.",
+  "loadFailed": "Không tải được bản xem lại",
+  "resumeTitle": "Xem tiếp từ {{time}}?",
+  "resumeBody": "Bạn đã xem dở bản xem lại này trên trình duyệt này.",
+  "resume": "Xem tiếp",
+  "startOver": "Xem từ đầu",
+  "finished": "Bạn đã xem hết",
+  "watchAgain": "Xem lại từ đầu",
+  "backHome": "Về trang chủ"
+}

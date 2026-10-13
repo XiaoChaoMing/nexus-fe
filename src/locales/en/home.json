@@ -1,0 +1,27 @@
+{
+  "greeting": "Hi, {{name}}",
+  "live": {
+    "heading": "Live now",
+    "loadFailed": "Could not load live streams.",
+    "empty": "Nobody is live right now."
+  },
+  "browse": {
+    "title": "Browse",
+    "live": "Live channels"
+  },
+  "following": {
+    "title": "Following",
+    "guestTitle": "Follow the channels you love",
+    "guestBody": "Sign in to see what your channels are streaming and hear when they go live.",
+    "login": "Sign in",
+    "register": "Sign up",
+    "emptyTitle": "You do not follow any channel yet",
+    "emptyBody": "Following arrives in phase 4. Meanwhile, discover who is live.",
+    "discover": "Discover channels"
+  },
+  "search": {
+    "title": "Search",
+    "soonTitle": "Search is coming",
+    "soonBody": "Searching channels, streams and categories arrives in phase 2."
+  }
+}

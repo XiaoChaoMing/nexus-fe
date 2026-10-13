@@ -1,0 +1,75 @@
+{
+  "title": "Cài đặt tài khoản",
+  "profile": {
+    "title": "Hồ sơ",
+    "description": "Tên hiển thị, ngày sinh, ngôn ngữ và múi giờ.",
+    "username": "Tên người dùng",
+    "joined": "Tham gia",
+    "displayName": "Tên hiển thị",
+    "displayNameHint": "1–50 ký tự.",
+    "birthDate": "Ngày sinh",
+    "birthDateHint": "Không bắt buộc; chỉ đặt được một lần.",
+    "birthDateLocked": "đã đặt, không đổi được",
+    "locale": "Ngôn ngữ",
+    "timezone": "Múi giờ",
+    "save": "Lưu thay đổi",
+    "saved": "Đã lưu hồ sơ"
+  },
+  "email": {
+    "title": "Email",
+    "verified": "Đã xác minh",
+    "unverified": "Chưa xác minh"
+  },
+  "password": {
+    "title": "Đổi mật khẩu",
+    "description": "Các thiết bị khác sẽ bị đăng xuất; thiết bị này vẫn đăng nhập.",
+    "current": "Mật khẩu hiện tại",
+    "new": "Mật khẩu mới",
+    "confirm": "Nhập lại mật khẩu mới",
+    "submit": "Đổi mật khẩu",
+    "changed": "Đã đổi mật khẩu. Các thiết bị khác đã bị đăng xuất."
+  },
+  "validation": {
+    "displayName": "Tên hiển thị cần 1–50 ký tự.",
+    "birthDate": "Ngày sinh không hợp lệ.",
+    "timezone": "Múi giờ không hợp lệ."
+  },
+  "verifyBanner": {
+    "text": "Xác minh email {{email}} để nộp đơn Creator. Kiểm tra hộp thư của bạn.",
+    "resend": "Gửi lại",
+    "resendIn_other": "Gửi lại sau {{count}}s",
+    "sent": "Đã gửi lại email xác minh.",
+    "alreadyVerified": "Email của bạn đã được xác minh.",
+    "dismiss": "Ẩn thông báo"
+  },
+  "verify": {
+    "verifying": "Đang xác minh email…",
+    "successTitle": "Email đã được xác minh",
+    "successBody": "Cảm ơn bạn! Giờ bạn có thể nộp đơn trở thành Creator.",
+    "toCreator": "Nộp đơn Creator",
+    "login": "Đăng nhập",
+    "invalidTitle": "Liên kết đã hết hạn",
+    "invalidBody": "Liên kết xác minh không hợp lệ, đã dùng hoặc đã hết hạn.",
+    "errorTitle": "Không xác minh được",
+    "errorBody": "Có lỗi khi xác minh. Mở lại liên kết trong email để thử lại.",
+    "resend": "Gửi lại email xác minh",
+    "alreadyVerified": "Email của bạn đã được xác minh.",
+    "loginToResend": "Đăng nhập để gửi lại"
+  },
+  "forgot": {
+    "title": "Quên mật khẩu",
+    "subtitle": "Nhập email của tài khoản, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
+    "submit": "Gửi liên kết",
+    "sent": "Nếu email tồn tại, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu. Liên kết có hạn 30 phút.",
+    "backToLogin": "Quay lại đăng nhập"
+  },
+  "reset": {
+    "title": "Đặt lại mật khẩu",
+    "subtitle": "Chọn mật khẩu mới. Mọi thiết bị đang đăng nhập sẽ bị đăng xuất.",
+    "password": "Mật khẩu mới",
+    "submit": "Đặt lại mật khẩu",
+    "invalidTitle": "Liên kết đã hết hạn",
+    "invalidBody": "Liên kết đặt lại mật khẩu không hợp lệ, đã dùng hoặc đã hết hạn.",
+    "requestNew": "Gửi liên kết mới"
+  }
+}

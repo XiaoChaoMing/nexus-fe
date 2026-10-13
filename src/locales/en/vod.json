@@ -1,0 +1,18 @@
+{
+  "replayBadge": "Replay",
+  "streamedOn": "Streamed on {{date}}",
+  "duration": "Duration {{time}}",
+  "expiresIn_one": "Expires in {{count}} day",
+  "expiresIn_other": "Expires in {{count}} days",
+  "expiresToday": "Expires today",
+  "gone": "This replay is no longer available",
+  "goneBody": "The replay expired or does not exist.",
+  "loadFailed": "Could not load this replay",
+  "resumeTitle": "Resume from {{time}}?",
+  "resumeBody": "You started watching this replay in this browser.",
+  "resume": "Resume",
+  "startOver": "Start over",
+  "finished": "You finished this replay",
+  "watchAgain": "Watch again from the start",
+  "backHome": "Back to home"
+}

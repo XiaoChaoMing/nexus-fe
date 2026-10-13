@@ -1,0 +1,19 @@
+{
+  "offline": "You are offline. Loaded content stays visible; the page updates when the connection is back.",
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you are looking for does not exist or was removed.",
+    "browse": "Discover channels"
+  },
+  "serverError": {
+    "title": "Something went wrong",
+    "body": "The server had a problem handling the request. Please try again."
+  },
+  "sessionExpired": {
+    "title": "Your session has expired",
+    "body": "For your security, please sign in again to continue.",
+    "toast": "Your session has expired. You can keep watching; sign in again for personal features.",
+    "login": "Sign in again",
+    "continue": "Continue"
+  }
+}

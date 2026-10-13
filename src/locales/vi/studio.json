@@ -1,0 +1,150 @@
+{
+  "breadcrumb": {
+    "studio": "Creator Studio",
+    "streamManager": "Stream Manager"
+  },
+  "title": "Phát trực tiếp",
+  "loadFailed": "Không tải được Studio. Trang sẽ tự thử lại.",
+  "header": {
+    "watch": "Xem buổi phát",
+    "end": "Kết thúc buổi phát",
+    "endConfirmTitle": "Kết thúc buổi phát?",
+    "endConfirm": "Kết thúc",
+    "endConfirmBody": "OBS sẽ bị ngắt kết nối và bản xem lại được tạo. Người xem đang xem lùi vẫn xem tiếp được tới hết.",
+    "endFailed": "Không kết thúc được, thử lại."
+  },
+  "preview": {
+    "label": "Xem trước · trễ vài giây so với OBS",
+    "emptyTitle": "Xem trước sẽ hiện khi OBS bắt đầu phát",
+    "emptyBody": "Mở OBS và bấm \"Start Streaming\" — trạng thái tự cập nhật, không cần tải lại trang.",
+    "checklist": "Chuẩn bị phát",
+    "hasKey": "Đã có stream key",
+    "noKey": "Chưa có stream key",
+    "settingsSaved": "Đã lưu thông tin buổi phát",
+    "settingsNotSaved": "Chưa lưu thông tin buổi phát",
+    "waitingObs": "Đang chờ tín hiệu từ OBS…"
+  },
+  "health": {
+    "title": "Sức khỏe luồng",
+    "stable": "Ổn định",
+    "attention": "Cần chú ý",
+    "waitingData": "Chờ dữ liệu",
+    "updated_other": "Cập nhật {{count}} giây trước",
+    "interrupted": "Mất tín hiệu từ OBS. Tự kết thúc sau <b>{{seconds}}s</b> nếu không kết nối lại.",
+    "noData": "Chưa có dữ liệu",
+    "bitrate": "Bitrate vào",
+    "bitrateTarget": "Mục tiêu ≤ {{target}}",
+    "fps": "FPS xử lý",
+    "fpsNote": "Khung hình mỗi giây máy chủ xử lý",
+    "speed": "Tốc độ",
+    "speedOk": "Theo kịp thời gian thực",
+    "speedSlow": "Chậm hơn thời gian thực",
+    "dropped": "Khung rơi",
+    "droppedUnit": "khung",
+    "droppedNone": "Không có khung bị rơi",
+    "droppedTotal": "Tổng từ đầu buổi phát",
+    "startedAt": "Bắt đầu",
+    "elapsed": "Đã phát",
+    "uploadErrors": "Lỗi tải lên kho",
+    "replay": "Bản xem lại",
+    "replayAuto": "Tự tạo khi kết thúc",
+    "justEnded": "Đã kết thúc. Hãy bấm \"Stop Streaming\" trong OBS; có thể phát lại sau 30 giây.",
+    "idle": "Số liệu sẽ hiện khi OBS bắt đầu gửi tín hiệu.",
+    "warnings": {
+      "slow": "Máy chủ không theo kịp (tốc độ {{speed}}x) — giảm độ phân giải hoặc bitrate trong OBS.",
+      "bitrate": "Bitrate {{bitrate}} kbps vượt mức khuyến nghị {{target}} kbps.",
+      "upload_other": "{{count}} lỗi tải lên kho lưu trữ."
+    }
+  },
+  "key": {
+    "title": "Kết nối OBS",
+    "subtitle": "RTMP · 1 nguồn phát cùng lúc",
+    "connected": "Đã kết nối",
+    "signalLost": "Mất tín hiệu",
+    "waiting": "Chờ tín hiệu",
+    "server": "Server",
+    "streamKey": "Stream key",
+    "justCreated": "Vừa tạo",
+    "createdAt": "Tạo lúc {{date}}",
+    "hidden": "Stream key đã ẩn",
+    "none": "Bạn chưa có stream key. Tạo key để phát bằng OBS.",
+    "saveNow": "Lưu key này ngay: vì lý do bảo mật, key sẽ không hiển thị lại. Không chia sẻ key cho ai.",
+    "securityNote": "Key chỉ hiển thị một lần khi tạo và chỉ lưu dạng mã băm. Không chia sẻ key cho ai.",
+    "regenerate": "Tạo lại key",
+    "create": "Tạo stream key",
+    "obsGuide": "Hướng dẫn OBS",
+    "createdToast": "Đã tạo stream key mới",
+    "createdToastBody": "Sao chép và dán vào OBS ngay: key sẽ không hiển thị lại.",
+    "createFailed": "Không tạo được key, thử lại.",
+    "regenerateTitle": "Tạo lại stream key?",
+    "regenerateConfirm": "Tạo key mới",
+    "regenerateBody": "Key cũ hết hiệu lực ngay. OBS đang dùng key cũ sẽ không phát được cho tới khi bạn dán key mới."
+  },
+  "settings": {
+    "title": "Thông tin buổi phát",
+    "appliesNow": "Áp dụng ngay cho buổi đang phát",
+    "appliesNext": "Áp dụng cho buổi phát tiếp theo",
+    "titleLabel": "Tiêu đề",
+    "tags": "Tag",
+    "tagsHint": "Enter hoặc dấu phẩy để thêm · mỗi tag tối đa {{max}} ký tự",
+    "addTag": "Thêm tag…",
+    "removeTag": "Bỏ tag {{tag}}",
+    "language": "Ngôn ngữ",
+    "mature": "Nội dung 18+",
+    "matureHint": "Người xem phải xác nhận độ tuổi trước khi xem",
+    "save": "Lưu thay đổi",
+    "savedAt": "Đã lưu lúc {{time}}",
+    "savedToast": "Đã lưu thông tin buổi phát",
+    "saveFailed": "Không lưu được, thử lại.",
+    "validation": {
+      "titleRequired": "Nhập tiêu đề",
+      "titleMax": "Tối đa {{titleMax}} ký tự",
+      "tagMax": "Mỗi tag tối đa {{tagMax}} ký tự",
+      "tagsMax": "Tối đa {{tagsMax}} tag"
+    }
+  },
+  "streamLanguages": {
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "guide": {
+    "title": "Cấu hình OBS khuyến nghị",
+    "subtitle": "Khớp với thang mã hóa 720p / 480p / 360p · GOP 2 giây",
+    "steps": {
+      "stream": {
+        "title": "Settings → Stream",
+        "body": "Service: Custom… rồi dán Server và Stream key ở trên."
+      },
+      "output": {
+        "title": "Output (Advanced)",
+        "body": "Encoder x264 hoặc NVENC H.264, Rate control CBR."
+      },
+      "video": {
+        "title": "Video",
+        "body": "Output 1280×720 hoặc 1920×1080, 30 FPS."
+      },
+      "stop": {
+        "title": "Dừng hẳn",
+        "body": "Bấm \"Stop Streaming\" trong OBS: nếu chỉ bấm Kết thúc ở đây, OBS có thể tự kết nối lại."
+      },
+      "noVideo": {
+        "title": "Không lên hình?",
+        "body": "Kiểm tra key, và chỉ một nơi được phát vào kênh cùng lúc."
+      }
+    },
+    "specs": {
+      "encoder": "Encoder",
+      "rateControl": "Rate control",
+      "bitrate": "Bitrate",
+      "keyframe": "Keyframe Interval",
+      "audio": "Audio",
+      "resolution": "Độ phân giải"
+    }
+  },
+  "notCreator": {
+    "title": "Bạn chưa có kênh Creator",
+    "body": "Studio dành cho Creator. Nộp đơn đăng ký Creator; khi được duyệt, kênh của bạn được tạo tự động và Studio mở ra.",
+    "apply": "Đăng ký Creator",
+    "preparing": "Kênh của bạn đang được chuẩn bị, Studio sẽ mở trong giây lát…"
+  }
+}

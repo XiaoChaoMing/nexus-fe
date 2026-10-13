@@ -1,0 +1,29 @@
+{
+  "play": "Play",
+  "pause": "Pause",
+  "mute": "Mute",
+  "unmute": "Unmute",
+  "volume": "Volume",
+  "live": "LIVE",
+  "goLive": "Go to live",
+  "quality": "Quality",
+  "qualityValue": "Quality: {{value}}",
+  "auto": "Auto",
+  "theater": "Theater mode",
+  "exitTheater": "Exit theater mode",
+  "fullscreen": "Fullscreen",
+  "exitFullscreen": "Exit fullscreen",
+  "seek": "Seek bar",
+  "tapToUnmute": "Tap to unmute",
+  "overlay": {
+    "reconnecting": "Reconnecting…",
+    "interrupted": "The streamer will be right back",
+    "interruptedHint": "The streamer's signal dropped. Video resumes automatically when it returns.",
+    "error": "Cannot play this video",
+    "retry": "Try again",
+    "matureTitle": "Content for viewers 18 and over",
+    "matureBody": "The creator marked this stream as mature content.",
+    "matureAccept": "I am 18 or older, continue",
+    "ended": "This stream has ended"
+  }
+}

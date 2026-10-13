@@ -1,0 +1,57 @@
+{
+  "title": "Trở thành Creator",
+  "subtitle": "Phát trực tiếp trên NexusLive. Đơn được Admin duyệt thủ công; khi duyệt, kênh của bạn được tạo tự động.",
+  "loadFailed": "Không tải được trạng thái đơn.",
+  "unverified": "Bạn cần xác minh email trước khi nộp đơn.",
+  "cancelledBefore": "Đơn trước của bạn đã được hủy. Bạn có thể nộp đơn mới.",
+  "form": {
+    "handle": "Kênh của bạn sẽ có handle @{{handle}} (theo tên người dùng).",
+    "legalName": "Họ tên pháp lý",
+    "legalNameHint": "2–100 ký tự, đúng như giấy tờ tùy thân.",
+    "birthDate": "Ngày sinh",
+    "birthDateHint": "Bạn cần đủ 18 tuổi.",
+    "note": "Ghi chú cho Admin (không bắt buộc)",
+    "terms": "Tôi đồng ý với <b>Điều khoản dành cho Creator</b> và cam kết thông tin trên là đúng.",
+    "submit": "Nộp đơn",
+    "resubmit": "Nộp lại đơn",
+    "submitted": "Đã nộp đơn, vui lòng chờ duyệt."
+  },
+  "validation": {
+    "legalName": "Họ tên cần 2–100 ký tự.",
+    "birthDate": "Ngày sinh không hợp lệ.",
+    "birthFuture": "Ngày sinh không thể ở tương lai.",
+    "underage": "Bạn cần đủ 18 tuổi để trở thành Creator.",
+    "note": "Ghi chú tối đa 500 ký tự.",
+    "terms": "Bạn cần đồng ý Điều khoản dành cho Creator."
+  },
+  "pending": {
+    "title": "Đơn đang chờ duyệt",
+    "body": "Admin sẽ xem xét đơn của bạn. Trang này tự cập nhật khi có kết quả.",
+    "submittedAt": "Nộp lúc",
+    "cancel": "Hủy đơn",
+    "cancelTitle": "Hủy đơn Creator?",
+    "cancelBody": "Đơn sẽ không được xét nữa. Bạn có thể nộp đơn mới sau.",
+    "cancelConfirm": "Hủy đơn",
+    "cancelled": "Đã hủy đơn."
+  },
+  "rejected": {
+    "title": "Đơn trước đã bị từ chối",
+    "reason": "Lý do: {{reason}}",
+    "resubmit": "Bạn có thể sửa thông tin và nộp lại ngay."
+  },
+  "creating": {
+    "title": "Đơn đã được duyệt — đang tạo kênh…",
+    "body": "Kênh của bạn đang được tạo. Studio sẽ tự mở khi kênh sẵn sàng."
+  },
+  "already": {
+    "title": "Bạn đã là Creator",
+    "body": "Kênh của bạn đã sẵn sàng. Mở Studio để tạo stream key và bắt đầu phát.",
+    "openStudio": "Mở Studio"
+  },
+  "cta": {
+    "title": "Trở thành Streamer",
+    "body": "Có kênh riêng, phát trực tiếp bằng OBS và xây dựng cộng đồng của bạn.",
+    "action": "Bắt đầu",
+    "dismiss": "Ẩn gợi ý trong 30 ngày"
+  }
+}

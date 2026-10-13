@@ -1,0 +1,27 @@
+{
+  "greeting": "Xin chào, {{name}}",
+  "live": {
+    "heading": "Đang phát",
+    "loadFailed": "Không tải được danh sách buổi phát.",
+    "empty": "Chưa có ai đang phát."
+  },
+  "browse": {
+    "title": "Khám phá",
+    "live": "Kênh đang phát trực tiếp"
+  },
+  "following": {
+    "title": "Đang theo dõi",
+    "guestTitle": "Theo dõi kênh bạn yêu thích",
+    "guestBody": "Đăng nhập để xem kênh bạn theo dõi đang phát gì và nhận thông báo khi họ lên sóng.",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "emptyTitle": "Bạn chưa theo dõi kênh nào",
+    "emptyBody": "Tính năng theo dõi sẽ có ở giai đoạn 4. Trong lúc chờ, hãy khám phá các kênh đang phát.",
+    "discover": "Khám phá kênh"
+  },
+  "search": {
+    "title": "Tìm kiếm",
+    "soonTitle": "Tìm kiếm sắp có",
+    "soonBody": "Tìm kênh, buổi phát và danh mục sẽ có ở giai đoạn 2."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "notFound": "Stream not found",
+  "loadFailed": "Could not load this stream",
+  "ended": "This stream has ended",
+  "replay": "Watch replay",
+  "noReplay": "This stream has no replay.",
+  "replayProcessing": "The replay is being processed…",
+  "chat": {
+    "title": "Chat",
+    "comingSoon": "Chat arrives in phase 3."
+  },
+  "follow": "Follow"
+}
