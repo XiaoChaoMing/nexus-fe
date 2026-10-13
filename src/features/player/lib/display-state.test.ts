@@ -33,9 +33,33 @@ describe('displayState', () => {
     expect(displayState(ended)).toBe('live')
     expect(displayState({ ...ended, videoEnded: true })).toBe('ended')
     expect(displayState({ ...ended, phase: 'idle' })).toBe('ended')
+    expect(displayState({ ...ended, buffering: true })).toBe('ended')
+    expect(displayState({ ...ended, buffering: true, atLiveEdge: false })).toBe('buffering')
   })
 
   it('reports errors', () => {
     expect(displayState({ ...base, phase: 'error' })).toBe('error')
+  })
+
+  it('turns a slow start or a failed session into the error state', () => {
+    expect(displayState({ ...base, phase: 'loading', loadingTimedOut: true })).toBe('error')
+    expect(displayState({ ...base, phase: 'idle', loadingTimedOut: false })).toBe('loading')
+    expect(displayState({ ...base, phase: 'idle', sourceFailed: true })).toBe('error')
+    // A late start recovers on its own: once playing, the timeout no longer matters.
+    expect(displayState({ ...base, loadingTimedOut: true })).toBe('live')
+  })
+
+  it('keeps the 18+ gate above a failed or slow source', () => {
+    expect(displayState({ ...base, matureBlocked: true, sourceFailed: true, loadingTimedOut: true })).toBe('mature')
+  })
+
+  it('ends a VOD at the end of the video only', () => {
+    const vod = { ...base, apiStatus: undefined, vod: true }
+    expect(displayState(vod)).toBe('live')
+    expect(displayState({ ...vod, videoEnded: true })).toBe('ended')
+  })
+
+  it('shows ended over a failed source once the broadcast is over', () => {
+    expect(displayState({ ...base, apiStatus: 'ENDED', phase: 'idle', sourceFailed: true })).toBe('ended')
   })
 })

@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         // Lazy player routes: shown while their chunk loads on a direct visit.
-        hydrateFallbackElement: <div className="min-h-dvh bg-deep" />,
+        hydrateFallbackElement: <div className="min-h-dvh bg-background" />,
         children: [
           { path: '/', element: <HomePage /> },
           { path: '/browse', element: <BrowsePage /> },

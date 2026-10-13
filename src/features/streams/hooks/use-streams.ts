@@ -1,12 +1,15 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { streamsApi, studioApi } from '@/features/streams/api/streams-api'
+import { channelsApi, streamsApi, studioApi, viewerApi } from '@/features/streams/api/streams-api'
+import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { isOnAir, type SettingsInput } from '@/features/streams/types'
 import { isApiError } from '@/lib/api-error'
 
 export const streamKeys = {
   live: ['streams', 'live'] as const,
   stream: (id: string) => ['streams', id] as const,
-  vod: (id: string) => ['vods', id] as const,
+  vod: (id: string, viewer: string) => ['vods', id, viewer] as const,
+  continueWatching: (viewer: string) => ['me', 'continue-watching', viewer] as const,
+  channel: (handle: string) => ['channels', handle] as const,
   studio: ['studio', 'stream'] as const,
   key: ['studio', 'stream-key'] as const,
 }
@@ -45,9 +48,12 @@ export function useStream(id: string) {
   })
 }
 
+/** Signed-in viewers get `viewer.positionSec`; the key changes with the account so a sign-in refetches it. */
 export function useVod(id: string) {
+  const viewer = useAuthStore((s) => s.user?.id ?? 'guest')
+
   return useQuery({
-    queryKey: streamKeys.vod(id),
+    queryKey: streamKeys.vod(id, viewer),
     queryFn: () => streamsApi.getVod(id),
     retry: (count, err) => !(isApiError(err) && err.status === 404) && count < 2,
     staleTime: 5 * 60_000,
@@ -86,5 +92,28 @@ export function useEndStream() {
   return useMutation({
     mutationFn: studioApi.end,
     onSettled: () => qc.invalidateQueries({ queryKey: streamKeys.studio }),
+  })
+}
+
+/** "Tiếp tục xem" on Home (signed-in only). */
+export function useContinueWatching(enabled: boolean) {
+  const viewer = useAuthStore((s) => s.user?.id ?? 'guest')
+
+  return useQuery({
+    queryKey: streamKeys.continueWatching(viewer),
+    queryFn: () => viewerApi.continueWatching(12),
+    enabled,
+    select: (d) => d?.items ?? [],
+  })
+}
+
+/** Channel profile (bio, live flag) for the About tab and the VOD info column; optional, never retried. */
+export function useChannelProfile(handle: string | undefined) {
+  return useQuery({
+    queryKey: streamKeys.channel(handle ?? ''),
+    queryFn: () => channelsApi.get(handle ?? ''),
+    enabled: Boolean(handle),
+    staleTime: 5 * 60_000,
+    retry: false,
   })
 }

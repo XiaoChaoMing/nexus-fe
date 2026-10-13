@@ -49,9 +49,10 @@
     "openStudio": "Open Studio"
   },
   "cta": {
-    "title": "Become a Streamer",
-    "body": "Get your own channel, stream with OBS and grow your community.",
-    "action": "Get started",
-    "dismiss": "Hide for 30 days"
+    "title": "Become a Creator on NexusLive",
+    "body": "Stream with OBS; viewers pick 720p/480p/360p and can watch the replay after you finish.",
+    "action": "Become a Creator",
+    "dismiss": "Hide for 30 days",
+    "learnMore": "Learn more"
   }
 }

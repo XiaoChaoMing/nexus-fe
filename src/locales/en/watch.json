@@ -7,7 +7,22 @@
   "replayProcessing": "The replay is being processed…",
   "chat": {
     "title": "Chat",
-    "comingSoon": "Chat arrives in phase 3."
+    "comingSoon": "Chat is coming soon",
+    "comingSoonBody": "You will talk with the streamer and other viewers here.",
+    "collapse": "Collapse chat",
+    "expand": "Open chat"
   },
-  "follow": "Follow"
+  "follow": "Follow",
+  "notFoundBody": "The link may be wrong, or the stream was removed.",
+  "startedAgo": "Started {{time}}",
+  "channelInfo": "Channel info",
+  "otherLive": "Other live channels",
+  "tabs": {
+    "about": "About",
+    "chat": "Chat"
+  },
+  "about": {
+    "heading": "About {{name}}",
+    "noBio": "This channel has no description yet."
+  }
 }

@@ -1,68 +1,117 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CheckIcon, Settings2Icon } from 'lucide-react'
 import { usePlayer } from '@/features/player/stores/player-store'
+import { cn } from '@/lib/utils'
 
-type Props = { onSelect: (index: number) => void }
+type Props = { onSelect: (index: number) => void; className?: string }
 
-/** UC-A02: Auto (ABR) or a fixed rendition; the button shows "Auto · 720p" while adapting. */
-export function QualityMenu({ onSelect }: Props) {
+/**
+ * Player/Quality Menu (03b state 12): "Tự động (720p)" or a fixed rendition, anchored above the button. Closes on
+ * selection, outside click or Esc; arrow keys move between items. Only the renditions in the stream are listed.
+ */
+export function QualityMenu({ onSelect, className }: Props) {
   const { t } = useTranslation('player')
   const levels = usePlayer((s) => s.levels)
   const selected = usePlayer((s) => s.selectedLevel)
   const activeHeight = usePlayer((s) => s.activeHeight)
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
     if (!open) return
 
-    const close = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+    const close = (e: MouseEvent | TouchEvent) => {
+      if (e.target instanceof Node && !ref.current?.contains(e.target)) setOpen(false)
+    }
+    // Capture phase: Esc closes the menu before the player's Esc (exit theater/fullscreen) sees it.
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      e.stopPropagation()
+      setOpen(false)
+      buttonRef.current?.focus()
     }
     document.addEventListener('mousedown', close)
+    document.addEventListener('touchstart', close)
+    document.addEventListener('keydown', onKey, true)
+    listRef.current?.querySelector<HTMLButtonElement>('[aria-checked="true"]')?.focus()
 
-    return () => document.removeEventListener('mousedown', close)
+    return () => {
+      document.removeEventListener('mousedown', close)
+      document.removeEventListener('touchstart', close)
+      document.removeEventListener('keydown', onKey, true)
+    }
   }, [open])
 
   if (levels.length === 0) return null
 
   const fixed = levels.find((l) => l.index === selected)
-  const label = fixed ? `${fixed.height}p` : `${t('auto')}${activeHeight ? ` · ${activeHeight}p` : ''}`
+  const autoLabel = activeHeight ? t('autoWith', { height: `${activeHeight}p` }) : t('auto')
+  const buttonText = fixed ? `${fixed.height}p` : activeHeight ? `${activeHeight}p` : t('auto')
+  const options = [{ index: -1, label: autoLabel }, ...levels.map((l) => ({ index: l.index, label: `${l.height}p` }))]
+
+  const moveFocus = (e: KeyboardEvent<HTMLUListElement>) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
+    e.preventDefault()
+    e.stopPropagation()
+    const items = [...(listRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]') ?? [])]
+    const at = items.findIndex((el) => el === document.activeElement)
+    const next = (at + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length
+    items[next]?.focus()
+  }
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className={cn('relative', className)}>
       <button
+        ref={buttonRef}
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label={t('qualityValue', { value: label })}
+        aria-label={t('qualityValue', { value: fixed ? `${fixed.height}p` : autoLabel })}
         onClick={() => setOpen((o) => !o)}
-        className="h-9 rounded-button px-2 text-xs font-semibold text-fg hover:bg-white/10"
+        className={cn(
+          'flex h-11 items-center gap-1 rounded-control px-2 text-body-sm font-semibold text-foreground hover:bg-white/10 md:h-9',
+          open && 'bg-accent',
+        )}
       >
-        {label}
+        <Settings2Icon className="size-5" aria-hidden />
+        {buttonText}
       </button>
       {open && (
-        <ul role="menu" className="absolute bottom-11 right-0 min-w-36 rounded-panel border border-border bg-surface-1 py-1 shadow-lg">
-          {[{ index: -1, label: t('auto') }, ...levels.map((l) => ({ index: l.index, label: `${l.height}p` }))].map((o) => (
-            <li key={o.index} role="none">
-              <button
-                type="button"
-                role="menuitemradio"
-                aria-checked={selected === o.index}
-                onClick={() => {
-                  onSelect(o.index)
-                  setOpen(false)
-                }}
-                className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-surface-2 ${
-                  selected === o.index ? 'text-primary' : 'text-fg'
-                }`}
-              >
-                {o.label}
-                {selected === o.index && <span aria-hidden>✓</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="absolute right-0 bottom-full z-10 mb-2 w-55 rounded-xl border bg-card p-1.5">
+          <p className="px-2.5 pt-2 pb-1.5 text-label-sm font-semibold tracking-wide text-subtle-foreground" aria-hidden>
+            {t('quality')}
+          </p>
+          <ul ref={listRef} role="menu" aria-label={t('quality')} onKeyDown={moveFocus}>
+            {options.map((o) => {
+              const checked = selected === o.index
+
+              return (
+                <li key={o.index} role="none">
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={checked}
+                    onClick={() => {
+                      onSelect(o.index)
+                      setOpen(false)
+                      buttonRef.current?.focus()
+                    }}
+                    className={cn(
+                      'flex h-10 w-full items-center justify-between rounded-control px-2.5 text-left text-body-md hover:bg-accent hover:text-foreground',
+                      checked ? 'bg-accent font-semibold text-foreground' : 'font-medium text-muted-foreground',
+                    )}
+                  >
+                    {o.label}
+                    {checked && <CheckIcon className="size-5 text-primary" aria-hidden />}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
       )}
     </div>
   )

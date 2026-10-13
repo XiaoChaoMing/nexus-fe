@@ -64,10 +64,11 @@ test('creator goes live, viewer watches, creator ends, replay is offered', async
       const player = viewer.getByTestId('player')
       await expect(player).toHaveAttribute('data-state', 'live', { timeout: 30_000 })
 
-      // Quality: Auto + three renditions.
+      // Quality: "Tự động (…)" + three renditions.
       await viewer.getByRole('button', { name: /^Chất lượng/ }).click()
-      for (const q of ['Auto', '720p', '480p', '360p']) await expect(viewer.getByRole('menuitemradio', { name: q })).toBeVisible()
-      await viewer.getByRole('menuitemradio', { name: '480p' }).click()
+      await expect(viewer.getByRole('menuitemradio', { name: /^Tự động/ })).toBeVisible()
+      for (const q of ['720p', '480p', '360p']) await expect(viewer.getByRole('menuitemradio', { name: q, exact: true })).toBeVisible()
+      await viewer.getByRole('menuitemradio', { name: '480p', exact: true }).click()
       await expect(viewer.getByRole('button', { name: 'Chất lượng: 480p' })).toBeVisible()
 
       // DVR: wait for some history, rewind 10 s, then back to live.

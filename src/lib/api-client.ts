@@ -23,6 +23,8 @@ type RequestOptions = {
   auth?: boolean
   headers?: Record<string, string>
   signal?: AbortSignal
+  /** Lets the request outlive the page (saving the watch position on pagehide). */
+  keepalive?: boolean
 }
 
 async function send(path: string, opts: RequestOptions): Promise<Response> {
@@ -40,6 +42,7 @@ async function send(path: string, opts: RequestOptions): Promise<Response> {
       // Same-origin cookie carries the refresh token (HttpOnly, Path=/v1/auth).
       credentials: 'same-origin',
       signal: opts.signal,
+      keepalive: opts.keepalive,
     })
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') throw err

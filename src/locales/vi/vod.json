@@ -8,10 +8,15 @@
   "goneBody": "Bản xem lại đã hết hạn hoặc không tồn tại.",
   "loadFailed": "Không tải được bản xem lại",
   "resumeTitle": "Xem tiếp từ {{time}}?",
-  "resumeBody": "Bạn đã xem dở bản xem lại này trên trình duyệt này.",
+  "resumeBody": "Bạn đã xem dở bản xem lại này.",
   "resume": "Xem tiếp",
   "startOver": "Xem từ đầu",
   "finished": "Bạn đã xem hết",
   "watchAgain": "Xem lại từ đầu",
-  "backHome": "Về trang chủ"
+  "backHome": "Về trang chủ",
+  "liveNow": "Đang trực tiếp",
+  "info": "Thông tin bản xem lại",
+  "channelLive": "Đang trực tiếp",
+  "channelOffline": "Đang offline",
+  "retry": "Thử lại"
 }

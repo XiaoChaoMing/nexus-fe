@@ -9,10 +9,15 @@
   "goneBody": "The replay expired or does not exist.",
   "loadFailed": "Could not load this replay",
   "resumeTitle": "Resume from {{time}}?",
-  "resumeBody": "You started watching this replay in this browser.",
+  "resumeBody": "You stopped part-way through this replay.",
   "resume": "Resume",
   "startOver": "Start over",
   "finished": "You finished this replay",
   "watchAgain": "Watch again from the start",
-  "backHome": "Back to home"
+  "backHome": "Back to home",
+  "liveNow": "Live now",
+  "info": "Replay details",
+  "channelLive": "Live now",
+  "channelOffline": "Offline",
+  "retry": "Try again"
 }

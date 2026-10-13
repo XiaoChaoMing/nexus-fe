@@ -1,9 +1,10 @@
 {
-  "greeting": "Xin chào, {{name}}",
   "live": {
-    "heading": "Đang phát",
-    "loadFailed": "Không tải được danh sách buổi phát.",
-    "empty": "Chưa có ai đang phát."
+    "heading": "Kênh trực tiếp đề xuất",
+    "loadFailed": "Không tải được danh sách",
+    "empty": "Chưa có kênh nào đang trực tiếp",
+    "emptyBody": "Danh sách sẽ tự cập nhật khi có Creator bắt đầu phát.",
+    "loadFailedBody": "Đã có lỗi khi tải nội dung. Kiểm tra kết nối mạng rồi thử lại."
   },
   "browse": {
     "title": "Khám phá",
@@ -23,5 +24,24 @@
     "title": "Tìm kiếm",
     "soonTitle": "Tìm kiếm sắp có",
     "soonBody": "Tìm kênh, buổi phát và danh mục sẽ có ở giai đoạn 2."
+  },
+  "title": "Trang chủ",
+  "hero": {
+    "featured": "Nổi bật nhất",
+    "liveNow": "ĐANG PHÁT TRỰC TIẾP",
+    "watch": "Xem ngay",
+    "started": "bắt đầu {{time}}"
+  },
+  "continue": {
+    "heading": "Tiếp tục xem",
+    "count_other": "{{count}} nội dung",
+    "watched": "Đã xem {{percent}}%",
+    "streamed": "Phát {{time}}"
+  },
+  "nobodyLive": {
+    "title": "Chưa có ai đang phát",
+    "body": "Quay lại sau hoặc trở thành Creator đầu tiên",
+    "becomeCreator": "Đăng ký làm Creator",
+    "goLive": "Phát trực tiếp"
   }
 }

@@ -24,6 +24,12 @@
     "matureTitle": "Content for viewers 18 and over",
     "matureBody": "The creator marked this stream as mature content.",
     "matureAccept": "I am 18 or older, continue",
-    "ended": "This stream has ended"
-  }
+    "ended": "This stream has ended",
+    "buffering": "Buffering",
+    "errorHint": "Check your connection and try again.",
+    "matureBack": "Go back",
+    "matureRemember": "Don’t ask again for this channel"
+  },
+  "label": "Video player",
+  "autoWith": "Auto ({{height}})"
 }

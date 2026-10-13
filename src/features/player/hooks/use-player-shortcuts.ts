@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ignoresPlayerShortcut } from '@/features/player/lib/shortcut-target'
 
 export type ShortcutHandlers = {
   togglePlay: () => void
@@ -13,19 +14,18 @@ export type ShortcutHandlers = {
 const SEEK = 10
 const VOLUME = 0.1
 
-function typingInto(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false
 
-  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
-}
-
-/** UC-A08: Space/K, M, F, T, ←/→, ↑/↓, Esc — ignored while typing. */
+/** UC-A08: Space/K, M, F, T, ←/→, ↑/↓, Esc — ignored while typing or inside another dialog/menu. */
 export function usePlayerShortcuts(enabled: boolean, h: ShortcutHandlers) {
   useEffect(() => {
     if (!enabled) return
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey || typingInto(e.target)) return
+      if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return
+      const target = e.target instanceof HTMLElement ? e.target : null
+      if (ignoresPlayerShortcut(target)) return
+      // Space on a focused button presses that button (a11y), it does not toggle playback.
+      if (e.key === ' ' && target?.closest('button, a, [role="slider"]')) return
 
       const actions: Record<string, () => void> = {
         ' ': h.togglePlay,

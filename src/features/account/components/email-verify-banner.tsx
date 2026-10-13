@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MailWarningIcon, XIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { MailWarningIcon } from 'lucide-react'
+import { Banner, BannerAction } from '@/components/ui/banner'
 import { useResendVerification } from '@/features/account/hooks/use-resend-verification'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 
@@ -34,15 +34,20 @@ export function EmailVerifyBanner() {
   }
 
   return (
-    <div role="status" data-testid="verify-banner" className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-warning/40 bg-warning/10 px-4 py-2 text-body-sm">
-      <MailWarningIcon className="size-4 shrink-0 text-warning" aria-hidden />
-      <span className="min-w-0 flex-1">{t('verifyBanner.text', { email: user.email })}</span>
-      <Button size="sm" variant="secondary" onClick={resend} loading={isPending} disabled={lockedFor > 0}>
-        {lockedFor > 0 ? t('verifyBanner.resendIn', { count: lockedFor }) : t('verifyBanner.resend')}
-      </Button>
-      <Button size="icon-sm" variant="ghost" onClick={dismiss} aria-label={t('verifyBanner.dismiss')}>
-        <XIcon />
-      </Button>
-    </div>
+    <Banner
+      role="status"
+      data-testid="verify-banner"
+      variant="info"
+      icon={<MailWarningIcon aria-hidden />}
+      action={
+        <BannerAction onClick={resend} disabled={isPending || lockedFor > 0} aria-busy={isPending || undefined}>
+          {lockedFor > 0 ? t('verifyBanner.resendIn', { count: lockedFor }) : t('verifyBanner.resend')}
+        </BannerAction>
+      }
+      onDismiss={dismiss}
+      dismissLabel={t('verifyBanner.dismiss')}
+    >
+      {t('verifyBanner.text', { email: user.email })}
+    </Banner>
   )
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { behindLive, clampLiveSeek, formatBehind, formatClock, isAtLiveEdge } from './live-edge'
+import { behindLive, clampLiveSeek, formatBehind, formatClock, formatTimecode, isAtLiveEdge } from './live-edge'
 
 describe('live edge', () => {
   it('measures how far the viewer is behind', () => {
@@ -18,6 +18,10 @@ describe('live edge', () => {
     expect(formatClock(3725)).toBe('1:02:05')
     expect(formatBehind(312)).toBe('-05:12')
     expect(formatBehind(3725)).toBe('-1:02:05')
+    expect(formatTimecode(192)).toBe('03:12')
+    expect(formatTimecode(5045)).toBe('1:24:05')
+    expect(formatTimecode(0)).toBe('00:00')
+    expect(formatTimecode(Number.NaN)).toBe('00:00')
   })
 
   it('never seeks past the live edge', () => {

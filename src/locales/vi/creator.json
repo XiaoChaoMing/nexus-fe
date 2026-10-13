@@ -49,9 +49,10 @@
     "openStudio": "Mở Studio"
   },
   "cta": {
-    "title": "Trở thành Streamer",
-    "body": "Có kênh riêng, phát trực tiếp bằng OBS và xây dựng cộng đồng của bạn.",
-    "action": "Bắt đầu",
-    "dismiss": "Ẩn gợi ý trong 30 ngày"
+    "title": "Trở thành Creator trên NexusLive",
+    "body": "Phát bằng OBS, người xem chọn chất lượng 720p/480p/360p và xem lại sau khi bạn kết thúc.",
+    "action": "Đăng ký làm Creator",
+    "dismiss": "Ẩn gợi ý trong 30 ngày",
+    "learnMore": "Tìm hiểu thêm"
   }
 }

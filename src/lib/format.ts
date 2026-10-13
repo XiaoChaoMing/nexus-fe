@@ -1,5 +1,6 @@
 import { formatClock } from '@/features/player/lib/live-edge'
 import { currentLocale } from '@/i18n'
+import { languageNameIn, relativeTimeIn } from '@/lib/relative-time'
 
 /** Time since an ISO date as a clock ("1:02:05"), for "Đã phát …". */
 export function elapsedSince(iso: string | null, now = Date.now()): string {
@@ -26,4 +27,14 @@ export function formatDate(iso: string, options: Intl.DateTimeFormatOptions): st
 
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(currentLocale()).format(value)
+}
+
+/** "2 giờ trước" in the current UI language. */
+export function relativeTime(iso: string | null, now = Date.now()): string {
+  return relativeTimeIn(currentLocale(), iso, now)
+}
+
+/** Display name of a stream language code ("vi" → "Tiếng Việt"). */
+export function languageName(code: string): string {
+  return languageNameIn(currentLocale(), code)
 }

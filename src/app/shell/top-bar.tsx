@@ -1,20 +1,23 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
-import { BellIcon, PanelLeftCloseIcon, PanelLeftOpenIcon, PlusIcon, RadioIcon, SearchIcon } from 'lucide-react'
+import { Link, NavLink, useNavigate } from 'react-router'
+import { BellIcon, PlusIcon, RadioIcon, SearchIcon } from 'lucide-react'
 import { LanguageMenu } from '@/app/shell/language-menu'
-import { useSidebarToggle } from '@/app/shell/use-sidebar-toggle'
 import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { UserMenu } from '@/features/auth/components/user-menu'
 import { useGatedAction } from '@/features/auth/hooks/use-gated-action'
 import { unreadBadge } from '@/features/auth/lib/roles'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useAuthModal } from '@/features/auth/stores/auth-modal-store'
+import { cn } from '@/lib/utils'
 
 export function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2 font-heading text-headline-sm text-foreground">
-      <span className="grid size-7 place-items-center rounded-control bg-primary text-primary-foreground" aria-hidden>
-        <RadioIcon className="size-4" />
+    <Link to="/" className="flex shrink-0 items-center gap-2 rounded-control font-heading text-lg font-bold text-foreground md:text-[19px]">
+      <span className="grid size-7 place-items-center rounded-control bg-primary/12 text-primary" aria-hidden>
+        <RadioIcon className="size-4.5" />
       </span>
       <span>
         Nexus<span className="text-primary">Live</span>
@@ -32,8 +35,8 @@ function NotificationBell() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label={badge ? t('notifications.labelCount', { count: unread }) : t('notifications.label')}>
-          <BellIcon />
+        <Button variant="ghost" size="icon" className="relative max-md:size-11" aria-label={badge ? t('notifications.labelCount', { count: unread }) : t('notifications.label')}>
+          <BellIcon className="size-5.5" />
           {badge && (
             <span className="absolute top-1 right-1 min-w-4 rounded-full bg-live px-1 text-[10px] leading-4 font-bold text-white" aria-hidden>
               {badge}
@@ -48,41 +51,80 @@ function NotificationBell() {
   )
 }
 
-export function TopBar() {
-  const { t } = useTranslation()
-  const { collapsed, toggle } = useSidebarToggle()
-  const signedIn = useAuthStore((s) => s.status === 'authenticated')
-  const gated = useGatedAction()
+/** Ctrl/⌘+K opens search from anywhere (the hint shown in the search box). */
+function useSearchShortcut() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== 'k' || !(e.ctrlKey || e.metaKey) || e.altKey) return
+      e.preventDefault()
+      navigate('/search')
+    }
+    window.addEventListener('keydown', onKey)
+
+    return () => window.removeEventListener('keydown', onKey)
+  }, [navigate])
+}
+
+/** Guests on a phone get one "Đăng nhập" button (Top Nav/Mobile — Khách). */
+function GuestMobileLogin() {
+  const { t } = useTranslation('auth')
+  const show = useAuthModal((s) => s.show)
 
   return (
-    <header className="sticky top-0 z-30 flex h-15 items-center gap-3 border-b bg-surface px-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggle}
-        aria-label={collapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
-        aria-expanded={!collapsed}
-        className="hidden md:inline-flex"
-      >
-        {collapsed ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
-      </Button>
-      <Logo />
+    <Button className="h-11 px-4 md:hidden" onClick={() => show('login')}>
+      {t('menu.login')}
+    </Button>
+  )
+}
+
+const topLink = 'rounded-control text-label-md text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground'
+
+/**
+ * Top Nav (GĐ2 frames): logo, Khám phá / Đang theo dõi from 1280 px, search with Ctrl+K, "Phát trực tiếp"
+ * (icon only on tablets), bell + avatar or Đăng nhập/Đăng ký. Phones: logo, bell, avatar; it scrolls away so
+ * the player can stick to the top on the live page.
+ */
+export function TopBar() {
+  const { t } = useTranslation()
+  const signedIn = useAuthStore((s) => s.status === 'authenticated')
+  const gated = useGatedAction()
+  useSearchShortcut()
+
+  return (
+    <header className="z-30 flex h-14 items-center gap-3 border-b bg-surface pr-2 pl-4 md:sticky md:top-0 md:h-16 md:gap-6 md:px-4 xl:px-6">
+      <div className="flex items-center gap-7">
+        <Logo />
+        <nav aria-label={t('nav.main')} className="hidden items-center gap-7 xl:flex">
+          <NavLink to="/browse" className={topLink}>
+            {t('nav.browse')}
+          </NavLink>
+          <NavLink to="/following" className={topLink}>
+            {t('nav.following')}
+          </NavLink>
+        </nav>
+      </div>
       <Link
         to="/search"
-        className="mx-auto hidden h-9 w-full max-w-md items-center gap-2 rounded-lg border bg-background px-3 text-body-sm text-subtle-foreground hover:border-border-strong lg:flex"
+        className="mx-auto hidden h-10 w-full max-w-md min-w-0 items-center gap-2.5 rounded-lg border bg-surface px-3 text-body-md text-subtle-foreground hover:border-border-strong md:flex"
       >
-        <SearchIcon className="size-4" aria-hidden />
-        {t('nav.searchPlaceholder')}
+        <SearchIcon className="size-5 shrink-0" aria-hidden />
+        <span className="flex-1 truncate">{t('nav.searchPlaceholder')}</span>
+        <Kbd className="hidden h-auto border bg-transparent px-1.5 py-0.5 text-[11px] font-normal text-subtle-foreground lg:inline-flex">Ctrl+K</Kbd>
       </Link>
-      <div className="ml-auto flex items-center gap-1.5 sm:gap-2 lg:ml-0">
+      <div className={cn('ml-auto flex items-center gap-1 md:ml-0 md:gap-3')}>
         {/* NXL-C BR28: Creator → Studio, Viewer → Creator application, Guest → login modal. */}
-        <Button onClick={() => gated({ type: 'goLive' })} data-testid="go-live" aria-label={t('nav.goLive')} className="max-sm:size-10 max-sm:px-0">
+        <Button onClick={() => gated({ type: 'goLive' })} data-testid="go-live" aria-label={t('nav.goLive')} className="hidden md:inline-flex max-xl:size-10 max-xl:px-0">
           <PlusIcon />
-          <span className="max-sm:sr-only">{t('nav.goLive')}</span>
+          <span className="max-xl:sr-only">{t('nav.goLive')}</span>
         </Button>
         {signedIn && <NotificationBell />}
         <LanguageMenu />
-        <UserMenu />
+        {!signedIn && <GuestMobileLogin />}
+        <div className={cn(!signedIn && 'max-md:hidden')}>
+          <UserMenu />
+        </div>
       </div>
     </header>
   )

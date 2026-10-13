@@ -8,7 +8,7 @@
   "goLive": "Về trực tiếp",
   "quality": "Chất lượng",
   "qualityValue": "Chất lượng: {{value}}",
-  "auto": "Auto",
+  "auto": "Tự động",
   "theater": "Chế độ rạp hát",
   "exitTheater": "Thoát chế độ rạp hát",
   "fullscreen": "Toàn màn hình",
@@ -24,6 +24,12 @@
     "matureTitle": "Nội dung dành cho người từ 18 tuổi",
     "matureBody": "Buổi phát này được Creator đánh dấu có nội dung người lớn.",
     "matureAccept": "Tôi đủ 18 tuổi, tiếp tục xem",
-    "ended": "Buổi phát đã kết thúc"
-  }
+    "ended": "Buổi phát đã kết thúc",
+    "buffering": "Đang tải thêm",
+    "errorHint": "Kiểm tra kết nối mạng rồi thử lại.",
+    "matureBack": "Quay lại",
+    "matureRemember": "Không hỏi lại với kênh này"
+  },
+  "label": "Trình phát video",
+  "autoWith": "Tự động ({{height}})"
 }

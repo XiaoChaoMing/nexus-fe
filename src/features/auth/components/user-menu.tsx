@@ -32,13 +32,11 @@ export function UserMenu() {
   if (!user) {
     // NXL-C BR27: guests get the two buttons instead of an avatar; both open the modal on this page.
     return (
-      <div className="flex items-center gap-1.5">
-        <Button variant="ghost" onClick={() => show('login')} className="max-sm:px-2">
+      <div className="flex items-center gap-2">
+        <Button variant="secondary" onClick={() => show('login')} className="font-medium">
           {t('menu.login')}
         </Button>
-        <Button variant="secondary" onClick={() => show('register')} className="max-sm:hidden">
-          {t('menu.register')}
-        </Button>
+        <Button onClick={() => show('register')}>{t('menu.register')}</Button>
       </div>
     )
   }
@@ -48,9 +46,9 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full" aria-label={t('menu.accountOf', { name: user.displayName })} data-testid="user-menu">
-          <Avatar>
-            <AvatarFallback className="bg-card font-semibold text-primary">{channelInitial({ displayName: user.displayName, handle: user.username })}</AvatarFallback>
+        <Button variant="ghost" size="icon" className="rounded-full max-md:size-11" aria-label={t('menu.accountOf', { name: user.displayName })} data-testid="user-menu">
+          <Avatar className="size-8 outline outline-border md:size-8.5">
+            <AvatarFallback>{channelInitial({ displayName: user.displayName, handle: user.username })}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

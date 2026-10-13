@@ -16,8 +16,8 @@
     "browse": "Khám phá",
     "following": "Đang theo dõi",
     "search": "Tìm kiếm",
-    "profile": "Hồ sơ",
-    "searchPlaceholder": "Tìm kênh, buổi phát…"
+    "profile": "Tôi",
+    "searchPlaceholder": "Tìm kiếm kênh, trò chơi, streamer..."
   },
   "actions": {
     "cancel": "Hủy",
@@ -35,7 +35,9 @@
     "interrupted": "Tạm gián đoạn",
     "ended": "Đã kết thúc",
     "offline": "Offline",
-    "mature": "18+"
+    "mature": "18+",
+    "onAir": "TRỰC TIẾP",
+    "liveShort": "LIVE"
   },
   "elapsed": "Đã phát {{time}}",
   "language": {
@@ -46,7 +48,7 @@
   "sidebar": {
     "suggested": "Kênh đề xuất",
     "noSuggestions": "Chưa có kênh nào đang phát.",
-    "loginInvite": "Đăng nhập để theo dõi kênh yêu thích và nhận thông báo khi họ phát.",
+    "loginInvite": "Đăng nhập để theo dõi kênh yêu thích",
     "following": "Kênh đang theo dõi",
     "followingEmpty": "Bạn chưa theo dõi kênh nào. Tính năng theo dõi sẽ có ở giai đoạn 4."
   },

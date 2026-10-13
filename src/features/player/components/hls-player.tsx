@@ -1,34 +1,37 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 import { useStore } from 'zustand'
+import {
+  ArrowLeftIcon,
+  MaximizeIcon,
+  MinimizeIcon,
+  PauseIcon,
+  PlayIcon,
+  RectangleHorizontalIcon,
+  Volume2Icon,
+  VolumeXIcon,
+} from 'lucide-react'
+import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { useHls, type PlayerMode } from '@/features/player/hooks/use-hls'
 import { usePlayerShortcuts } from '@/features/player/hooks/use-player-shortcuts'
-import { displayState } from '@/features/player/lib/display-state'
-import { behindLive, clampLiveSeek, formatBehind, formatClock, isAtLiveEdge } from '@/features/player/lib/live-edge'
+import { displayState, LOADING_TIMEOUT_MS, type DisplayState } from '@/features/player/lib/display-state'
+import { behindLive, clampLiveSeek, formatBehind, formatTimecode, isAtLiveEdge } from '@/features/player/lib/live-edge'
 import { createPlayerStore, PlayerStoreContext } from '@/features/player/stores/player-store'
-import { FullscreenIcon, PauseIcon, PlayIcon, TheaterIcon, VolumeIcon } from '@/features/player/components/icons'
 import { PlayerOverlay } from '@/features/player/components/player-overlay'
 import { QualityMenu } from '@/features/player/components/quality-menu'
 import { SeekBar } from '@/features/player/components/seek-bar'
 import type { StreamStatus } from '@/features/streams/types'
+import { cn } from '@/lib/utils'
 
-const MATURE_KEY = 'nxl.mature'
+const CONTROLS_HIDE_MS = 3000
 
-function matureAccepted(scope: string): boolean {
-  try {
-    return (JSON.parse(localStorage.getItem(MATURE_KEY) ?? '[]') as string[]).includes(scope)
-  } catch {
-    return false
-  }
-}
-
-function rememberMature(scope: string) {
-  try {
-    const list = JSON.parse(localStorage.getItem(MATURE_KEY) ?? '[]') as string[]
-    localStorage.setItem(MATURE_KEY, JSON.stringify([...new Set([...list, scope])]))
-  } catch {
-    // storage unavailable: the viewer confirms again next time
-  }
+/** Playback session state from the page (WP1): the 18+ gate and a failed session live outside hls.js. */
+export type PlayerSession = {
+  matureBlocked: boolean
+  failed: boolean
+  onAcceptMature: () => void
+  onRetry: () => void
 }
 
 export type HlsPlayerProps = {
@@ -36,26 +39,55 @@ export type HlsPlayerProps = {
   mode: PlayerMode
   /** Live only: status from stream-svc (drives Interrupted / Ended). */
   streamStatus?: StreamStatus
-  /** Mature gate scope (channel id); gate shown when set and not yet accepted in this browser. */
-  matureScope?: string
+  /** Omitted by the Studio preview, which plays its own manifest. */
+  session?: PlayerSession
   autoPlay?: boolean
   startAt?: number
-  /** Studio preview: no theater, no keyboard shortcuts. */
+  /** Studio preview: no theater, no keyboard shortcuts, no LIVE badge. */
   compact?: boolean
   theater?: boolean
   onTheaterChange?: (on: boolean) => void
   onTimeUpdate?: (time: number, duration: number) => void
-  endedSlot?: ReactNode
-  /** Heading of the ended overlay (default: the stream ended). */
-  endedLabel?: string
+  onPause?: () => void
+  /** Content of the "ended" overlay. */
+  endedContent?: ReactNode
+  /** Shown on top of the video in fullscreen (mobile landscape): channel name and stream title. */
+  heading?: { title: string; subtitle?: string }
   className?: string
 }
 
-function IconButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+/** Views in which the control bar is offered (the others are full overlays). */
+const WITH_CONTROLS: DisplayState[] = ['live', 'buffering', 'reconnecting', 'interrupted', 'loading']
+/** Views that keep the "TRỰC TIẾP" badge in the corner. */
+const WITH_LIVE_BADGE: DisplayState[] = ['live', 'buffering', 'interrupted']
+
+function ControlButton({ label, onClick, active, className, children }: { label: string; onClick: () => void; active?: boolean; className?: string; children: ReactNode }) {
   return (
-    <button type="button" aria-label={label} title={label} onClick={onClick} className="grid size-9 place-items-center rounded-button text-fg hover:bg-white/10">
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        'grid size-11 shrink-0 place-items-center rounded-control text-foreground hover:bg-white/10 md:size-9 [&_svg]:size-6',
+        active && 'text-primary',
+        className,
+      )}
+    >
       {children}
     </button>
+  )
+}
+
+function LiveBadge({ className }: { className?: string }) {
+  const { t } = useTranslation('common')
+
+  return (
+    <span className={cn('inline-flex items-center gap-1.5 rounded-control bg-live px-2 py-0.75 text-[11px] font-bold tracking-wide text-white md:px-2.5 md:py-1.25 md:text-label-sm md:font-bold', className)}>
+      <span className="size-1.5 rounded-full bg-white" aria-hidden />
+      {t('status.onAir')}
+    </span>
   )
 }
 
@@ -63,44 +95,67 @@ export function HlsPlayer({
   src,
   mode,
   streamStatus,
-  matureScope,
+  session,
   autoPlay = true,
   startAt,
   compact = false,
   theater = false,
   onTheaterChange,
   onTimeUpdate,
-  endedSlot,
-  endedLabel,
-  className = '',
+  onPause,
+  endedContent,
+  heading,
+  className,
 }: HlsPlayerProps) {
   const { t } = useTranslation('player')
+  const navigate = useNavigate()
+  const signedIn = useAuthStore((st) => st.status === 'authenticated')
   const store = useMemo(() => createPlayerStore(), [])
   const s = useStore(store)
   const videoRef = useRef<HTMLVideoElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
-  const [matureOk, setMatureOk] = useState(() => !matureScope || matureAccepted(matureScope))
   const [controlsVisible, setControlsVisible] = useState(true)
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false)
   const hideTimer = useRef<number | undefined>(undefined)
+  const lastPointer = useRef<string>('mouse')
 
-  const playable = matureOk
-  const hls = useHls({ videoRef, store, src: playable ? src : null, mode, autoPlay, startAt })
+  const matureBlocked = session?.matureBlocked ?? false
+  const sourceFailed = session?.failed ?? false
+  const hls = useHls({ videoRef, store, src: matureBlocked ? null : src, mode, autoPlay, startAt })
 
   const behind = mode === 'live' ? behindLive(s.liveSync, s.currentTime) : 0
   const atLive = isAtLiveEdge(behind)
-  const view = displayState({
+  const input = {
     apiStatus: mode === 'live' ? streamStatus : undefined,
     phase: s.phase,
     buffering: s.buffering,
     videoEnded: s.ended,
     atLiveEdge: atLive,
-    matureBlocked: !matureOk,
-  })
-  const finished = mode === 'vod' ? s.ended : view === 'ended'
+    matureBlocked,
+    sourceFailed,
+    vod: mode === 'vod',
+  }
+  const stillLoading = displayState(input) === 'loading'
+  const view = displayState({ ...input, loadingTimedOut })
+
+  // 03b state 1 → 9: no picture after 10 s is shown as an error (with "Thử lại"); a late start still recovers.
+  useEffect(() => {
+    if (!stillLoading) return
+    const id = window.setTimeout(() => setLoadingTimedOut(true), LOADING_TIMEOUT_MS)
+
+    return () => {
+      window.clearTimeout(id)
+      setLoadingTimedOut(false)
+    }
+  }, [stillLoading, src])
 
   useEffect(() => {
     onTimeUpdate?.(s.currentTime, s.duration)
   }, [s.currentTime, s.duration, onTimeUpdate])
+
+  useEffect(() => {
+    if (s.paused && s.currentTime > 0) onPause?.()
+  }, [s.paused, s.currentTime, onPause])
 
   useEffect(() => {
     const onFs = () => store.getState().set({ fullscreen: document.fullscreenElement === frameRef.current })
@@ -109,7 +164,7 @@ export function HlsPlayer({
     return () => document.removeEventListener('fullscreenchange', onFs)
   }, [store])
 
-  const video = () => videoRef.current
+  useEffect(() => () => window.clearTimeout(hideTimer.current), [])
 
   const seek = useCallback(
     (target: number) => {
@@ -156,79 +211,137 @@ export function HlsPlayer({
     [store, compact, theater, onTheaterChange, seek],
   )
 
-  usePlayerShortcuts(!compact && matureOk, actions)
+  usePlayerShortcuts(!compact && view !== 'mature', actions)
 
   const goLive = () => {
     const live = hls.liveSyncPosition()
-    const v = video()
+    const v = videoRef.current
     if (v && live !== null) {
       v.currentTime = live
       if (v.paused) void v.play().catch(() => undefined)
     }
   }
 
+  const retry = () => {
+    setLoadingTimedOut(false)
+    if (sourceFailed) session?.onRetry()
+    else hls.retry()
+  }
+
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1)
+    else navigate('/')
+  }
+
   const showControls = () => {
     setControlsVisible(true)
     window.clearTimeout(hideTimer.current)
-    hideTimer.current = window.setTimeout(() => setControlsVisible(false), 3000)
+    hideTimer.current = window.setTimeout(() => setControlsVisible(false), CONTROLS_HIDE_MS)
   }
 
-  const controlsShown = controlsVisible || s.paused || view !== 'live'
+  // Touch: a tap shows the controls (or hides them again); a mouse click toggles playback.
+  const onVideoClick = () => {
+    if (lastPointer.current !== 'touch') {
+      actions.togglePlay()
+
+      return
+    }
+    if (controlsVisible) setControlsVisible(false)
+    else showControls()
+  }
+
+  const hasControls = WITH_CONTROLS.includes(view) && !(view === 'loading' && s.phase === 'idle')
+  const controlsShown = controlsVisible || s.paused || view === 'interrupted' || view === 'reconnecting'
+  const liveBadge = mode === 'live' && !compact && WITH_LIVE_BADGE.includes(view) && streamStatus !== 'ENDED'
+  const fullscreenHeading = s.fullscreen && heading
+  const muted = s.muted || s.volume === 0
 
   return (
     <PlayerStoreContext.Provider value={store}>
       <div
         ref={frameRef}
+        role="region"
+        aria-label={t('label')}
         data-testid="player"
         data-state={view}
         data-behind={Math.round(behind)}
-        className={`group/player relative aspect-video w-full overflow-hidden bg-black ${s.fullscreen ? '' : 'rounded-panel'} ${className}`}
+        className={cn(
+          'group/player relative aspect-video w-full overflow-hidden bg-black',
+          !s.fullscreen && 'rounded-panel border',
+          s.fullscreen && 'border-0',
+          className,
+        )}
         onMouseMove={showControls}
-        onMouseLeave={() => setControlsVisible(false)}
+        onPointerDown={(e) => {
+          lastPointer.current = e.pointerType
+        }}
+        onMouseLeave={() => !s.paused && setControlsVisible(false)}
       >
         <video
           ref={videoRef}
           className="size-full"
           playsInline
-          onClick={actions.togglePlay}
+          onClick={onVideoClick}
           onDoubleClick={actions.toggleFullscreen}
         />
 
+        {liveBadge && !fullscreenHeading && <LiveBadge className="pointer-events-none absolute top-2 left-2 md:top-4 md:left-4" />}
+
         <PlayerOverlay
-          state={finished ? 'ended' : view}
-          onRetry={hls.retry}
-          onAcceptMature={() => {
-            if (matureScope) rememberMature(matureScope)
-            setMatureOk(true)
-          }}
-          endedSlot={endedSlot}
-          endedLabel={endedLabel}
+          state={view}
+          onRetry={retry}
+          mature={{ signedIn, onAccept: () => session?.onAcceptMature(), onBack: goBack }}
+          endedContent={endedContent}
         />
+
+        {fullscreenHeading && hasControls && (
+          <div
+            className={cn(
+              'absolute inset-x-0 top-0 flex items-center gap-2 bg-linear-to-t from-background/0 to-background/80 pt-2 pr-4 pb-6 pl-2 transition-opacity',
+              controlsShown ? 'opacity-100' : 'pointer-events-none opacity-0',
+            )}
+          >
+            <ControlButton label={t('exitFullscreen')} onClick={actions.toggleFullscreen} className="size-11 md:size-11">
+              <ArrowLeftIcon />
+            </ControlButton>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate font-semibold text-foreground">{heading.title}</span>
+              {heading.subtitle && <span className="truncate text-body-sm text-muted-foreground">{heading.subtitle}</span>}
+            </div>
+            {liveBadge && <LiveBadge />}
+          </div>
+        )}
 
         {s.autoplayMuted && s.muted && view === 'live' && (
           <button
             type="button"
             onClick={actions.toggleMute}
-            className="absolute left-3 top-3 rounded-button bg-deep/80 px-3 py-1.5 text-xs font-semibold text-fg hover:bg-deep"
+            className={cn(
+              'absolute left-2 flex h-11 items-center gap-2 rounded-lg border bg-card px-4 text-label-md font-semibold text-foreground transition-[bottom] hover:bg-accent md:left-4',
+              hasControls && controlsShown ? 'bottom-24 md:bottom-22' : 'bottom-2 md:bottom-4',
+            )}
           >
-            🔇 {t('tapToUnmute')}
+            <VolumeXIcon className="size-4.5" aria-hidden />
+            {t('tapToUnmute')}
           </button>
         )}
 
-        {matureOk && !finished && view !== 'error' && (
+        {hasControls && (
           <div
-            className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 pb-2 pt-8 transition-opacity ${
-              controlsShown ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={cn(
+              'absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-linear-to-b from-background/0 to-background/90 px-1 pt-5 transition-opacity md:px-3 md:pt-8 md:pb-2',
+              s.fullscreen && 'px-2 pt-6 pb-2',
+              controlsShown ? 'opacity-100' : 'pointer-events-none opacity-0',
+            )}
           >
             <SeekBar mode={mode} onSeek={seek} />
-            <div className="mt-1 flex items-center gap-1">
-              <IconButton label={s.paused ? t('play') : t('pause')} onClick={actions.togglePlay}>
-                {s.paused ? <PlayIcon /> : <PauseIcon />}
-              </IconButton>
-              <IconButton label={s.muted ? t('unmute') : t('mute')} onClick={actions.toggleMute}>
-                <VolumeIcon muted={s.muted || s.volume === 0} />
-              </IconButton>
+            <div className="flex items-center gap-1">
+              <ControlButton label={s.paused ? t('play') : t('pause')} onClick={actions.togglePlay}>
+                {s.paused ? <PlayIcon className="fill-current" /> : <PauseIcon className="fill-current" />}
+              </ControlButton>
+              <ControlButton label={muted ? t('unmute') : t('mute')} onClick={actions.toggleMute}>
+                {muted ? <VolumeXIcon /> : <Volume2Icon />}
+              </ControlButton>
               <input
                 type="range"
                 min={0}
@@ -237,51 +350,54 @@ export function HlsPlayer({
                 value={s.muted ? 0 : s.volume}
                 aria-label={t('volume')}
                 onChange={(e) => {
-                  const v = video()
+                  const v = videoRef.current
                   if (!v) return
                   v.volume = Number(e.target.value)
                   v.muted = v.volume === 0
                 }}
-                className="hidden w-20 accent-primary sm:block"
+                className="hidden h-1 w-18 cursor-pointer accent-foreground md:block"
               />
+              <span className="w-2 shrink-0" aria-hidden />
 
               {mode === 'live' ? (
-                <div className="ml-2 flex items-center gap-2 text-xs font-semibold">
-                  <span
-                    data-testid="live-badge"
-                    data-at-live={atLive}
-                    className={`flex items-center gap-1 rounded-control px-1.5 py-0.5 text-white ${atLive ? 'bg-live' : 'bg-white/25'}`}
-                  >
-                    <span className="size-1.5 rounded-full bg-white" aria-hidden />
+                atLive ? (
+                  <span data-testid="live-badge" data-at-live="true" className="flex items-center gap-1.5 rounded-control px-2 py-1.5 text-body-sm font-bold tracking-wide text-live">
+                    <span className="size-2 rounded-full bg-live" aria-hidden />
                     {t('live')}
                   </span>
-                  {!atLive && (
-                    <>
-                      <span className="tabular-nums text-fg-secondary" data-testid="behind-label">
-                        {formatBehind(behind)}
-                      </span>
-                      <button type="button" onClick={goLive} className="rounded-button bg-primary px-2 py-1 text-primary-foreground hover:bg-primary-hover">
-                        {t('goLive')}
-                      </button>
-                    </>
-                  )}
-                </div>
+                ) : (
+                  <button
+                    type="button"
+                    data-testid="live-badge"
+                    data-at-live="false"
+                    aria-label={t('goLive')}
+                    onClick={goLive}
+                    className="flex min-h-9 items-center gap-1.5 rounded-control border bg-card px-2.5 py-1.5 text-body-sm font-semibold text-muted-foreground hover:bg-accent hover:text-foreground max-md:min-h-11"
+                  >
+                    <span className="size-2 rounded-full bg-subtle-foreground" aria-hidden />
+                    {t('goLive')}
+                    <span className="text-label-sm text-subtle-foreground tabular-nums max-sm:hidden" data-testid="behind-label">
+                      {formatBehind(behind)}
+                    </span>
+                  </button>
+                )
               ) : (
-                <span className="ml-2 text-xs tabular-nums text-fg-secondary">
-                  {formatClock(s.currentTime)} / {formatClock(s.duration)}
+                <span className="text-body-sm tabular-nums" data-testid="vod-time">
+                  <span className="font-semibold text-foreground">{formatTimecode(s.currentTime)}</span>{' '}
+                  <span className="text-muted-foreground">/ {formatTimecode(s.duration)}</span>
                 </span>
               )}
 
               <div className="ml-auto flex items-center gap-1">
                 <QualityMenu onSelect={hls.setLevel} />
-                {!compact && (
-                  <IconButton label={theater ? t('exitTheater') : t('theater')} onClick={() => onTheaterChange?.(!theater)}>
-                    <TheaterIcon />
-                  </IconButton>
+                {!compact && !s.fullscreen && (
+                  <ControlButton label={theater ? t('exitTheater') : t('theater')} onClick={() => onTheaterChange?.(!theater)} active={theater} className="max-md:hidden">
+                    <RectangleHorizontalIcon />
+                  </ControlButton>
                 )}
-                <IconButton label={s.fullscreen ? t('exitFullscreen') : t('fullscreen')} onClick={actions.toggleFullscreen}>
-                  <FullscreenIcon active={s.fullscreen} />
-                </IconButton>
+                <ControlButton label={s.fullscreen ? t('exitFullscreen') : t('fullscreen')} onClick={actions.toggleFullscreen}>
+                  {s.fullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
+                </ControlButton>
               </div>
             </div>
           </div>

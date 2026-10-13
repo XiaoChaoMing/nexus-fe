@@ -1,90 +1,93 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
-import { useEffect, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { ChannelAvatar } from '@/features/channels/components/channel-avatar'
-import { channelName } from '@/features/channels/lib/channel-display'
+import { RadioTowerIcon, RotateCwIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { SkeletonStreamCard } from '@/components/ui/skeleton'
+import { SectionHeader } from '@/features/home/components/section-header'
+import { StreamCard } from '@/features/home/components/stream-card'
 import { useLiveStreams } from '@/features/streams/hooks/use-streams'
 import type { Stream } from '@/features/streams/types'
-import { elapsedSince } from '@/lib/format'
+import { useNow } from '@/hooks/use-now'
 
-/** Thumbnails are rewritten every 30 s with the same key; a per-minute query string beats the cache. */
-function thumbSrc(url: string, now: number) {
-  return `${url}?t=${Math.floor(now / 60_000)}`
-}
+export const STREAM_GRID = 'grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-x-4 md:gap-y-6 xl:grid-cols-4 2xl:grid-cols-5'
 
-function StreamCard({ s, now }: { s: Stream; now: number }) {
-  const { t } = useTranslation()
-  const [broken, setBroken] = useState(false)
+/** Empty State "Chưa có kênh nào đang trực tiếp" in a framed panel. */
+export function NoLiveChannels() {
+  const { t } = useTranslation('home')
 
   return (
-    <Link to={`/live/${s.id}`} className="group flex flex-col gap-2" data-testid="stream-card">
-      <div className="relative aspect-video overflow-hidden rounded-card bg-surface-1">
-        {!broken && (
-          <img
-            src={thumbSrc(s.thumbnailUrl, now)}
-            alt=""
-            loading="lazy"
-            onError={() => setBroken(true)}
-            className="size-full object-cover transition-transform group-hover:scale-[1.02]"
-          />
-        )}
-        <div className="absolute left-2 top-2">
-          {s.status === 'LIVE' ? <Badge variant="live">{t('status.live')}</Badge> : <Badge variant="warning">{t('status.interrupted')}</Badge>}
-        </div>
-        <span className="absolute bottom-2 left-2 rounded-control bg-deep/80 px-1.5 py-0.5 text-xs tabular-nums text-fg">
-          {elapsedSince(s.startedAt, now)}
-        </span>
-      </div>
-      <div className="flex min-w-0 gap-2.5">
-        {s.channel && <ChannelAvatar channel={s.channel} className="mt-0.5" />}
-        <div className="min-w-0">
-          <p className="truncate font-semibold text-fg group-hover:text-primary">{s.title}</p>
-          {channelName(s.channel) && (
-            <p className="truncate text-sm text-fg-secondary" data-testid="card-channel">
-              {channelName(s.channel)}
-            </p>
-          )}
-          {s.tags.length > 0 && <p className="truncate text-xs text-fg-muted">{s.tags.join(' · ')}</p>}
-        </div>
-      </div>
-    </Link>
+    <Empty className="rounded-panel border bg-surface" data-testid="live-empty">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <RadioTowerIcon />
+        </EmptyMedia>
+        <EmptyTitle>{t('live.empty')}</EmptyTitle>
+        <EmptyDescription>{t('live.emptyBody')}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
   )
 }
 
-export function LiveGrid({ heading }: { heading?: string } = {}) {
-  const { t } = useTranslation('home')
-  const { data, isPending, isError } = useLiveStreams()
-  const [now, setNow] = useState(() => Date.now())
-
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 30_000)
-
-    return () => window.clearInterval(id)
-  }, [])
+/** Error Panel: "Không tải được danh sách" + "Thử lại". */
+export function ListError({ onRetry, className }: { onRetry: () => void; className?: string }) {
+  const { t } = useTranslation(['home', 'common'])
 
   return (
-    <section aria-labelledby="live-heading" className="px-4 py-6">
-      <h2 id="live-heading" className="mb-4 text-lg font-semibold">
-        {heading ?? t('live.heading')}
-      </h2>
-      {isPending && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4">
-          {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="aspect-video animate-pulse rounded-card bg-surface-1" />
-          ))}
-        </div>
-      )}
-      {isError && <p className="text-fg-secondary">{t('live.loadFailed')}</p>}
-      {data && data.items.length === 0 && (
-        <p className="rounded-panel border border-dashed border-border p-8 text-center text-fg-secondary">{t('live.empty')}</p>
-      )}
-      {data && data.items.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4">
-          {data.items.map((s) => (
-            <StreamCard key={s.id} s={s} now={now} />
-          ))}
-        </div>
+    <Empty className={className ?? 'rounded-panel border bg-surface'} role="alert" data-testid="home-error">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <RadioTowerIcon />
+        </EmptyMedia>
+        <EmptyTitle>{t('home:live.loadFailed')}</EmptyTitle>
+        <EmptyDescription>{t('home:live.loadFailedBody')}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="secondary" className="font-medium" onClick={onRetry}>
+          <RotateCwIcon />
+          {t('common:actions.retry')}
+        </Button>
+      </EmptyContent>
+    </Empty>
+  )
+}
+
+/** Card grid of live streams (or 4 skeleton cards while loading). */
+export function StreamGrid({ items, loading }: { items: Stream[] | undefined; loading?: boolean }) {
+  const now = useNow(30_000)
+
+  if (loading) {
+    return (
+      <div className={STREAM_GRID} aria-hidden>
+        {Array.from({ length: 4 }, (_, i) => (
+          <SkeletonStreamCard key={i} />
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className={STREAM_GRID}>
+      {(items ?? []).map((s) => (
+        <StreamCard key={s.id} stream={s} now={now} />
+      ))}
+    </div>
+  )
+}
+
+/** Live channels with their own loading/empty/error states (Browse page). */
+export function LiveGrid({ heading }: { heading?: string } = {}) {
+  const { t } = useTranslation('home')
+  const { data, isPending, isError, refetch } = useLiveStreams()
+
+  return (
+    <section aria-labelledby="live-heading" className="flex flex-col gap-4">
+      <SectionHeader id="live-heading" icon={<span className="size-2.5 rounded-full bg-live" aria-hidden />} title={heading ?? t('live.heading')} />
+      {isError && !data ? (
+        <ListError onRetry={() => void refetch()} />
+      ) : data && data.items.length === 0 ? (
+        <NoLiveChannels />
+      ) : (
+        <StreamGrid items={data?.items} loading={isPending} />
       )}
     </section>
   )

@@ -16,8 +16,8 @@
     "browse": "Browse",
     "following": "Following",
     "search": "Search",
-    "profile": "Profile",
-    "searchPlaceholder": "Search channels, streams…"
+    "profile": "Me",
+    "searchPlaceholder": "Search channels, games, streamers..."
   },
   "actions": {
     "cancel": "Cancel",
@@ -35,7 +35,9 @@
     "interrupted": "Interrupted",
     "ended": "Ended",
     "offline": "Offline",
-    "mature": "18+"
+    "mature": "18+",
+    "onAir": "LIVE",
+    "liveShort": "LIVE"
   },
   "elapsed": "Live for {{time}}",
   "language": {
@@ -46,7 +48,7 @@
   "sidebar": {
     "suggested": "Suggested channels",
     "noSuggestions": "No channel is live right now.",
-    "loginInvite": "Sign in to follow your favorite channels and hear when they go live.",
+    "loginInvite": "Sign in to follow your favourite channels",
     "following": "Followed channels",
     "followingEmpty": "You do not follow any channel yet. Following arrives in phase 4."
   },

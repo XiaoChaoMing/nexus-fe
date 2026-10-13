@@ -13,8 +13,8 @@ export function BrowsePage() {
   const { t } = useTranslation('home')
 
   return (
-    <div className="mx-auto max-w-[1600px]">
-      <h1 className="px-4 pt-6 font-heading text-headline-lg">{t('browse.title')}</h1>
+    <div className="mx-auto flex max-w-[1600px] flex-col gap-6 p-4 xl:p-6">
+      <h1 className="font-heading text-headline-lg">{t('browse.title')}</h1>
       <LiveGrid heading={t('browse.live')} />
     </div>
   )

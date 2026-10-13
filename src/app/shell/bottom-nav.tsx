@@ -12,7 +12,7 @@ function isActive(item: NavItem, pathname: string) {
   return item.to === '/' ? pathname === '/' : pathname === item.to || pathname.startsWith(`${item.to}/`)
 }
 
-/** Mobile (<768px) navigation, NXL-C BR33 / AF12. */
+/** Mobile (<768px) navigation, NXL-C BR33 / AF12: five 56 px targets, hidden in fullscreen or while typing. */
 export function BottomNav() {
   const { t } = useTranslation()
   const signedIn = useAuthStore((s) => s.status === 'authenticated')
@@ -43,7 +43,7 @@ export function BottomNav() {
       aria-label={t('nav.mobile')}
       data-testid="bottom-nav"
       className={cn(
-        'fixed inset-x-0 bottom-0 z-20 flex h-14 border-t bg-surface pb-[env(safe-area-inset-bottom)] md:hidden',
+        'fixed inset-x-0 bottom-0 z-30 flex h-[calc(4rem+env(safe-area-inset-bottom))] border-t bg-surface px-0 pt-1 pb-[calc(0.25rem+env(safe-area-inset-bottom))] md:hidden',
         hidden && 'hidden',
       )}
     >
@@ -56,9 +56,9 @@ export function BottomNav() {
             to={item.to}
             end={item.to === '/'}
             onClick={onClick(item)}
-            className="flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 text-label-sm text-muted-foreground aria-[current=page]:text-primary"
+            className="flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] leading-4 font-medium text-muted-foreground aria-[current=page]:font-semibold aria-[current=page]:text-primary"
           >
-            <Icon className="size-5" aria-hidden />
+            <Icon className="size-6" aria-hidden />
             {t(item.label)}
           </NavLink>
         )

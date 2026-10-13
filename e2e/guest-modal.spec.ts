@@ -67,15 +67,15 @@ test('deep link /login?returnTo= returns to an internal path only', async ({ pag
 test.describe('mobile', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })
 
-  test('bottom nav has five tabs and Profile opens the login sheet for guests', async ({ page }) => {
+  test('bottom nav has five tabs and "Tôi" opens the login sheet for guests', async ({ page }) => {
     await page.goto('/')
     const nav = page.getByTestId('bottom-nav')
     await expect(nav).toBeVisible()
-    for (const name of ['Trang chủ', 'Khám phá', 'Đang theo dõi', 'Tìm kiếm', 'Hồ sơ']) {
+    for (const name of ['Trang chủ', 'Khám phá', 'Đang theo dõi', 'Tìm kiếm', 'Tôi']) {
       await expect(nav.getByRole('link', { name })).toBeVisible()
     }
 
-    await nav.getByRole('link', { name: 'Hồ sơ' }).click()
+    await nav.getByRole('link', { name: 'Tôi' }).click()
     const sheet = page.getByRole('dialog')
     await expect(sheet).toBeVisible()
     await expect(page).toHaveURL(/\/$/)

@@ -10,6 +10,7 @@ import { PendingActionRunner } from '@/features/auth/components/pending-action-r
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { OfflineBanner } from '@/features/system/components/offline-banner'
 import { SessionWatcher } from '@/features/system/components/session-watcher'
+import { useMergeLocalProgress } from '@/features/vod/hooks/use-merge-local-progress'
 import { useUiStore } from '@/stores/ui-store'
 
 /** The account's saved sidebar choice wins over this browser's when an account signs in. */
@@ -28,6 +29,7 @@ function useAccountSidebarPreference() {
 export function AppShell() {
   const { t } = useTranslation()
   useAccountSidebarPreference()
+  useMergeLocalProgress()
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -39,7 +41,7 @@ export function AppShell() {
       <EmailVerifyBanner />
       <div className="flex flex-1">
         <Sidebar />
-        <main id="main" className="min-w-0 flex-1 pb-14 md:pb-0">
+        <main id="main" className="min-w-0 flex-1 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
           <Outlet />
         </main>
       </div>

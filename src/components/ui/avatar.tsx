@@ -10,7 +10,8 @@ function Avatar({
   live = false,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Root> & {
-  size?: "default" | "sm" | "lg" | "xl"
+  /** sm 24 · default 32 · md 36 (stream cards) · lg 40 · xl 64 (GĐ2 Avatar scale). */
+  size?: "default" | "sm" | "md" | "lg" | "xl"
   /** Crimson ring while the channel is live. */
   live?: boolean
 }) {
@@ -20,7 +21,7 @@ function Avatar({
       data-size={size}
       data-live={live || undefined}
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 overflow-hidden rounded-full select-none data-[size=lg]:size-10 data-[size=sm]:size-6 data-[size=xl]:size-16 data-[live=true]:ring-2 data-[live=true]:ring-live data-[live=true]:ring-offset-2 data-[live=true]:ring-offset-background",
+        "group/avatar relative flex size-8 shrink-0 overflow-hidden rounded-full select-none data-[size=md]:size-9 data-[size=lg]:size-10 data-[size=sm]:size-6 data-[size=xl]:size-16 data-[live=true]:ring-2 data-[live=true]:ring-live data-[live=true]:ring-offset-2 data-[live=true]:ring-offset-background",
         className
       )}
       {...props}
@@ -49,7 +50,7 @@ function AvatarFallback({
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
+        "flex size-full items-center justify-center rounded-full bg-avatar text-xs font-semibold text-primary group-data-[size=sm]/avatar:text-[10px] group-data-[size=md]/avatar:text-[13px] group-data-[size=lg]/avatar:text-sm group-data-[size=xl]/avatar:text-[22px]",
         className
       )}
       {...props}

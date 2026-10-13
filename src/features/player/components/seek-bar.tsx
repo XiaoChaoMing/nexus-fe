@@ -1,6 +1,6 @@
 import { useState, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { formatClock } from '@/features/player/lib/live-edge'
+import { formatTimecode } from '@/features/player/lib/live-edge'
 import { usePlayer } from '@/features/player/stores/player-store'
 import type { PlayerMode } from '@/features/player/hooks/use-hls'
 
@@ -40,8 +40,8 @@ export function SeekBar({ mode, onSeek }: Props) {
       aria-valuemin={0}
       aria-valuemax={Math.round(span)}
       aria-valuenow={Math.round(currentTime - start)}
-      aria-valuetext={formatClock(currentTime - start)}
-      className="group relative h-4 cursor-pointer touch-none"
+      aria-valuetext={mode === 'live' ? `−${formatTimecode(Math.max(0, end - currentTime))}` : `${formatTimecode(currentTime)} / ${formatTimecode(duration)}`}
+      className="group relative h-4 cursor-pointer touch-none rounded-sm"
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId)
         onSeek(timeAt(e))
@@ -62,16 +62,13 @@ export function SeekBar({ mode, onSeek }: Props) {
       <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-white/25 transition-[height] group-hover:h-1.5">
         <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
-      <div
-        className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary opacity-0 group-hover:opacity-100"
-        style={{ left: `${pct}%` }}
-      />
+      <div className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: `${pct}%` }} />
       {hover !== null && (
         <div
-          className="pointer-events-none absolute -top-7 -translate-x-1/2 rounded-control bg-deep/90 px-1.5 py-0.5 text-xs text-fg"
+          className="pointer-events-none absolute -top-8 -translate-x-1/2 rounded-control border bg-card px-2 py-1 text-label-sm font-semibold text-foreground tabular-nums"
           style={{ left: `${Math.min(100, Math.max(0, ((hover - start) / span) * 100))}%` }}
         >
-          {mode === 'live' ? `-${formatClock(Math.max(0, end - hover))}` : formatClock(hover)}
+          {mode === 'live' ? `−${formatTimecode(Math.max(0, end - hover))}` : formatTimecode(hover)}
         </div>
       )}
     </div>

@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink, useNavigate } from 'react-router'
-import { HeartIcon } from 'lucide-react'
+import { HeartIcon, PanelLeftCloseIcon, PanelLeftOpenIcon } from 'lucide-react'
+import { useSidebarToggle } from '@/app/shell/use-sidebar-toggle'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
@@ -49,25 +50,42 @@ function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
         }}
         // Static class with aria-current styling: Radix Slot (tooltip trigger) cannot merge a className function.
         className={cn(
-          'flex h-10 items-center gap-3 rounded-control px-3 text-label-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
-          'aria-[current=page]:bg-card aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:text-primary',
-          collapsed && 'justify-center px-0',
+          'flex h-10 items-center gap-3 rounded-lg px-3 text-label-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
+          'aria-[current=page]:bg-card aria-[current=page]:font-semibold aria-[current=page]:text-foreground',
+          collapsed && 'mx-auto h-11 w-12 justify-center px-0',
         )}
       >
-        <Icon className="size-5 shrink-0" aria-hidden />
+        <Icon className={cn('shrink-0', collapsed ? 'size-5.5' : 'size-5')} aria-hidden />
         {!collapsed && <span className="truncate">{label}</span>}
       </NavLink>
     </WithTooltip>
   )
 }
 
-function SuggestedChannels({ collapsed }: { collapsed: boolean }) {
+function GroupLabel({ id, collapsed, children }: { id: string; collapsed: boolean; children: string }) {
+  if (collapsed) {
+    return (
+      <span id={id} className="sr-only">
+        {children}
+      </span>
+    )
+  }
+
+  return (
+    <h2 id={id} className="px-2 pt-3.5 pb-1.5 text-[11px] font-semibold tracking-[0.8px] text-subtle-foreground uppercase">
+      {children}
+    </h2>
+  )
+}
+
+/** Live channels (one per channel): name, title, LIVE; avatars only when collapsed. */
+function LiveChannels({ collapsed }: { collapsed: boolean }) {
   const { t } = useTranslation()
   const { data } = useLiveStreams()
   const items = suggestedChannels(data?.items)
 
   if (items.length === 0) {
-    return collapsed ? null : <p className="px-3 text-body-sm text-subtle-foreground">{t('sidebar.noSuggestions')}</p>
+    return collapsed ? null : <p className="px-2 text-body-sm text-subtle-foreground">{t('sidebar.noSuggestions')}</p>
   }
 
   return (
@@ -81,16 +99,18 @@ function SuggestedChannels({ collapsed }: { collapsed: boolean }) {
               <Link
                 to={`/live/${s.id}`}
                 aria-label={collapsed ? name : undefined}
-                className={cn('flex h-11 items-center gap-2.5 rounded-control px-2 hover:bg-accent', collapsed && 'justify-center px-0')}
+                className={cn('flex items-center gap-2.5 rounded-lg p-2 hover:bg-accent', collapsed && 'mx-auto h-11 w-12 justify-center p-0')}
               >
-                <ChannelAvatar channel={s.channel} size="sm" live />
+                <ChannelAvatar channel={s.channel} liveDot />
                 {!collapsed && (
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-label-md text-foreground">{name}</span>
-                    {s.channel && <span className="truncate text-label-sm text-subtle-foreground">{s.title}</span>}
-                  </span>
+                  <>
+                    <span className="flex min-w-0 flex-1 flex-col gap-px">
+                      <span className="truncate text-label-md text-foreground">{name}</span>
+                      {s.channel && <span className="truncate text-label-sm font-normal text-subtle-foreground">{s.title}</span>}
+                    </span>
+                    <span className="shrink-0 text-label-sm font-bold tracking-wide text-live">{t('status.liveShort')}</span>
+                  </>
                 )}
-                {!collapsed && <span className="size-2 shrink-0 rounded-full bg-live" aria-label={t('status.live')} />}
               </Link>
             </WithTooltip>
           </li>
@@ -100,80 +120,91 @@ function SuggestedChannels({ collapsed }: { collapsed: boolean }) {
   )
 }
 
+/** Login Prompt (01 · Trang chủ — Khách): replaces the channel lists for guests. */
 function GuestInvite() {
   const { t } = useTranslation()
   const show = useAuthModal((s) => s.show)
 
   return (
-    <div className="mt-3 flex flex-col gap-2 rounded-lg border bg-card p-3" data-testid="sidebar-login-invite">
-      <p className="text-body-sm text-muted-foreground">{t('sidebar.loginInvite')}</p>
-      <Button size="sm" onClick={() => show('login')}>
-        {t('auth.login')}
-      </Button>
+    <div className="mt-4 flex flex-col gap-3 rounded-lg border bg-card px-3 py-4" data-testid="sidebar-login-invite">
+      <HeartIcon className="size-5.5 text-primary" aria-hidden />
+      <p className="text-label-md text-foreground">{t('sidebar.loginInvite')}</p>
+      <Button onClick={() => show('login')}>{t('auth.login')}</Button>
     </div>
   )
 }
 
+/** Sidebar (240 px) or icon rail (64 px); the rail is forced while a player is in theater mode. */
 export function Sidebar() {
   const { t } = useTranslation()
-  const collapsed = useUiStore((s) => s.sidebarCollapsed)
+  const { collapsed: savedCollapsed, toggle } = useSidebarToggle()
+  const theater = useUiStore((s) => s.theater)
+  const collapsed = savedCollapsed || theater
   const signedIn = useAuthStore((s) => s.status === 'authenticated')
+  const toggleLabel = collapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')
 
   return (
     <aside
       aria-label={t('nav.main')}
       className={cn(
-        'sticky top-15 hidden h-[calc(100dvh-3.75rem)] shrink-0 flex-col overflow-y-auto border-r bg-surface p-3 transition-[width] md:flex',
-        collapsed ? 'w-16' : 'w-60',
+        'sticky top-16 hidden h-[calc(100dvh-4rem)] shrink-0 flex-col justify-between overflow-y-auto border-r bg-surface transition-[width] md:flex',
+        collapsed ? 'w-16 px-2 py-3' : 'w-60 px-3 py-4',
       )}
     >
-      <nav className="flex flex-col gap-1">
-        {MAIN_NAV.map((item) => (
-          <SidebarLink key={item.to} item={item} collapsed={collapsed} />
-        ))}
-      </nav>
+      <div className={cn('flex flex-col', collapsed ? 'gap-1' : 'gap-0.5')}>
+        <nav className={cn('flex flex-col', collapsed ? 'gap-1' : 'gap-0.5')}>
+          {MAIN_NAV.map((item) => (
+            <SidebarLink key={item.to} item={item} collapsed={collapsed} />
+          ))}
+        </nav>
 
-      <div className="my-3 border-t" />
+        <div className={cn('my-2 h-px bg-border', collapsed && 'mx-auto w-8')} />
 
-      {signedIn ? (
-        <section aria-labelledby="sidebar-following">
-          {!collapsed && (
-            <h2 id="sidebar-following" className="px-3 pb-2 text-label-sm font-bold tracking-wide text-subtle-foreground uppercase">
-              {t('sidebar.following')}
-            </h2>
-          )}
-          {collapsed ? (
-            <span id="sidebar-following" className="sr-only">
-              {t('sidebar.following')}
-            </span>
-          ) : (
-            <div className="flex flex-col items-start gap-2 px-3 text-body-sm text-muted-foreground" data-testid="sidebar-following-empty">
-              <HeartIcon className="size-4 text-subtle-foreground" aria-hidden />
-              {t('sidebar.followingEmpty')}
-            </div>
-          )}
-        </section>
-      ) : (
-        <section aria-labelledby="sidebar-suggested">
-          {!collapsed ? (
-            <h2 id="sidebar-suggested" className="px-3 pb-2 text-label-sm font-bold tracking-wide text-subtle-foreground uppercase">
-              {t('sidebar.suggested')}
-            </h2>
-          ) : (
-            <span id="sidebar-suggested" className="sr-only">
-              {t('sidebar.suggested')}
-            </span>
-          )}
-          <SuggestedChannels collapsed={collapsed} />
-          {!collapsed && <GuestInvite />}
-        </section>
-      )}
+        {signedIn ? (
+          <>
+            <section aria-labelledby="sidebar-following">
+              <GroupLabel id="sidebar-following" collapsed={collapsed}>
+                {t('sidebar.following')}
+              </GroupLabel>
+              {!collapsed && (
+                <p className="px-2 text-body-sm text-subtle-foreground" data-testid="sidebar-following-empty">
+                  {t('sidebar.followingEmpty')}
+                </p>
+              )}
+            </section>
+            <section aria-labelledby="sidebar-suggested" className={cn(!collapsed && 'mt-2')}>
+              <GroupLabel id="sidebar-suggested" collapsed={collapsed}>
+                {t('sidebar.suggested')}
+              </GroupLabel>
+              <LiveChannels collapsed={collapsed} />
+            </section>
+          </>
+        ) : (
+          !collapsed && <GuestInvite />
+        )}
+      </div>
 
-      {signedIn && (
-        <div className="mt-auto border-t pt-3">
-          <SidebarLink item={SETTINGS_NAV} collapsed={collapsed} />
-        </div>
-      )}
+      <div className={cn('flex items-center gap-1 pt-3', collapsed && 'flex-col')}>
+        {signedIn && (
+          <div className="min-w-0 flex-1">
+            <SidebarLink item={SETTINGS_NAV} collapsed={collapsed} />
+          </div>
+        )}
+        {!theater && (
+          <WithTooltip collapsed={collapsed} label={toggleLabel}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggle}
+              aria-label={toggleLabel}
+              aria-expanded={!collapsed}
+              className={cn(collapsed ? 'h-11 w-12' : 'ml-auto')}
+            >
+              {collapsed ? <PanelLeftOpenIcon className="size-5.5" /> : <PanelLeftCloseIcon className="size-5" />}
+            </Button>
+          </WithTooltip>
+        )}
+      </div>
     </aside>
   )
 }

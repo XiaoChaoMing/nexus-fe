@@ -30,7 +30,8 @@ Sao chép `.env.example` thành `.env.local`. Web chỉ gọi một origin (`/v1
 
 | Tiền tố | Đích (mặc định) | Biến |
 | --- | --- | --- |
-| `/v1/studio`, `/v1/streams`, `/v1/vods` | stream-svc `http://localhost:8092` | `VITE_DEV_STREAM_URL` |
+| `/v1/studio`, `/v1/streams`, `/v1/vods`, `/v1/me/watch-progress`, `/v1/me/continue-watching` | stream-svc `http://localhost:8092` | `VITE_DEV_STREAM_URL` |
+| `/v1/channels` | channel-svc `http://localhost:8094` | `VITE_DEV_CHANNEL_URL` |
 | `/v1` còn lại (auth, WebSocket sau này) | identity-svc `http://localhost:8090` | `VITE_DEV_IDENTITY_URL` |
 | `/hls` | bucket MinIO `http://localhost:9000/nxl-media` | `VITE_DEV_HLS_URL` |
 
@@ -86,8 +87,9 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 | `src/components/ui/` | Thành phần dùng chung: `Button`, `TextField` |
 | `src/lib/` | `api-client` (fetch + Bearer + tự refresh một lần khi 401), `api-error`, `query-client` |
 | `src/features/<tên>/` | Theo tính năng: `api/`, `components/`, `hooks/`, `stores/`, `schemas/`, `constants/`, `lib/` |
-| `src/features/player/` | Player HLS tự viết (hls.js): DVR, chất lượng, phím tắt, trạng thái; store Zustand riêng cho mỗi player |
-| `src/features/streams/` | Gọi stream-svc (TanStack Query, poll trạng thái) |
+| `src/features/player/` | Player HLS tự viết (hls.js): DVR, chất lượng, phím tắt, trạng thái (frame 03b); store Zustand riêng cho mỗi player |
+| `src/features/streams/` | Gọi stream-svc (TanStack Query, poll trạng thái); phiên xem `POST …/playback` (cổng 18+, `X-NXL-Anon-Id` = `nxl.anonId` cho Khách) |
+| `src/features/vod/` | Trang xem lại; tiến độ xem: tài khoản qua `PUT /v1/me/watch-progress` (15 s, tạm dừng, rời trang), Khách ở localStorage, gộp lên tài khoản khi đăng nhập |
 | `src/features/watch/`, `studio/`, `home/` | Trang xem live, Studio phát trực tiếp, lưới "Đang phát" |
 | `src/features/auth/` | Phiên, modal đăng nhập/đăng ký, `pendingAction`, guard, vai trò (`lib/roles.ts`) |
 | `src/features/account/` | Xác minh email, quên/đặt lại mật khẩu, cài đặt tài khoản, banner xác minh |

@@ -3,6 +3,9 @@ import { persist } from 'zustand/middleware'
 
 type UiState = {
   sidebarCollapsed: boolean
+  /** Theater mode of a player page: the sidebar shrinks to icons while it lasts (not persisted). */
+  theater: boolean
+  setTheater: (on: boolean) => void
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
 }
@@ -18,9 +21,11 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       sidebarCollapsed: defaultCollapsed(),
+      theater: false,
+      setTheater: (theater) => set({ theater }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
     }),
-    { name: 'nxl-ui' },
+    { name: 'nxl-ui', partialize: (s) => ({ sidebarCollapsed: s.sidebarCollapsed }) },
   ),
 )

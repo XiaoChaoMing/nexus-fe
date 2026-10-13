@@ -44,6 +44,39 @@ export type Vod = {
   createdAt: string
   expiresAt: string
   channel?: ChannelSummary | null
+  /** Only with a token: where this account stopped watching (null = never watched). */
+  viewer?: { positionSec: number | null }
+}
+
+/**
+ * `POST /v1/streams/{id}/playback` and `/v1/vods/{id}/playback` (TSD GĐ2 §4). The first three are null while the
+ * 18+ gate is closed; `anonId` comes back for guests only.
+ */
+export type Playback = {
+  sessionId: string | null
+  manifestUrl: string | null
+  expiresAt: string | null
+  anonId?: string
+  mature: { required: boolean; acknowledged: boolean }
+}
+
+/** One row of `GET /v1/me/continue-watching`. */
+export type ContinueWatchingItem = {
+  vod: Vod
+  positionSec: number
+  updatedAt: string
+}
+
+/** `GET /v1/channels/{handle}` (channel-svc, GĐ1 minimal profile). */
+export type ChannelProfile = {
+  id: string
+  handle: string
+  displayName: string
+  bio: string | null
+  avatarUrl: string | null
+  isLive: boolean
+  currentStreamId: string | null
+  createdAt: string
 }
 
 export type Health = {

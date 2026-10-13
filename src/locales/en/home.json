@@ -1,9 +1,10 @@
 {
-  "greeting": "Hi, {{name}}",
   "live": {
-    "heading": "Live now",
-    "loadFailed": "Could not load live streams.",
-    "empty": "Nobody is live right now."
+    "heading": "Recommended live channels",
+    "loadFailed": "Could not load the list",
+    "empty": "No channel is live right now",
+    "emptyBody": "This list updates by itself when a creator goes live.",
+    "loadFailedBody": "Something went wrong while loading. Check your connection and try again."
   },
   "browse": {
     "title": "Browse",
@@ -23,5 +24,25 @@
     "title": "Search",
     "soonTitle": "Search is coming",
     "soonBody": "Searching channels, streams and categories arrives in phase 2."
+  },
+  "title": "Home",
+  "hero": {
+    "featured": "Top pick",
+    "liveNow": "LIVE NOW",
+    "watch": "Watch now",
+    "started": "started {{time}}"
+  },
+  "continue": {
+    "heading": "Continue watching",
+    "count_one": "{{count}} item",
+    "count_other": "{{count}} items",
+    "watched": "{{percent}}% watched",
+    "streamed": "Streamed {{time}}"
+  },
+  "nobodyLive": {
+    "title": "Nobody is live yet",
+    "body": "Come back later, or become the first creator",
+    "becomeCreator": "Become a Creator",
+    "goLive": "Go live"
   }
 }
