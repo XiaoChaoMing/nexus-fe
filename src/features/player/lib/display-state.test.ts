@@ -37,6 +37,13 @@ describe('displayState', () => {
     expect(displayState({ ...ended, buffering: true, atLiveEdge: false })).toBe('buffering')
   })
 
+  it('shows ended instead of a reload, retry or timeout once the broadcast is over', () => {
+    const ended = { ...base, apiStatus: 'ENDED' as const }
+    expect(displayState({ ...ended, phase: 'loading', loadingTimedOut: true })).toBe('ended')
+    expect(displayState({ ...ended, phase: 'reconnecting', atLiveEdge: false })).toBe('ended')
+    expect(displayState({ ...ended, phase: 'error' })).toBe('ended')
+  })
+
   it('reports errors', () => {
     expect(displayState({ ...base, phase: 'error' })).toBe('error')
   })

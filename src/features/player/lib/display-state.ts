@@ -39,8 +39,10 @@ export type DisplayInput = {
 export function displayState(i: DisplayInput): DisplayState {
   if (i.matureBlocked) return 'mature'
   if (i.vod && i.videoEnded) return 'ended'
-  // Ended: the video ran out, or the viewer waits at the live edge for segments that will never come.
-  if (i.apiStatus === 'ENDED' && (i.videoEnded || i.phase === 'idle' || i.phase === 'error' || (i.atLiveEdge && i.buffering))) return 'ended'
+  // Ended: the video ran out, or nothing is playing any more (stalled, reloading, retrying or failed after
+  // the publisher left), or the viewer waits at the live edge for segments that will never come. A rewound
+  // viewer who is still playing keeps watching.
+  if (i.apiStatus === 'ENDED' && (i.videoEnded || i.phase !== 'playing' || (i.atLiveEdge && i.buffering))) return 'ended'
   if (i.sourceFailed || i.phase === 'error') return 'error'
   if (i.apiStatus === 'INTERRUPTED' && i.atLiveEdge && (i.buffering || i.phase !== 'playing')) return 'interrupted'
   if (i.phase === 'reconnecting') return 'reconnecting'

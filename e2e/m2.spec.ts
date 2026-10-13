@@ -118,8 +118,16 @@ test('M2: go live, watch with quality switch, interruption, end, replay and resu
     const title = `M2 ${Date.now().toString(36)}`
     await creator.updateSettings({ title, tags: ['m2', 'e2e'], language: 'vi', isMature: false })
 
+    // A publish within STREAM_END_COOLDOWN (30 s) of another spec ending a broadcast is refused: retry once.
     obs = publish(key, 240)
-    const streamId = await creator.waitLive(title)
+    let streamId: string
+    try {
+      streamId = await creator.waitLive(title)
+    } catch {
+      obs.kill('SIGKILL')
+      obs = publish(key, 240)
+      streamId = await creator.waitLive(title)
+    }
 
     // Guest: Home shows the hero and the card; the card opens the live room.
     const guestCtx = await browser.newContext({ baseURL: APP_URL, locale: 'vi-VN' })
@@ -211,7 +219,15 @@ test('M2: an 18+ stream is gated by the playback session until the guest confirm
     await creator.updateSettings({ title, tags: ['m2'], language: 'vi', isMature: true })
 
     obs = publish(key, 120)
-    const streamId = await creator.waitLive(title)
+    let streamId: string
+    try {
+      streamId = await creator.waitLive(title)
+    } catch {
+      // Refused inside the end cooldown of the previous test: retry once.
+      obs.kill('SIGKILL')
+      obs = publish(key, 120)
+      streamId = await creator.waitLive(title)
+    }
 
     const guestCtx = await browser.newContext({ baseURL: APP_URL, locale: 'vi-VN' })
     contexts.push(guestCtx)
