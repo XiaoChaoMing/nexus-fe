@@ -7,7 +7,7 @@ import { FollowButton } from '@/features/channels/components/follow-button'
 import { EmotePicker } from '@/features/chat/components/emote-picker'
 import type { ChatRoom } from '@/features/chat/hooks/use-chat-room'
 import { useModeText } from '@/features/chat/hooks/use-mode-text'
-import { canAddLine, charCount, checkDraft, completeMention, insertToken, mentionAt, showCounter, suggestMentions, type Chatter } from '@/features/chat/lib/compose'
+import { canAddLine, charCount, checkDraft, completeMention, insertToken, lineCount, mentionAt, showCounter, suggestMentions, type Chatter } from '@/features/chat/lib/compose'
 import { CHAT_LIMITS } from '@/features/chat/lib/constants'
 import type { ChatLock, ComposerView, InputNotice } from '@/features/chat/lib/errors'
 import { isTypingTarget } from '@/features/player/lib/shortcut-target'
@@ -124,6 +124,7 @@ export function ChatInput({ room, channel }: { room: ChatRoom; channel: ChannelS
   const suggestions = mention && mention.start !== dismissedAt ? suggestMentions(room.chatters, mention.query) : []
   const open = suggestions.length > 0
   const tooLong = charCount(draft) > CHAT_LIMITS.maxChars
+  const tooManyLines = lineCount(draft) > CHAT_LIMITS.maxLines
   const canSend = enabled && view.cooldownSec === 0 && checkDraft(draft).ok
 
   // A refused message comes back to an empty input (BR26), never over what is being typed.
@@ -236,6 +237,8 @@ export function ChatInput({ room, channel }: { room: ChatRoom; channel: ChannelS
     <NoticeText notice={notice} now={now} />
   ) : tooLong ? (
     t('input.tooLong', { max: CHAT_LIMITS.maxChars })
+  ) : tooManyLines ? (
+    t('input.tooManyLines', { max: CHAT_LIMITS.maxLines })
   ) : !enabled && draft ? (
     placeholder
   ) : null
@@ -243,7 +246,7 @@ export function ChatInput({ room, channel }: { room: ChatRoom; channel: ChannelS
   return (
     <div className="shrink-0 p-3 pt-2">
       {helper && (
-        <p id={helpId} role="status" className={cn('pb-1.5 text-label-sm font-normal', notice || tooLong ? 'text-warning' : 'text-muted-foreground')} data-testid="chat-notice">
+        <p id={helpId} role="status" className={cn('pb-1.5 text-label-sm font-normal', notice || tooLong || tooManyLines ? 'text-warning' : 'text-muted-foreground')} data-testid="chat-notice">
           {helper}
         </p>
       )}

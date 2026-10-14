@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { channelName } from '@/features/channels/lib/channel-display'
-import { ChatColumn, ChatPanel, ChatRail } from '@/features/chat/components/chat-panel'
+import { ChatColumn, ChatPanel, ChatRail, SkipToChat } from '@/features/chat/components/chat-panel'
 import { useChatRoom } from '@/features/chat/hooks/use-chat-room'
 import { HlsPlayer } from '@/features/player/components/hls-player'
 import { usePlayback } from '@/features/streams/hooks/use-playback'
@@ -120,6 +120,7 @@ export function LivePage() {
 
   return (
     <div className={cn('mx-auto flex w-full gap-6 md:p-4 xl:p-6', theater ? 'max-w-none' : 'max-w-[1600px]')}>
+      {wide && !theater && !chatCollapsed && <SkipToChat />}
       <div className="flex min-w-0 flex-1 flex-col md:gap-4 xl:gap-5">
         <div className="bg-black max-md:sticky max-md:top-0 max-md:z-20 md:bg-transparent">
           {showPlayer ? (

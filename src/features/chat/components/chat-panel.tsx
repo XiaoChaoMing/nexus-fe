@@ -192,3 +192,23 @@ export function ChatRail({ onExpand, mentioned }: { onExpand: () => void; mentio
     </div>
   )
 }
+
+/** "Chuyển tới chat" (AC a11y): a skip link that moves the keyboard focus into the chat. */
+export function SkipToChat() {
+  const { t } = useTranslation('chat')
+
+  return (
+    <a
+      href="#chat"
+      onClick={(e) => {
+        const target = document.querySelector<HTMLElement>('#chat textarea:not(:disabled), #chat [data-testid="chat-guest-input"], #chat [role="log"]')
+        if (!target) return
+        e.preventDefault()
+        target.focus()
+      }}
+      className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-control focus:bg-card focus:px-3 focus:py-2 focus:text-foreground"
+    >
+      {t('skipToChat')}
+    </a>
+  )
+}

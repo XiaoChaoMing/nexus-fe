@@ -16,7 +16,6 @@
   "pending": "Sending",
   "failed": "Not sent",
   "resend": "Resend",
-  "mentionedYou": "{{name}} mentioned you: {{text}}",
   "banner": {
     "reconnecting": "Reconnecting…",
     "failed": "Can't connect to chat",
@@ -87,7 +86,6 @@
     "sendIn_one": "Send in {{count}} second",
     "sendIn_other": "Send in {{count}} seconds",
     "emotes": "Emotes",
-    "counter": "{{count}}/{{max}} characters",
     "tooLong": "Messages can be at most {{max}} characters.",
     "tooManyLines": "Messages can be at most {{max}} lines."
   },

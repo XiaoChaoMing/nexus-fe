@@ -15,7 +15,6 @@
   "pending": "Đang gửi",
   "failed": "Gửi lỗi",
   "resend": "Gửi lại",
-  "mentionedYou": "{{name}} nhắc đến bạn: {{text}}",
   "banner": {
     "reconnecting": "Đang kết nối lại…",
     "failed": "Không thể kết nối chat",
@@ -82,7 +81,6 @@
     "send": "Gửi",
     "sendIn_other": "Gửi sau {{count}} giây",
     "emotes": "Emote",
-    "counter": "{{count}}/{{max}} ký tự",
     "tooLong": "Tin nhắn tối đa {{max}} ký tự.",
     "tooManyLines": "Tin nhắn tối đa {{max}} dòng."
   },
