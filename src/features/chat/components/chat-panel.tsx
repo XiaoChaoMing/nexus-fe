@@ -123,7 +123,7 @@ export function ChatPanel({ room, channel, toolbar = false, className }: PanelPr
   const manage = canManageChat(room.state.me?.role) && mode
 
   return (
-    <div className={cn('flex min-h-0 flex-1 flex-col', className)} data-testid="chat-panel" id="chat">
+    <div className={cn('flex min-h-0 flex-1 scroll-mb-[calc(4rem+env(safe-area-inset-bottom))] flex-col md:scroll-mb-4', className)} data-testid="chat-panel" id="chat">
       {toolbar && manage && (
         <div className="flex shrink-0 justify-end px-2 pt-1">
           <ChatSettings channelId={room.channelId} mode={mode} />

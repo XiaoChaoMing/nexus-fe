@@ -151,6 +151,11 @@ export class RealtimeClient {
 
   /** Another account (or sign-out): a fresh connection, topics resumed from their `lastSeq`. */
   reconnect() {
+    if (this.statusValue === 'failed') {
+      this.retry()
+
+      return
+    }
     if (!this.socket && !this.reconnectTimer) {
       this.ensureConnected()
 

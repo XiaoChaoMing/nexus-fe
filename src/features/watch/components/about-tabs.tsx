@@ -42,12 +42,17 @@ export function AboutTabs({ channel, chat, flat = false }: Props) {
   const [tab, setTab] = useState('about')
   const focusRequest = useUiStore((s) => s.chatFocusRequest)
   const initialRequest = useRef(focusRequest)
+  const select = (next: string) => {
+    setTab(next)
+    // The chat fills the screen under the (sticky) player with its input above the bottom bar.
+    if (next === 'chat') requestAnimationFrame(() => document.getElementById('chat')?.scrollIntoView({ block: 'end', behavior: 'smooth' }))
+  }
   useEffect(() => {
-    if (withChat && focusRequest !== initialRequest.current) setTab('chat')
+    if (withChat && focusRequest !== initialRequest.current) select('chat')
   }, [focusRequest, withChat])
 
   return (
-    <Tabs value={withChat ? tab : 'about'} onValueChange={setTab} className={cn('gap-0', !flat && 'rounded-panel border bg-surface')}>
+    <Tabs value={withChat ? tab : 'about'} onValueChange={select} className={cn('gap-0', !flat && 'rounded-panel border bg-surface')}>
       <TabsList className={cn('h-12 px-4! md:px-5!', flat && 'gap-0')}>
         <TabsTrigger value="about" className={flat ? 'flex-1!' : undefined}>
           {t('tabs.about')}
@@ -62,7 +67,7 @@ export function AboutTabs({ channel, chat, flat = false }: Props) {
         <About channel={channel} />
       </TabsContent>
       {withChat && (
-        <TabsContent value="chat" className="flex h-[calc(100dvh-56.25vw-9rem)] min-h-96 flex-col md:h-136">
+        <TabsContent value="chat" className="flex h-[calc(100dvh-56.25vw-4rem-env(safe-area-inset-bottom))] min-h-96 flex-col md:h-136">
           {chat}
         </TabsContent>
       )}

@@ -46,6 +46,16 @@ export function MessageList({ room }: { room: ChatRoom }) {
     if (el && !pausedRef.current) el.scrollTop = el.scrollHeight
   }, [])
 
+  // The list gets shorter when a banner or the mode bar appears: keep the newest line in view.
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => stickToBottom())
+    ro.observe(el)
+
+    return () => ro.disconnect()
+  }, [stickToBottom])
+
   // Not compiled by React Compiler (the project does not use it); the virtualizer re-renders this component itself.
   // oxlint-disable-next-line react/incompatible-library
   const virtualizer = useVirtualizer({
@@ -54,15 +64,13 @@ export function MessageList({ room }: { room: ChatRoom }) {
     estimateSize: () => 28,
     overscan: 12,
     getItemKey: (i) => items[i]?.key ?? i,
-    // Lines measured taller than estimated push the bottom down: follow it while auto-scrolling.
-    onChange: (_v, sync) => {
-      if (!sync) stickToBottom()
-    },
   })
+  const totalSize = virtualizer.getTotalSize()
 
+  // New lines, and lines measured taller than estimated, push the bottom down: follow it while auto-scrolling.
   useLayoutEffect(() => {
     stickToBottom()
-  }, [items, state.paused, stickToBottom])
+  }, [items, totalSize, state.paused, stickToBottom])
 
   const onScroll = () => {
     const el = scrollRef.current
@@ -70,10 +78,15 @@ export function MessageList({ room }: { room: ChatRoom }) {
     const distance = el.scrollHeight - el.scrollTop - el.clientHeight
     const movedUp = el.scrollTop < lastTop.current - 1
     lastTop.current = el.scrollTop
+    // The ref changes at once: the layout effect of the render this scroll causes must not snap back down.
     if (distance <= CHAT_LIMITS.pauseThresholdPx) {
-      if (pausedRef.current) setPaused(false)
+      if (pausedRef.current) {
+        pausedRef.current = false
+        setPaused(false)
+      }
     } else if (movedUp && !pausedRef.current) {
       // Only the reader scrolling up pauses; content growing under us does not.
+      pausedRef.current = true
       setPaused(true)
     }
   }
@@ -112,7 +125,7 @@ export function MessageList({ room }: { room: ChatRoom }) {
             {t('empty')}
           </p>
         ) : (
-          <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
+          <div className="relative w-full" style={{ height: totalSize }}>
             {virtualizer.getVirtualItems().map((v) => {
               const item = items[v.index]
               if (!item) return null

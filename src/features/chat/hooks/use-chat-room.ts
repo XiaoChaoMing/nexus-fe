@@ -114,24 +114,32 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
     dispatch({ type: 'batch', events, myId: meRef.current?.id ?? null, myUsername: meRef.current?.username ?? null })
   })
 
-  // History (API 01) on join and after a resync.
+  // History (API 01) on join and after a resync; an answer for a room we already left is dropped.
+  const roomRef = useRef(streamId)
   const loadHistory = useCallback(
-    (resync: boolean) =>
-      chatApi
+    (resync: boolean) => {
+      const forRoom = streamId
+
+      return chatApi
         .history(streamId)
-        .then((messages) => dispatch({ type: 'history', messages, resync }))
+        .then((messages) => {
+          if (roomRef.current === forRoom) dispatch({ type: 'history', messages, resync })
+        })
         .catch((err: unknown) => {
+          if (roomRef.current !== forRoom) return
           // No room yet (just went live) reads as an empty room; anything else is "chat unavailable".
           if (isApiError(err) && err.status === 404) dispatch({ type: 'history', messages: [], resync })
           else dispatch({ type: 'historyFailed' })
-        }),
+        })
+    },
     [streamId],
   )
 
   useEffect(() => {
+    roomRef.current = streamId
     dispatch({ type: 'reset' })
     void loadHistory(false)
-  }, [loadHistory])
+  }, [streamId, loadHistory])
 
   // Pending sends of a room we leave are forgotten with it.
   useEffect(() => {
