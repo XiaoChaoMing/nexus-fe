@@ -25,6 +25,13 @@ export function formatDate(iso: string, options: Intl.DateTimeFormatOptions): st
   return new Intl.DateTimeFormat(currentLocale(), options).format(new Date(iso))
 }
 
+/** Viewer counts: "1.234", and compact from a million ("1,2 Tr" / "1.2M"). */
+export function formatViewers(value: number): string {
+  if (value < 1_000_000) return formatNumber(value)
+
+  return new Intl.NumberFormat(currentLocale(), { notation: 'compact', maximumFractionDigits: 1 }).format(value)
+}
+
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(currentLocale()).format(value)
 }

@@ -6,14 +6,13 @@
   "skipToChat": "Chuyển tới chat",
   "list": "Tin nhắn trong chat",
   "loading": "Đang tải tin nhắn…",
-  "empty": "Chưa có tin nhắn nào. Hãy là người đầu tiên chào streamer!",
   "newMessages": "Có tin mới ↓",
   "newMessagesCount_other": "Có {{count}} tin mới ↓",
   "missed": "Có thể bạn đã bỏ lỡ một số tin",
   "sampling": "Chat đang rất nhanh — hiển thị rút gọn",
   "deleted": "Tin nhắn đã bị xóa",
   "pending": "Đang gửi",
-  "failed": "Gửi lỗi",
+  "failed": "Không gửi được.",
   "resend": "Gửi lại",
   "banner": {
     "reconnecting": "Đang kết nối lại…",
@@ -27,9 +26,9 @@
     "STREAMER": "Streamer",
     "MODERATOR": "Moderator",
     "VIP": "VIP",
-    "SUB_T1": "Subscriber Tier 1",
-    "SUB_T2": "Subscriber Tier 2",
-    "SUB_T3": "Subscriber Tier 3",
+    "SUB_T1": "Subscriber · Tier 1",
+    "SUB_T2": "Subscriber · Tier 2",
+    "SUB_T3": "Subscriber · Tier 3",
     "VERIFIED": "Đã xác minh"
   },
   "mode": {
@@ -60,10 +59,10 @@
   },
   "input": {
     "label": "Tin nhắn chat",
-    "placeholder": "Gửi tin nhắn…",
+    "placeholder": "Gửi tin nhắn",
     "guest": "Đăng nhập để trò chuyện",
     "connecting": "Đang kết nối chat…",
-    "reconnecting": "Đang kết nối lại…",
+    "reconnecting": "Chờ kết nối lại để gửi tin",
     "failed": "Không thể kết nối chat",
     "unavailable": "Chat tạm thời không khả dụng",
     "readOnly": "Buổi phát đã kết thúc — chat chỉ đọc",
@@ -82,7 +81,8 @@
     "sendIn_other": "Gửi sau {{count}} giây",
     "emotes": "Emote",
     "tooLong": "Tin nhắn tối đa {{max}} ký tự.",
-    "tooManyLines": "Tin nhắn tối đa {{max}} dòng."
+    "tooManyLines": "Tin nhắn tối đa {{max}} dòng.",
+    "closeNotice": "Đóng thông báo"
   },
   "error": {
     "slow_other": "Chế độ chậm đang bật. Bạn gửi lại sau {{count}} giây.",
@@ -97,12 +97,15 @@
     "title": "Emote",
     "search": "Tìm emote",
     "recent": "Gần đây",
-    "global": "Emote toàn cầu",
-    "none": "Không tìm thấy emote",
-    "loadFailed": "Không tải được emote"
+    "global": "Emote chung",
+    "none": "Không tìm thấy emote phù hợp",
+    "loadFailed": "Không tải được emote",
+    "insertHint": "Bấm để chèn vào tin nhắn"
   },
   "mention": {
-    "label": "Gợi ý nhắc tên"
+    "label": "Gợi ý nhắc tên",
+    "title": "Người vừa chat",
+    "hint": "↑↓ chọn · Enter chèn · Esc đóng"
   },
   "settings": {
     "open": "Cài đặt chế độ chat",
@@ -113,7 +116,7 @@
     "off": "Tắt",
     "seconds_other": "{{count}} giây",
     "anyFollower": "Mọi người theo dõi",
-    "hint": "Thay đổi áp dụng ngay cho cả phòng.",
+    "hint": "Thay đổi áp dụng ngay cho mọi người xem",
     "toast": {
       "slowOn": "Đã bật chế độ chậm {{count}} giây",
       "slowOff": "Đã tắt chế độ chậm",
@@ -122,6 +125,13 @@
       "followersOff": "Đã tắt chế độ chỉ người theo dõi",
       "subsOn": "Đã bật chế độ chỉ Subscriber",
       "subsOff": "Đã tắt chế độ chỉ Subscriber"
-    }
-  }
+    },
+    "slowDesc": "Mỗi người chỉ gửi được 1 tin trong khoảng thời gian đã chọn.",
+    "followersDesc": "Chỉ người đã theo dõi kênh đủ lâu mới được trò chuyện.",
+    "subsDesc": "Chỉ Subscriber của kênh được trò chuyện.",
+    "failed": "Không đổi được chế độ chat. Thử lại.",
+    "close": "Đóng"
+  },
+  "emptyTitle": "Chưa có tin nhắn nào.",
+  "emptyBody": "Hãy là người đầu tiên chào streamer!"
 }

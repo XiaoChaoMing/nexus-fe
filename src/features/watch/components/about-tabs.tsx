@@ -30,16 +30,23 @@ type Props = {
   chat?: ReactNode
   /** Mobile: tabs span the width and the panel is not framed. */
   flat?: boolean
+  /** The broadcast is on air: the Chat tab opens first (03 · Chat hoạt động/768, /375). */
+  chatFirst?: boolean
 }
 
 /**
  * Tabs under the stream (Giới thiệu; Chat on tablet/mobile). Schedule, Clips and Badges stay hidden until built.
  * A request to focus the chat (guest signed in to chat, AF10) opens the Chat tab.
  */
-export function AboutTabs({ channel, chat, flat = false }: Props) {
+export function AboutTabs({ channel, chat, flat = false, chatFirst = false }: Props) {
   const { t } = useTranslation('watch')
   const withChat = chat !== undefined
-  const [tab, setTab] = useState('about')
+  const [tab, setTab] = useState(chatFirst && withChat ? 'chat' : 'about')
+  const setChatTabOpen = useUiStore((s) => s.setChatTabOpen)
+  useEffect(() => {
+    setChatTabOpen(withChat && tab === 'chat')
+  }, [withChat, tab, setChatTabOpen])
+  useEffect(() => () => setChatTabOpen(false), [setChatTabOpen])
   const focusRequest = useUiStore((s) => s.chatFocusRequest)
   const initialRequest = useRef(focusRequest)
   const select = (next: string) => {
@@ -67,7 +74,7 @@ export function AboutTabs({ channel, chat, flat = false }: Props) {
         <About channel={channel} />
       </TabsContent>
       {withChat && (
-        <TabsContent value="chat" className="flex h-[calc(100dvh-56.25vw-4rem-env(safe-area-inset-bottom))] min-h-96 flex-col md:h-136">
+        <TabsContent value="chat" className="flex h-[calc(100dvh-56.25vw-10.5rem)] min-h-80 flex-none flex-col md:h-140">
           {chat}
         </TabsContent>
       )}

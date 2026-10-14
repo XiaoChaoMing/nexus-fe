@@ -9,6 +9,9 @@ type UiState = {
   /** Bumped to ask the live page to show and focus the chat input (after a guest signs in to chat, AF10). */
   chatFocusRequest: number
   requestChatFocus: () => void
+  /** The Chat tab of a live room is open (mobile: bottom nav and stream title give it their space). */
+  chatTabOpen: boolean
+  setChatTabOpen: (open: boolean) => void
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
 }
@@ -28,6 +31,8 @@ export const useUiStore = create<UiState>()(
       setTheater: (theater) => set({ theater }),
       chatFocusRequest: 0,
       requestChatFocus: () => set((s) => ({ chatFocusRequest: s.chatFocusRequest + 1 })),
+      chatTabOpen: false,
+      setChatTabOpen: (chatTabOpen) => set({ chatTabOpen }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
     }),

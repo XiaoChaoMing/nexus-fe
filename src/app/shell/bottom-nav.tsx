@@ -5,6 +5,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router'
 import { useGatedAction } from '@/features/auth/hooks/use-gated-action'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { useBottomNavHidden } from '@/hooks/use-bottom-nav-hidden'
+import { useUiStore } from '@/stores/ui-store'
 import { cn } from '@/lib/utils'
 import { BOTTOM_NAV, type NavItem } from './nav-items'
 
@@ -16,7 +17,9 @@ function isActive(item: NavItem, pathname: string) {
 export function BottomNav() {
   const { t } = useTranslation()
   const signedIn = useAuthStore((s) => s.status === 'authenticated')
-  const hidden = useBottomNavHidden()
+  // The Chat tab of a live room takes the whole height under the player (03 · Phòng Live — Chat hoạt động/375).
+  const chatTab = useUiStore((s) => s.chatTabOpen)
+  const hidden = useBottomNavHidden() || chatTab
   const gated = useGatedAction()
   const navigate = useNavigate()
   const location = useLocation()

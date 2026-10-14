@@ -1,26 +1,47 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { ZapIcon } from 'lucide-react'
+import { HandIcon, ZapIcon } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChatLine } from '@/features/chat/components/chat-message'
 import type { ChatRoom } from '@/features/chat/hooks/use-chat-room'
 import { CHAT_LIMITS } from '@/features/chat/lib/constants'
 
-const SKELETON_WIDTHS = ['w-3/4', 'w-1/2', 'w-5/6', 'w-2/3', 'w-3/5', 'w-4/5']
+const SKELETON_LINE2 = ['w-45', 'w-30', 'w-45', 'w-30', 'w-45', 'w-30']
 
-/** Brief C2 "Đang tải": six skeleton message lines. */
+/** Chat/Message/Skeleton × 6 (03c · Đang tải). */
 function ListSkeleton() {
   const { t } = useTranslation('chat')
 
   return (
-    <div className="flex flex-col gap-3 p-3" aria-busy aria-label={t('loading')}>
-      {SKELETON_WIDTHS.map((w, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <Skeleton className="h-3.5 w-16 rounded-sm" />
-          <Skeleton className={`h-3.5 rounded-sm ${w}`} />
+    <div className="flex flex-col gap-0.5" aria-busy aria-label={t('loading')}>
+      {SKELETON_LINE2.map((w, i) => (
+        <div key={i} className="flex flex-col gap-1.75 p-2">
+          <div className="flex items-center gap-1.25">
+            <Skeleton className="h-3 w-4 rounded-sm bg-card" />
+            <Skeleton className="h-3 w-21 rounded-sm bg-card" />
+          </div>
+          <Skeleton className="h-2.5 w-full rounded-sm bg-card" />
+          <Skeleton className={`h-2.5 rounded-sm bg-card ${w}`} />
         </div>
       ))}
+    </div>
+  )
+}
+
+/** 03c · Phòng trống. */
+function EmptyRoom() {
+  const { t } = useTranslation('chat')
+
+  return (
+    <div className="grid h-full place-items-center p-4" data-testid="chat-empty">
+      <div className="flex flex-col items-center gap-3 px-6 py-8 text-center">
+        <span className="grid size-14 place-items-center rounded-xl border bg-card text-muted-foreground">
+          <HandIcon className="size-7" aria-hidden />
+        </span>
+        <p className="text-body-lg leading-5.5 font-semibold text-foreground">{t('emptyTitle')}</p>
+        <p className="text-body-md text-muted-foreground">{t('emptyBody')}</p>
+      </div>
     </div>
   )
 }
@@ -61,7 +82,7 @@ export function MessageList({ room }: { room: ChatRoom }) {
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 28,
+    estimateSize: () => 50,
     overscan: 12,
     getItemKey: (i) => items[i]?.key ?? i,
   })
@@ -103,8 +124,8 @@ export function MessageList({ room }: { room: ChatRoom }) {
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       {state.sampling && (
-        <p className="flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-label-sm text-muted-foreground" data-testid="chat-sampling">
-          <ZapIcon className="size-3.5 text-warning" aria-hidden />
+        <p className="flex shrink-0 items-center gap-1.5 bg-background px-3 py-1.5 text-[11.5px] font-medium text-muted-foreground" data-testid="chat-sampling">
+          <ZapIcon className="size-3.5 fill-warning text-warning" aria-hidden />
           {t('sampling')}
         </p>
       )}
@@ -115,15 +136,13 @@ export function MessageList({ room }: { room: ChatRoom }) {
         aria-live="off"
         aria-label={t('list')}
         tabIndex={0}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
         data-testid="chat-list"
       >
         {state.phase === 'loading' && items.length === 0 ? (
           <ListSkeleton />
         ) : items.length === 0 ? (
-          <p className="grid h-full place-items-center px-6 text-center text-body-md text-muted-foreground" data-testid="chat-empty">
-            {t('empty')}
-          </p>
+          <EmptyRoom />
         ) : (
           <div className="relative w-full" style={{ height: totalSize }}>
             {virtualizer.getVirtualItems().map((v) => {
@@ -131,7 +150,7 @@ export function MessageList({ room }: { room: ChatRoom }) {
               if (!item) return null
 
               return (
-                <div key={v.key} data-index={v.index} ref={virtualizer.measureElement} className="absolute top-0 left-0 w-full" style={{ transform: `translateY(${v.start}px)` }}>
+                <div key={v.key} data-index={v.index} ref={virtualizer.measureElement} className="absolute top-0 left-0 w-full pb-0.5" style={{ transform: `translateY(${v.start}px)` }}>
                   <ChatLine item={item} myId={myId} myUsername={myUsername} onRetry={retry} />
                 </div>
               )
@@ -144,7 +163,7 @@ export function MessageList({ room }: { room: ChatRoom }) {
           type="button"
           onClick={jumpToLatest}
           aria-label={t('newMessagesCount', { count: state.unseen })}
-          className="absolute bottom-2 left-1/2 inline-flex h-8 -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-3 text-label-sm font-semibold text-primary-foreground outline-none hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring max-md:h-11"
+          className="absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center rounded-full bg-primary px-3.5 py-1.75 text-body-sm font-semibold text-primary-foreground outline-none hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring max-md:h-11"
           data-testid="chat-new-pill"
         >
           {t('newMessages')}

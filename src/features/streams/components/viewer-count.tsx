@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { UserIcon } from 'lucide-react'
-import { formatNumber } from '@/lib/format'
+import { formatViewers } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   className?: string
 }
 
-/** Viewer Count (brief C0): person icon + "1.234"; nothing when the count is unknown (null). */
+/** Viewer Count (Components GĐ3 · Chat): red person icon + "1.234" (≥ 1 million: "1,2 Tr"); hidden when unknown. */
 export function ViewerCount({ count, variant = 'plain', className }: Props) {
   const { t } = useTranslation()
   if (typeof count !== 'number') return null
@@ -20,15 +20,15 @@ export function ViewerCount({ count, variant = 'plain', className }: Props) {
     <span
       className={cn(
         'inline-flex items-center gap-1 tabular-nums',
-        variant === 'overlay' ? 'rounded-control bg-overlay px-1.5 py-0.5 text-label-sm font-semibold text-foreground' : 'text-label-sm font-medium text-muted-foreground',
+        variant === 'overlay' ? 'rounded-control bg-overlay py-0.75 pr-2 pl-1.5 text-label-sm font-semibold text-white' : 'text-body-sm font-semibold text-foreground',
         className,
       )}
       title={label}
       aria-label={label}
       data-testid="viewer-count"
     >
-      <UserIcon className="size-3.5" aria-hidden />
-      {formatNumber(count)}
+      <UserIcon className={cn('fill-live text-live', variant === 'overlay' ? 'size-3.75' : 'size-4')} aria-hidden />
+      {formatViewers(count)}
     </span>
   )
 }

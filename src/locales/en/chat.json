@@ -6,7 +6,6 @@
   "skipToChat": "Skip to chat",
   "list": "Chat messages",
   "loading": "Loading messages…",
-  "empty": "No messages yet. Be the first to say hi to the streamer!",
   "newMessages": "New messages ↓",
   "newMessagesCount_one": "{{count}} new message ↓",
   "newMessagesCount_other": "{{count}} new messages ↓",
@@ -14,7 +13,7 @@
   "sampling": "Chat is very fast — showing a sample",
   "deleted": "Message deleted",
   "pending": "Sending",
-  "failed": "Not sent",
+  "failed": "Not sent.",
   "resend": "Resend",
   "banner": {
     "reconnecting": "Reconnecting…",
@@ -28,9 +27,9 @@
     "STREAMER": "Streamer",
     "MODERATOR": "Moderator",
     "VIP": "VIP",
-    "SUB_T1": "Subscriber Tier 1",
-    "SUB_T2": "Subscriber Tier 2",
-    "SUB_T3": "Subscriber Tier 3",
+    "SUB_T1": "Subscriber · Tier 1",
+    "SUB_T2": "Subscriber · Tier 2",
+    "SUB_T3": "Subscriber · Tier 3",
     "VERIFIED": "Verified"
   },
   "mode": {
@@ -64,10 +63,10 @@
   },
   "input": {
     "label": "Chat message",
-    "placeholder": "Send a message…",
+    "placeholder": "Send a message",
     "guest": "Sign in to chat",
     "connecting": "Connecting to chat…",
-    "reconnecting": "Reconnecting…",
+    "reconnecting": "Wait for the connection to send",
     "failed": "Can't connect to chat",
     "unavailable": "Chat is temporarily unavailable",
     "readOnly": "The broadcast has ended — chat is read-only",
@@ -87,7 +86,8 @@
     "sendIn_other": "Send in {{count}} seconds",
     "emotes": "Emotes",
     "tooLong": "Messages can be at most {{max}} characters.",
-    "tooManyLines": "Messages can be at most {{max}} lines."
+    "tooManyLines": "Messages can be at most {{max}} lines.",
+    "closeNotice": "Close notice"
   },
   "error": {
     "slow_one": "Slow mode is on. You can send again in {{count}} second.",
@@ -105,11 +105,14 @@
     "search": "Search emotes",
     "recent": "Recent",
     "global": "Global emotes",
-    "none": "No emotes found",
-    "loadFailed": "Couldn't load emotes"
+    "none": "No matching emotes",
+    "loadFailed": "Couldn't load emotes",
+    "insertHint": "Click to insert into your message"
   },
   "mention": {
-    "label": "Mention suggestions"
+    "label": "Mention suggestions",
+    "title": "Recent chatters",
+    "hint": "↑↓ select · Enter insert · Esc close"
   },
   "settings": {
     "open": "Chat mode settings",
@@ -121,7 +124,7 @@
     "seconds_one": "{{count}} second",
     "seconds_other": "{{count}} seconds",
     "anyFollower": "Any follower",
-    "hint": "Changes apply to the whole room right away.",
+    "hint": "Changes apply to every viewer right away",
     "toast": {
       "slowOn_one": "Slow mode on: {{count}} second",
       "slowOn_other": "Slow mode on: {{count}} seconds",
@@ -131,6 +134,13 @@
       "followersOff": "Followers-only mode off",
       "subsOn": "Subscribers-only mode on",
       "subsOff": "Subscribers-only mode off"
-    }
-  }
+    },
+    "slowDesc": "Everyone can send 1 message per chosen interval.",
+    "followersDesc": "Only people who have followed the channel long enough can chat.",
+    "subsDesc": "Only the channel's subscribers can chat.",
+    "failed": "Couldn't change the chat mode. Try again.",
+    "close": "Close"
+  },
+  "emptyTitle": "No messages yet.",
+  "emptyBody": "Be the first to say hi to the streamer!"
 }

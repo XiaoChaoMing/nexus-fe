@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangleIcon, PanelRightCloseIcon, PanelRightOpenIcon, WifiOffIcon } from 'lucide-react'
-import { Banner, BannerAction } from '@/components/ui/banner'
+import { ClockIcon, HeartIcon, PanelRightCloseIcon, PanelRightOpenIcon, SettingsIcon, StarIcon, MessageSquareOffIcon, WifiOffIcon } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 import { ChatInput } from '@/features/chat/components/chat-input'
 import { ChatSettings } from '@/features/chat/components/chat-settings'
@@ -12,62 +11,71 @@ import { canManageChat } from '@/features/chat/lib/errors'
 import type { ChannelSummary } from '@/features/streams/types'
 import { cn } from '@/lib/utils'
 
-/** Chat/Mode Bar: a thin strip above the input listing the active modes (brief C0). */
+const MODE_ICON = { slow: ClockIcon, followers: HeartIcon, subs: StarIcon } as const
+
+/** Chat/Mode Bar: the active modes above the input, hidden when none is on (Components GĐ3 · Chat). */
 function ModeBar({ room }: { room: ChatRoom }) {
   const { t } = useTranslation('chat')
-  const { chips } = useModeText()
+  const { items } = useModeText()
   const mode = room.state.room?.mode
-  const items = mode ? chips(mode) : []
-  if (items.length === 0) return null
+  const list = mode ? items(mode) : []
+  if (list.length === 0) return null
 
   return (
-    <ul aria-label={t('mode.bar')} className="flex shrink-0 flex-wrap items-center gap-1.5 border-t px-3 pt-2" data-testid="chat-mode-bar">
-      {items.map((label) => (
-        <li key={label} className="rounded-sm bg-accent px-2 py-0.5 text-label-sm font-normal text-muted-foreground">
-          {label}
-        </li>
-      ))}
+    <ul aria-label={t('mode.bar')} className="flex flex-wrap items-center gap-x-3.5 gap-y-1 rounded-control bg-background px-3 py-1.5" data-testid="chat-mode-bar">
+      {list.map(({ kind, label }) => {
+        const Icon = MODE_ICON[kind]
+
+        return (
+          <li key={kind} className="flex items-center gap-1.25 text-label-sm text-muted-foreground">
+            <Icon className="size-3.5" aria-hidden />
+            {label}
+          </li>
+        )
+      })}
     </ul>
   )
 }
 
-/** One banner over the list: kill switch, connection lost or gave up, chat unavailable (brief C2, E01/E02/E18). */
+/** Chat/Reconnect Banner style: amber tint, amber hairline under it. */
+function ChatBanner({ icon, children, action }: { icon: ReactNode; children: ReactNode; action?: ReactNode }) {
+  return (
+    <div className="flex shrink-0 items-center gap-2.5 border-b border-warning bg-warning/15 px-3 py-2.5 text-body-sm font-medium text-foreground" role="status" data-testid="chat-banner">
+      {icon}
+      <span className="min-w-0 flex-1">{children}</span>
+      {action}
+    </div>
+  )
+}
+
+/** One banner under the header: kill switch, reconnecting, gave up, unavailable (03c, E01/E02/E18). */
 function ConnectionBanner({ room }: { room: ChatRoom }) {
   const { t } = useTranslation('chat')
   const { connection, state } = room
+  const retry = (
+    <button type="button" onClick={room.reconnect} className="rounded-control px-2 py-1 text-label-md font-semibold text-primary outline-none hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring max-md:min-h-11">
+      {t('banner.retry')}
+    </button>
+  )
 
   if (state.lock?.kind === 'disabled') {
-    return (
-      <Banner variant="warning" icon={<AlertTriangleIcon aria-hidden />} className="min-h-10 px-3 py-2 text-body-sm" data-testid="chat-banner">
-        {t('banner.disabled')}
-      </Banner>
-    )
+    return <ChatBanner icon={<MessageSquareOffIcon className="size-5 text-warning" aria-hidden />}>{t('banner.disabled')}</ChatBanner>
   }
   if (connection === 'reconnecting') {
-    return (
-      <Banner icon={<Spinner className="size-4" />} className="min-h-10 px-3 py-2 text-body-sm" data-testid="chat-banner">
-        {t('banner.reconnecting')}
-      </Banner>
-    )
+    return <ChatBanner icon={<Spinner className="size-4 text-warning" />}>{t('banner.reconnecting')}</ChatBanner>
   }
   if (connection === 'failed' || (state.phase === 'error' && connection !== 'open')) {
     return (
-      <Banner
-        variant="warning"
-        icon={<WifiOffIcon aria-hidden />}
-        className="min-h-10 px-3 py-2 text-body-sm"
-        action={<BannerAction onClick={room.reconnect}>{t('banner.retry')}</BannerAction>}
-        data-testid="chat-banner"
-      >
+      <ChatBanner icon={<WifiOffIcon className="size-4 text-warning" aria-hidden />} action={retry}>
         {connection === 'failed' ? t('banner.failed') : t('banner.unavailable')}
-      </Banner>
+      </ChatBanner>
     )
   }
   if (connection === 'unavailable') {
     return (
-      <Banner variant="warning" icon={<WifiOffIcon aria-hidden />} className="min-h-10 px-3 py-2 text-body-sm" data-testid="chat-banner">
+      <ChatBanner icon={<WifiOffIcon className="size-4 text-warning" aria-hidden />}>
         {typeof WebSocket === 'undefined' ? t('banner.unsupported') : t('banner.unavailable')}
-      </Banner>
+      </ChatBanner>
     )
   }
 
@@ -112,29 +120,50 @@ function Announcer({ room }: { room: ChatRoom }) {
 type PanelProps = {
   room: ChatRoom
   channel: ChannelSummary | null | undefined
-  /** Tabs (tablet/mobile) have no column header: the settings button sits in a small toolbar. */
-  toolbar?: boolean
+  /** Tablet/mobile tab: no column header, so the settings button sits left of the input (03d mobile). */
+  inTab?: boolean
   className?: string
 }
 
 /** The chat body shared by the desktop column and the tablet/mobile tab. */
-export function ChatPanel({ room, channel, toolbar = false, className }: PanelProps) {
+export function ChatPanel({ room, channel, inTab = false, className }: PanelProps) {
   const mode = room.state.room?.mode
   const manage = canManageChat(room.state.me?.role) && mode
 
   return (
-    <div className={cn('flex min-h-0 flex-1 scroll-mb-[calc(4rem+env(safe-area-inset-bottom))] flex-col md:scroll-mb-4', className)} data-testid="chat-panel" id="chat">
-      {toolbar && manage && (
-        <div className="flex shrink-0 justify-end px-2 pt-1">
-          <ChatSettings channelId={room.channelId} mode={mode} />
-        </div>
-      )}
+    <div className={cn('flex min-h-0 flex-1 flex-col', className)} data-testid="chat-panel" id="chat">
       <ConnectionBanner room={room} />
       <MessageList room={room} />
-      <ModeBar room={room} />
-      <ChatInput room={room} channel={channel} />
+      <ChatInput
+        room={room}
+        channel={channel}
+        modeBar={<ModeBar room={room} />}
+        inTab={inTab}
+        leading={inTab && manage ? <ChatSettings channelId={room.channelId} mode={mode} trigger={<SettingsTrigger large />} /> : null}
+      />
       <Announcer room={room} />
     </div>
+  )
+}
+
+/** Gear of Chat/Header (36 px), or the 44 px button left of the input on mobile. */
+export function SettingsTrigger({ large = false, ...props }: { large?: boolean } & React.ComponentProps<'button'>) {
+  const { t } = useTranslation('chat')
+
+  return (
+    <button
+      type="button"
+      aria-label={t('settings.open')}
+      title={t('settings.open')}
+      data-testid="chat-settings"
+      {...props}
+      className={cn(
+        'grid shrink-0 place-items-center rounded-control text-muted-foreground outline-none hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring',
+        large ? 'size-11 rounded-lg bg-accent text-foreground' : 'size-9',
+      )}
+    >
+      <SettingsIcon className={large ? 'size-5.5' : 'size-5'} aria-hidden />
+    </button>
   )
 }
 
@@ -154,7 +183,7 @@ export function ChatColumn({ room, channel, onCollapse }: { room: ChatRoom; chan
           {t('title')}
         </h2>
         <div className="flex items-center gap-0.5">
-          {canManageChat(room.state.me?.role) && mode && <ChatSettings channelId={room.channelId} mode={mode} />}
+          {canManageChat(room.state.me?.role) && mode && <ChatSettings channelId={room.channelId} mode={mode} trigger={<SettingsTrigger />} />}
           <button
             type="button"
             onClick={onCollapse}

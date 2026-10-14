@@ -27,6 +27,16 @@ export function useModeText() {
       return out
     }
 
+    /** Mode Bar entries with their kind (for the icon). */
+    const items = (mode: ChatMode): { kind: 'slow' | 'followers' | 'subs'; label: string }[] => {
+      const out: { kind: 'slow' | 'followers' | 'subs'; label: string }[] = []
+      if (mode.slowSec > 0) out.push({ kind: 'slow', label: t('mode.slow', { count: mode.slowSec }) })
+      if (mode.followersMin !== null) out.push({ kind: 'followers', label: mode.followersMin === 0 ? t('mode.followersAny') : t('mode.followers', { duration: duration(mode.followersMin) }) })
+      if (mode.subsOnly) out.push({ kind: 'subs', label: t('mode.subs') })
+
+      return out
+    }
+
     /** AF05 system notice: what changed ("Chế độ chậm đã bật: 10 giây"). */
     const changes = (mode: ChatMode, prev: ChatMode | null): string[] => {
       const p = prev ?? { slowSec: 0, followersMin: null, subsOnly: false }
@@ -56,6 +66,6 @@ export function useModeText() {
       return out
     }
 
-    return { duration, chips, changes, toasts }
+    return { duration, chips, items, changes, toasts }
   }, [t])
 }

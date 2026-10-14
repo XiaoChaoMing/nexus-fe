@@ -110,6 +110,7 @@ export function LivePage() {
   useStreamRealtime(streamId, Boolean(stream) && (stream?.status !== 'ENDED' || !stream?.vodId))
   const room = useChatRoom({ streamId, channelId: stream?.channelId ?? '', status: stream?.status, endedOnArrival: endedOnArrival !== false })
   const mentionedWhileCollapsed = useMentionsWhileCollapsed(room.state.mentions, chatCollapsed)
+  const chatTabOpen = useUiStore((s) => s.chatTabOpen)
 
   if (isPending) return <LivePageSkeleton />
   if (error || !stream) return <LiveNotAvailable notFound={isApiError(error) && error.status === 404} />
@@ -152,9 +153,14 @@ export function LivePage() {
           )}
         </div>
 
-        <ChannelInfo stream={stream} now={now} layout={layout} />
+        <ChannelInfo stream={stream} now={now} layout={layout} compact={layout === 'mobile' && chatTabOpen} />
         {!theater && (
-          <AboutTabs channel={stream.channel} chat={wide ? undefined : <ChatPanel room={room} channel={stream.channel} toolbar />} flat={layout === 'mobile'} />
+          <AboutTabs
+            channel={stream.channel}
+            chat={wide ? undefined : <ChatPanel room={room} channel={stream.channel} inTab />}
+            flat={layout === 'mobile'}
+            chatFirst={stream.status !== 'ENDED'}
+          />
         )}
       </div>
 

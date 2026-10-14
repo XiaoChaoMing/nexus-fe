@@ -8,17 +8,24 @@ import { ViewerCount } from '@/features/streams/components/viewer-count'
 import type { Stream } from '@/features/streams/types'
 import { relativeTime } from '@/lib/format'
 
-type Props = { stream: Stream; now: number; layout: 'desktop' | 'tablet' | 'mobile' }
+type Props = {
+  stream: Stream
+  now: number
+  layout: 'desktop' | 'tablet' | 'mobile'
+  /** Mobile with the Chat tab open: only the channel row stays (the title is under "Giới thiệu"). */
+  compact?: boolean
+}
 
 /**
  * Card/Channel Info (03 · Phòng Live): desktop — 64 px avatar, name + status, title, "Bắt đầu N giờ trước",
  * Follow + Share, tags; tablet — 48 px avatar row, title and tags below; mobile — flat rows under the player.
  * Follower counts and the verified mark need GĐ4 data and are not shown.
  */
-export function ChannelInfo({ stream: s, now, layout }: Props) {
+export function ChannelInfo({ stream: s, now, layout, compact = false }: Props) {
   const { t } = useTranslation('watch')
   const name = channelName(s.channel)
   const started = relativeTime(s.startedAt, now)
+  const viewers = s.status !== 'ENDED' && typeof s.viewerCount === 'number' ? <ViewerCount count={s.viewerCount} /> : null
   const tags = <StreamTags language={s.language} tags={s.tags} mature={s.isMature} />
 
   if (layout === 'desktop') {
@@ -34,12 +41,17 @@ export function ChannelInfo({ stream: s, now, layout }: Props) {
                 </span>
               )}
               <StreamStatusBadge status={s.status} />
-              {s.status !== 'ENDED' && <ViewerCount count={s.viewerCount} />}
             </div>
             <h1 className="text-body-lg font-medium break-words text-foreground" title={s.title}>
               {s.title}
             </h1>
-            {s.startedAt && <p className="text-label-sm font-normal text-subtle-foreground">{t('startedAgo', { time: started })}</p>}
+            {(viewers || s.startedAt) && (
+              <p className="flex flex-wrap items-center gap-2 text-label-sm font-normal text-muted-foreground">
+                {viewers}
+                {viewers && s.startedAt && <span className="text-subtle-foreground" aria-hidden>·</span>}
+                {s.startedAt && <span>{t('startedAgo', { time: started })}</span>}
+              </p>
+            )}
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <FollowButton channel={s.channel} />
@@ -63,15 +75,15 @@ export function ChannelInfo({ stream: s, now, layout }: Props) {
               </span>
             )}
             <StreamStatusBadge status={s.status} />
-            {s.status !== 'ENDED' && <ViewerCount count={s.viewerCount} />}
           </div>
           <FollowButton channel={s.channel} className="h-11" />
           <ShareButton className="size-11" />
         </div>
         <h1 className="text-body-lg font-medium break-words text-foreground">{s.title}</h1>
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           {tags}
-          {s.startedAt && <span className="text-label-sm font-normal text-subtle-foreground">· {t('startedAgo', { time: started })}</span>}
+          {viewers}
+          {s.startedAt && <span className="text-label-sm font-normal text-muted-foreground">· {t('startedAgo', { time: started })}</span>}
         </div>
       </section>
     )
@@ -90,10 +102,11 @@ export function ChannelInfo({ stream: s, now, layout }: Props) {
         </div>
         <FollowButton channel={s.channel} className="h-11 px-3.5 text-body-sm" />
       </div>
-      <div className="flex flex-col gap-2.5 px-4 pb-3">
+      {/* With the Chat tab open the title block gives the chat its space; the heading stays for screen readers. */}
+      <div className={compact ? 'sr-only' : 'flex flex-col gap-2.5 px-4 pb-3'}>
         <h1 className="text-body-lg leading-5.5 font-semibold break-words text-foreground">{s.title}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
-          {s.status !== 'ENDED' && <ViewerCount count={s.viewerCount} />}
+          {viewers}
           {tags}
           {s.startedAt && <span className="text-label-sm font-normal text-subtle-foreground">· {started}</span>}
         </div>
