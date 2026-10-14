@@ -58,7 +58,7 @@ export function StudioHeader({ current, channel, now, onEnded }: StudioHeaderPro
         <nav aria-label={t('common:nav.breadcrumb')} className="flex items-center gap-1.5 text-label-sm font-semibold uppercase">
           <span className="text-subtle-foreground">{t('breadcrumb.studio')}</span>
           <ChevronRightIcon className="size-3.5 text-subtle-foreground" aria-hidden />
-          <span className="text-primary">{t('breadcrumb.streamManager')}</span>
+          <span className="text-primary">{t('nav.stream')}</span>
         </nav>
         <div className="flex flex-wrap items-center gap-3.5">
           <h1 className="font-heading text-[28px] leading-tight font-bold">{t('title')}</h1>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { useUpdateSettings } from '@/features/streams/hooks/use-streams'
 import type { StreamSettings } from '@/features/streams/types'
+import { CategoryPicker } from '@/features/studio/components/category-picker'
 import { Panel } from '@/features/studio/components/panel'
 import { TagInput } from '@/features/studio/components/tag-input'
 import { SETTINGS_LIMITS, settingsSchema, STREAM_LANGUAGES, TAG_MAX, TITLE_MAX, type SettingsForm } from '@/features/studio/schemas/settings-schema'
@@ -14,13 +15,13 @@ import { useMessage } from '@/i18n/messages'
 import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-const toForm = (s: StreamSettings): SettingsForm => ({ title: s.title, tags: s.tags, language: s.language || 'vi', isMature: s.isMature })
+const toForm = (s: StreamSettings): SettingsForm => ({ title: s.title, tags: s.tags, language: s.language || 'vi', isMature: s.isMature, categoryId: s.categoryId ?? null })
 
 /** UC-G02: applies to the current broadcast right away, and to the next one. */
 export function SettingsFormCard({ settings, live }: { settings: StreamSettings; live: boolean }) {
   const { t } = useTranslation('studio')
   const msg = useMessage()
-  const ids = { title: useId(), lang: useId(), mature: useId() }
+  const ids = { title: useId(), lang: useId(), mature: useId(), category: useId() }
   const update = useUpdateSettings()
   const { register, handleSubmit, reset, setError, control, formState } = useForm<SettingsForm>({ defaultValues: toForm(settings) })
 
@@ -95,6 +96,14 @@ export function SettingsFormCard({ settings, live }: { settings: StreamSettings;
             />
           )}
         />
+
+        <div className="flex flex-col gap-1.5">
+          <span id={ids.category} className="text-[13px] font-medium text-foreground">
+            {t('category.label')}
+          </span>
+          <Controller control={control} name="categoryId" render={({ field }) => <CategoryPicker value={field.value} onChange={field.onChange} labelId={ids.category} />} />
+          {live && <p className="text-body-sm text-subtle-foreground">{t('category.liveHint')}</p>}
+        </div>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor={ids.lang} className="text-[13px] font-medium text-foreground">

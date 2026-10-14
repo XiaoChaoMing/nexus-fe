@@ -9,7 +9,11 @@ import { LoginPage } from '@/features/auth/components/login-page'
 import { RegisterPage } from '@/features/auth/components/register-page'
 import { GuestOnly, RequireAuth } from '@/features/auth/components/route-guards'
 import { CreatorApplyPage } from '@/features/creator/components/creator-apply-page'
-import { BrowsePage, FollowingPage, SearchPage } from '@/features/discover/discover-pages'
+import { ProfilePage } from '@/features/channels/profile-page'
+import { BrowsePage } from '@/features/discover/browse-page'
+import { CategoryPage } from '@/features/discover/category-page'
+import { FollowingPage } from '@/features/discover/following-page'
+import { SearchPage } from '@/features/search/search-page'
 import { AccountLockedPage, NotFoundPage, ServerErrorPage, SessionExpiredPage } from '@/features/system/pages/system-pages'
 
 // No admin routes here: administration is the separate nexuslive-admin app (VITE_ADMIN_URL).
@@ -34,6 +38,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <HomePage /> },
           { path: '/browse', element: <BrowsePage /> },
+          { path: '/browse/:slug', element: <CategoryPage /> },
           { path: '/following', element: <FollowingPage /> },
           { path: '/search', element: <SearchPage /> },
           { path: '/verify-email', element: <VerifyEmailPage /> },
@@ -52,9 +57,22 @@ export const router = createBrowserRouter([
               { path: '/account', element: <Navigate to="/settings/account" replace /> },
               { path: '/settings/account', element: <SettingsAccountPage /> },
               { path: '/creator/apply', element: <CreatorApplyPage /> },
-              { path: '/studio/stream', lazy: async () => ({ Component: (await import('@/features/studio/stream-page')).StudioStreamPage }) },
+              {
+                path: '/studio',
+                lazy: async () => ({ Component: (await import('@/features/studio/studio-layout')).StudioLayout }),
+                children: [
+                  { index: true, lazy: async () => ({ Component: (await import('@/features/studio/dashboard-page')).StudioDashboardPage }) },
+                  { path: 'stream', lazy: async () => ({ Component: (await import('@/features/studio/stream-page')).StudioStreamPage }) },
+                  { path: 'content', lazy: async () => ({ Component: (await import('@/features/studio/content-page')).StudioContentPage }) },
+                  { path: 'schedule', lazy: async () => ({ Component: (await import('@/features/studio/schedule-page')).StudioSchedulePage }) },
+                  { path: 'channel', lazy: async () => ({ Component: (await import('@/features/studio/channel-page')).StudioChannelPage }) },
+                ],
+              },
             ],
           },
+          // Channel profiles (NXL-D §9.0): every app route above wins over a handle; `/c/` works for any handle.
+          { path: '/c/:handle', element: <ProfilePage /> },
+          { path: '/:handle', element: <ProfilePage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },

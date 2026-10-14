@@ -18,6 +18,8 @@ export const settingsSchema = z.object({
     .max(TAGS_MAX, 'studio:settings.validation.tagsMax'),
   language: z.string().min(2).max(8),
   isMature: z.boolean(),
+  // Absent from forms saved before GĐ4: no category.
+  categoryId: z.string().nullable().default(null),
 })
 
 export type SettingsForm = z.infer<typeof settingsSchema>

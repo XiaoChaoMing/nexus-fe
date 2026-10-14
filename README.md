@@ -24,7 +24,7 @@ Frontend SPA của NexusLive — React + TypeScript + Vite. Kiến trúc và lý
 
 Sao chép `.env.example` thành `.env.local`. Web chỉ gọi một origin (`/v1`, `/hls` qua Vite proxy), nên không cần CORS. Có hai cách nối backend:
 
-**1. Qua Nginx edge (khuyên dùng).** Backend chạy cả stack: `make nxl-up-all` trong `nexuslive-be`. Đặt `VITE_DEV_GATEWAY_URL=http://localhost:8080` — mọi `/v1`, `/hls` và `/emotes` đi qua edge, định tuyến giống hệt khi deploy.
+**1. Qua Nginx edge (khuyên dùng).** Backend chạy cả stack: `make nxl-up-all` trong `nexuslive-be`. Đặt `VITE_DEV_GATEWAY_URL=http://localhost:8080` — mọi `/v1`, `/hls`, `/media` và `/emotes` đi qua edge, định tuyến giống hệt khi deploy.
 
 **2. Gọi thẳng từng service** (khi chạy service ngoài Docker, không đặt `VITE_DEV_GATEWAY_URL`): Vite tự định tuyến theo tiền tố.
 
@@ -33,9 +33,12 @@ Sao chép `.env.example` thành `.env.local`. Web chỉ gọi một origin (`/v1
 | `/v1/studio`, `/v1/streams`, `/v1/vods`, `/v1/me/watch-progress`, `/v1/me/continue-watching` | stream-svc `http://localhost:8092` | `VITE_DEV_STREAM_URL` |
 | `/v1/ws` (WebSocket), `/v1/chat`, `/v1/channels/{id}/chat-settings` | chat-svc `http://localhost:8095` | `VITE_DEV_CHAT_URL` |
 | `/emotes` (ảnh emote toàn cầu, file tĩnh của edge) | Nginx edge `http://localhost:8080` | `VITE_DEV_EMOTES_URL` |
+| `/v1/channels/{id}/vods` (GĐ4) | stream-svc | `VITE_DEV_STREAM_URL` |
+| `/v1/me/following`, `/v1/me/search-history`, `/v1/studio/channel*`, `/v1/studio/schedules*`, `/v1/categories`, `/v1/search`, `/v1/schedules` (GĐ4) | channel-svc | `VITE_DEV_CHANNEL_URL` |
 | `/v1/channels` | channel-svc `http://localhost:8094` | `VITE_DEV_CHANNEL_URL` |
 | `/v1` còn lại (auth) | identity-svc `http://localhost:8090` | `VITE_DEV_IDENTITY_URL` |
 | `/hls` | bucket MinIO `http://localhost:9000/nxl-media` | `VITE_DEV_HLS_URL` |
+| `/media` (ảnh kênh, ảnh danh mục — GĐ4) | bucket MinIO `http://localhost:9000/nxl-public` | `VITE_DEV_MEDIA_URL` |
 
 Backend cho cách 2: `make nxl-media-up` trong `nexuslive-be`.
 
@@ -71,7 +74,7 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 
 ## Đa ngôn ngữ (i18n)
 
-- Chuỗi giao diện nằm trong `src/locales/<ngôn ngữ>/<namespace>.json`. Namespace: `common`, `auth`, `account`, `creator`, `system`, `home`, `watch`, `player`, `studio`, `vod`, `chat`. **Tiếng Việt là nguồn**: thêm key vào `vi` trước, rồi dịch sang `en`.
+- Chuỗi giao diện nằm trong `src/locales/<ngôn ngữ>/<namespace>.json`. Namespace: `common`, `auth`, `account`, `creator`, `system`, `home`, `watch`, `player`, `studio`, `vod`, `chat`, `channel`, `discover`, `search`. **Tiếng Việt là nguồn**: thêm key vào `vi` trước, rồi dịch sang `en`.
 - Dùng trong component: `const { t } = useTranslation('studio')` → `t('key.title')`; khác namespace: `useTranslation(['studio', 'common'])` → `t('common:status.live')`. Key được kiểm tra kiểu (`src/i18n/i18next.d.ts`), gõ sai key là lỗi `pnpm typecheck`.
 - Chèn giá trị: `"Đã phát {{time}}"` → `t('elapsed', { time })`. Số nhiều: `key_one` / `key_other` + `{ count }` (tiếng Việt chỉ cần `_other`). Định dạng đậm/link trong câu: `<Trans components={{ b: <b /> }} />`.
 - Ngoài component (zod schema, ánh xạ mã lỗi API, cảnh báo health…) không gọi `t`: trả về **key** dạng `"ns:path"`, component dịch bằng `useMessage()` (`src/i18n/messages.ts`).
@@ -95,12 +98,14 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 | `src/features/player/` | Player HLS tự viết (hls.js): DVR, chất lượng, phím tắt, trạng thái (frame 03b); store Zustand riêng cho mỗi player |
 | `src/features/streams/` | Gọi stream-svc (TanStack Query, poll trạng thái); phiên xem `POST …/playback` (cổng 18+, `X-NXL-Anon-Id` = `nxl.anonId` cho Khách); chủ đề `stream:{id}` (trạng thái, số người xem, tiêu đề, VOD) ghi vào cache, polling giữ làm dự phòng (30 s khi WebSocket mở) |
 | `src/features/vod/` | Trang xem lại; tiến độ xem: tài khoản qua `PUT /v1/me/watch-progress` (15 s, tạm dừng, rời trang), Khách ở localStorage, gộp lên tài khoản khi đăng nhập |
-| `src/features/watch/`, `studio/`, `home/` | Trang xem live, Studio phát trực tiếp, lưới "Đang phát" |
+| `src/features/watch/`, `studio/`, `home/` | Trang xem live (+ "Sắp diễn ra"), Studio (`/studio`: Tổng quan, Phát trực tiếp, Nội dung, Lịch phát, Kênh), Trang chủ theo khối |
 | `src/features/auth/` | Phiên, modal đăng nhập/đăng ký, `pendingAction`, guard, vai trò (`lib/roles.ts`) |
 | `src/features/account/` | Xác minh email, quên/đặt lại mật khẩu, cài đặt tài khoản, banner xác minh |
 | `src/features/creator/` | Đơn Creator, Creator CTA |
-| `src/features/channels/` | Avatar/tên kênh, nút Follow (GĐ1 chỉ ghi ý định) |
-| `src/features/discover/` | Khám phá, Đang theo dõi, Tìm kiếm (khung GĐ1) |
+| `src/features/channels/` | GĐ4: hồ sơ kênh `/:handle` (4 tab), nút Theo dõi + chuông (lạc quan, hoàn tác khi lỗi), sidebar "Kênh đang theo dõi" (REST + `sidebar:{userId}`), nhắc lịch, luật handle / từ khóa dành riêng (`lib/handle.ts`) |
+| `src/features/categories/` | `GET /v1/categories` (tên / slug ghép vào thẻ stream vì stream-svc chỉ trả `category: {id}`) |
+| `src/features/discover/` | Khám phá (nhóm, Danh mục / Kênh live, sắp xếp, ngôn ngữ, tag — trạng thái trong URL), trang danh mục `/browse/:slug`, Đang theo dõi, thẻ VOD / danh mục / kênh |
+| `src/features/search/` | Bảng tìm kiếm Ctrl+K (gợi ý theo nhóm, ↑↓ Enter, lịch sử: server cho tài khoản, localStorage cho Khách, gộp lên server khi đăng nhập), trang `/search?q=` |
 | `src/features/system/` | 404, 500, phiên hết hạn, tài khoản bị khóa, banner offline |
 | `src/stores/` | State UI dùng chung toàn app |
 | `src/i18n/`, `src/locales/` | Khởi tạo i18next, kiểu key, chuỗi giao diện theo ngôn ngữ |
@@ -127,7 +132,8 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 | Hành động | Guest | Viewer | Creator |
 | --- | --- | --- | --- |
 | **Phát trực tiếp** (top bar) | modal → sau đăng nhập đi tiếp như cột bên | `/creator/apply` | `/studio/stream` |
-| **Follow** (trang xem) | modal → quay lại trang xem | ghi ý định (localStorage `nxl.followIntents`) + toast "sẽ có ở GĐ4", không gọi API | như Viewer |
+| **Theo dõi** (hồ sơ, trang xem, thẻ kênh) | modal "Đăng nhập để theo dõi kênh" → theo dõi thật sau khi đăng nhập | `POST /v1/channels/{id}/follow`, đổi ngay, lỗi thì trả về + toast | kênh của mình: "Chỉnh sửa kênh" |
+| **Đặt nhắc** (lịch, "Sắp diễn ra") | modal "Đăng nhập để đặt nhắc" → đặt nhắc sau khi đăng nhập | `POST /v1/schedules/{id}/reminders` | như Viewer |
 | **Đang theo dõi** (sidebar, bottom nav) | trang giới thiệu + modal | trạng thái rỗng tới GĐ4 | như Viewer |
 | **Hồ sơ** (bottom nav) | modal → `/settings/account` | `/settings/account` | như Viewer |
 | **Creator CTA** (cuối trang chủ, ẩn 30 ngày khi bấm ×) | modal (tab Đăng ký) | `/creator/apply` | không hiện |
@@ -152,7 +158,12 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 | `/settings/account` | Hồ sơ (tên hiển thị, ngày sinh nếu chưa có, ngôn ngữ, múi giờ), email, đổi mật khẩu | `PATCH /v1/me`, `POST /v1/me/password` |
 | `/creator/apply` | Đơn Creator: form, đang chờ (hủy), bị từ chối (lý do + nộp lại), đã duyệt (chờ tạo kênh → Studio) | `GET /v1/creator-applications/me`, `POST /v1/creator-applications`, `DELETE /v1/creator-applications/{id}`, `GET /v1/me` |
 | `/studio/stream` | Studio; `403 NOT_CREATOR` → lời mời nộp đơn (hoặc "kênh đang được chuẩn bị" nếu vừa được duyệt) | `/v1/studio/*` |
-| `/browse`, `/following`, `/search` | Khung GĐ1 (Khám phá = danh sách live) | `GET /v1/streams` |
+| `/browse` | Khám phá: pill nhóm, Danh mục / Kênh live, sắp xếp, ngôn ngữ, lọc tag (`?group=&view=&sort=&lang=&tags=`) | `GET /v1/categories`, `GET /v1/streams?category=&language=&tags=&sort=&cursor=` |
+| `/browse/:slug` | Trang danh mục, tab Live / Video (`?tab=videos`) | `GET /v1/categories/{slug}`, `GET /v1/streams?category=`, `GET /v1/vods?category=` |
+| `/following` | Đang theo dõi, tab Live / Tất cả (`?tab=all`); Khách thấy lời mời đăng nhập | `GET /v1/me/following?status=live\|all` |
+| `/search`, `/search?q=&type=` | Không `q`: màn tìm kiếm (tab Tìm kiếm trên mobile); có `q`: kết quả theo nhóm | `GET /v1/search/suggest`, `GET /v1/search`, `/v1/me/search-history` |
+| `/:handle`, `/c/:handle` | Hồ sơ kênh: Trang chủ · Video · Giới thiệu · Lịch (`?tab=`). Route của app luôn thắng handle; từ khóa dành riêng (NXL-D §9.0) không bao giờ là kênh | `GET /v1/channels/{handle}`, `/v1/channels/{id}/vods`, `/v1/channels/{id}/schedule` |
+| `/studio`, `/studio/content`, `/studio/schedule`, `/studio/channel` | Studio GĐ4: Tổng quan, Nội dung (ẩn/hiện, đổi tên, xóa VOD), Lịch phát (một lần / hằng tuần, dời, hủy), Kênh (ảnh, tên, handle 30 ngày/lần, bio, liên kết) | `/v1/studio/dashboard`, `/v1/studio/vods`, `/v1/studio/schedules`, `/v1/studio/channel*` |
 | `/session-expired`, `/account-locked`, `*` (404), lỗi route (500 + Thử lại) | Trang hệ thống | — |
 
 `/account` cũ chuyển sang `/settings/account`.
@@ -182,6 +193,8 @@ Tài khoản seed (identity `NXL_ENV=dev`, `IDENTITY_DEV_SEED=true`), mật kh�
 | `e2e/m1.spec.ts` | Mốc M1: Guest bấm Phát trực tiếp → đăng ký trong modal (tick điều khoản) → đọc email xác minh từ Mailpit API (`http://localhost:8025`, `E2E_MAILPIT_URL`) → xác minh → nộp đơn Creator → admin seed duyệt qua API → Studio mở, tên kênh hiện → tạo key (+ phát và kiểm tra tên kênh trên trang xem nếu có ffmpeg) |
 | `e2e/guest-modal.spec.ts` | Modal + `pendingAction` chạy đúng một lần; `returnTo` ngoài bị bỏ; mobile: bottom nav 5 mục, Hồ sơ của Guest mở bottom sheet |
 | `e2e/livestream.spec.ts` | Creator (tài khoản seed) phát, viewer xem, gián đoạn, kết thúc, xem lại |
+| `e2e/m4-discovery.spec.ts` | GĐ4 Discovery: Creator phát trong "Liên Minh Huyền Thoại" → Khách Ctrl+K gõ "lien minh" → danh mục → live → Theo dõi (modal) → sidebar thấy kênh live → kết thúc → offline; trạng thái URL của `/search`, `/browse` |
+| `e2e/m4-creator.spec.ts` | GĐ4 Creator: Studio → Kênh (ảnh đại diện + bio) → tạo lịch vài phút tới → người xem đặt nhắc → "Sắp diễn ra" → Go Live gắn đúng `streamId`, trang tự chuyển → VOD → ẩn trong Nội dung → biến khỏi hồ sơ, URL trực tiếp 404 |
 
 - Rate limit của cổng vào (auth 10/phút/IP) có thể chặn khi chạy lặp nhiều lần liền; chờ một phút hoặc nới `NXL_EDGE_AUTH_RATE` khi dev.
 - Chromium tải kèm Playwright **không giải mã H.264**, nên phần kiểm tra phát hình (chất lượng, DVR) tự bỏ qua.
