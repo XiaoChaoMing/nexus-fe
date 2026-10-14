@@ -15,6 +15,9 @@ import { useStream } from '@/features/streams/hooks/use-streams'
 import { AboutTabs } from '@/features/watch/components/about-tabs'
 import { ChannelInfo } from '@/features/watch/components/channel-info'
 import { LiveEndedContent } from '@/features/watch/components/ended-content'
+import { ChatNotOpen, UpcomingInfo, UpcomingStage } from '@/features/watch/components/upcoming'
+import { useOccurrence } from '@/features/watch/hooks/use-occurrence'
+import { isRegularStream, type Stream, type StreamDetail } from '@/features/streams/types'
 import { MEDIA, useMediaQuery } from '@/hooks/use-media-query'
 import { useLocalFlag } from '@/hooks/use-local-flag'
 import { useNow } from '@/hooks/use-now'
@@ -75,6 +78,27 @@ function LiveNotAvailable({ notFound }: { notFound: boolean }) {
   )
 }
 
+/** 05 · Sắp diễn ra: stage + info; chat column (desktop) or tab (tablet/mobile) stays closed until the start. */
+function UpcomingPage({ stream, wide, tablet, now: slowNow }: { stream: StreamDetail; wide: boolean; tablet: boolean; now: number }) {
+  // The countdown ticks every second; the rest of the page keeps the slower clock.
+  const now = useNow(1000)
+  const occurrence = useOccurrence(stream)
+  const layout = wide ? 'desktop' : tablet ? 'tablet' : 'mobile'
+
+  return (
+    <div className="mx-auto flex w-full max-w-[1600px] gap-6 md:p-4 xl:p-6" data-now={slowNow}>
+      <div className="flex min-w-0 flex-1 flex-col md:gap-4 xl:gap-5">
+        <div className="bg-black max-md:sticky max-md:top-0 max-md:z-20 md:bg-transparent">
+          <UpcomingStage stream={stream} occurrence={occurrence} now={now} />
+        </div>
+        <UpcomingInfo stream={stream} occurrence={occurrence} now={now} />
+        <AboutTabs channel={stream.channel} chat={wide ? undefined : <ChatNotOpen />} flat={layout === 'mobile'} chatFirst={false} />
+      </div>
+      {wide && <ChatNotOpen column />}
+    </div>
+  )
+}
+
 /** Mentions of the viewer while the column was collapsed: a dot on "Mở chat" (NXL-B AF04). */
 function useMentionsWhileCollapsed(mentions: number, collapsed: boolean): boolean {
   const [seen, setSeen] = useState(mentions)
@@ -103,17 +127,26 @@ export function LivePage() {
   const [endedOnArrival, setEndedOnArrival] = useState<boolean | null>(null)
   if (stream && endedOnArrival === null) setEndedOnArrival(stream.status === 'ENDED')
   const showPlayer = endedOnArrival === false
+  // A scheduled broadcast (NXL-A §7A): the Upcoming stage until `stream:` says LIVE, then the player takes over
+  // on the same URL without a reload (AF04).
+  const upcoming = stream?.status === 'SCHEDULED' || stream?.status === 'CANCELLED'
 
-  const playback = usePlayback('stream', streamId, showPlayer)
+  const playback = usePlayback('stream', streamId, showPlayer && !upcoming)
 
-  // Realtime while there is something to hear: on air, or ended and still waiting for the replay.
-  useStreamRealtime(streamId, Boolean(stream) && (stream?.status !== 'ENDED' || !stream?.vodId))
-  const room = useChatRoom({ streamId, channelId: stream?.channelId ?? '', status: stream?.status, endedOnArrival: endedOnArrival !== false })
+  // Realtime while there is something to hear: upcoming, on air, or ended and still waiting for the replay.
+  useStreamRealtime(streamId, Boolean(stream) && stream?.status !== 'CANCELLED' && (stream?.status !== 'ENDED' || !stream?.vodId))
+  const room = useChatRoom({
+    streamId,
+    channelId: stream?.channelId ?? '',
+    status: upcoming ? undefined : (stream?.status as Stream['status'] | undefined),
+    endedOnArrival: endedOnArrival !== false || upcoming,
+  })
   const mentionedWhileCollapsed = useMentionsWhileCollapsed(room.state.mentions, chatCollapsed)
   const chatTabOpen = useUiStore((s) => s.chatTabOpen)
 
   if (isPending) return <LivePageSkeleton />
   if (error || !stream) return <LiveNotAvailable notFound={isApiError(error) && error.status === 404} />
+  if (!isRegularStream(stream)) return <UpcomingPage stream={stream} wide={wide} tablet={tablet} now={now} />
 
   const layout = wide ? 'desktop' : tablet ? 'tablet' : 'mobile'
   const decision = playback.decision
