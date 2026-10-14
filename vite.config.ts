@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
         '/v1/ws': { target: chat, changeOrigin: true, ws: true },
         '/v1/chat': { target: chat, changeOrigin: true },
         '^/v1/channels/[^/]+/chat-settings': { target: chat, changeOrigin: true },
-        // Global emote images (/emotes/<code>.svg) are static files of the Nginx edge.
+        // Global emote images (/emotes/<code>.webp) are static files of the Nginx edge.
         '/emotes': { target: emotes, changeOrigin: true },
         '/v1/me/watch-progress': { target: stream, changeOrigin: true },
         '/v1/me/continue-watching': { target: stream, changeOrigin: true },

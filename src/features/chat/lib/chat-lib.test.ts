@@ -151,7 +151,7 @@ describe('parsing untrusted payloads', () => {
       body: 'hi Kappa @minh',
       fragments: [
         { type: 'text', text: 'hi ' },
-        { type: 'emote', text: 'Kappa', emote: { id: 'e1', code: 'Kappa', imageUrl: '/emotes/kappa.svg' } },
+        { type: 'emote', text: 'Kappa', emote: { id: 'e1', code: 'Kappa', imageUrl: '/emotes/kappa.webp' } },
         { type: 'emote', text: 'Evil', emote: { id: 'e2', code: 'Evil', imageUrl: 'javascript:alert(1)' } },
         { type: 'mention', text: '@minh', userId: 'u2' },
         { type: 'html', text: '<b>x</b>' },
@@ -201,7 +201,7 @@ describe('parsing untrusted payloads', () => {
   })
 
   it('accepts only relative and http(s) image URLs', () => {
-    expect(safeImageUrl('/emotes/a.svg')).toBe('/emotes/a.svg')
+    expect(safeImageUrl('/emotes/a.webp')).toBe('/emotes/a.webp')
     expect(safeImageUrl('https://cdn/x.png')).toBe('https://cdn/x.png')
     expect(safeImageUrl('//evil/x.png')).toBeNull()
     expect(safeImageUrl('data:image/svg+xml,<svg>')).toBeNull()
