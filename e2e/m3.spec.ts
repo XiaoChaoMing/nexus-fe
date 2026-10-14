@@ -67,7 +67,8 @@ class CreatorApi {
 
   /** Leaves the seed channel's chat as other specs expect it. */
   async resetChat(channelId: string) {
-    await this.api.put(`/v1/channels/${channelId}/chat-settings`, { headers: this.headers, data: { slowSec: 0, followersMin: null, subsOnly: false } })
+    const res = await this.api.put(`/v1/channels/${channelId}/chat-settings`, { headers: this.headers, data: { slowSec: 0, followersMin: null, subsOnly: false } })
+    expect(res.status(), `reset chat settings: ${await res.text()}`).toBe(200)
   }
 
   async dispose() {
@@ -175,6 +176,10 @@ test('M3: realtime chat between a viewer and a guest, login gate, slow mode, rea
     await expect(a.getByTestId('chat-mode-bar')).toContainText('Chậm 10 giây')
     await expect(b.getByText('Chế độ chậm đã bật: 10 giây')).toBeVisible()
 
+    // A second tab of A is opened now: opening a page can take longer than the slow-mode window.
+    const a2 = await aCtx.newPage()
+    await openRoom(a2, stream.id)
+
     // A's first message goes through and starts the countdown on the send button; the next one waits.
     const first = `Slow 1 ${Date.now().toString(36)}`
     await send(a, first)
@@ -189,8 +194,6 @@ test('M3: realtime chat between a viewer and a guest, login gate, slow mode, rea
 
     // The server enforces it too: another tab of A has no local countdown, yet its message is refused (or the
     // snapshot already says to wait) and shows the countdown; nothing reaches the room.
-    const a2 = await aCtx.newPage()
-    await openRoom(a2, stream.id)
     const third = `Slow 3 ${Date.now().toString(36)}`
     await send(a2, third)
     await expect(a2.getByTestId('chat-send')).toHaveText(/^\d+$/)
