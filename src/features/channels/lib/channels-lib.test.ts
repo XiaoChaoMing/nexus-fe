@@ -59,6 +59,7 @@ describe('profile routes and reserved words', () => {
     expect(handleFromSegment('Kaelen')).toBe('kaelen')
     expect(handleFromSegment('@maianh.vlog')).toBe('maianh.vlog')
     expect(handleFromSegment('creator_01')).toBe('creator_01')
+    expect(handleFromSegment('creator', { allowReserved: true })).toBe('creator')
   })
 
   it('links reserved handles through /c/', () => {

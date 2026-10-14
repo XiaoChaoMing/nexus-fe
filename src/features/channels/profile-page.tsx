@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams, useSearchParams } from 'react-router'
+import { Link, useLocation, useParams, useSearchParams } from 'react-router'
 import {
   AtSignIcon,
   BadgeCheckIcon,
@@ -408,12 +408,13 @@ function ProfileNotFound() {
 /**
  * /:handle and /c/:handle — 04 · Trang Creator: header (banner 16:5, avatar, follow + bell, "Đang phát" link) and
  * the tabs Trang chủ · Video · Giới thiệu · Lịch (`?tab=`, switching does not reload). App routes win over
- * handles; reserved words never resolve to a channel.
+ * handles; reserved words resolve to a channel only under `/c/`.
  */
 export function ProfilePage() {
   const { t } = useTranslation('channel')
   const { handle: segment } = useParams()
-  const handle = handleFromSegment(segment)
+  const { pathname } = useLocation()
+  const handle = handleFromSegment(segment, { allowReserved: pathname.startsWith('/c/') })
   const [sp, setSp] = useSearchParams()
   const raw = sp.get('tab')
   const tab: Tab = (TABS as readonly string[]).includes(raw ?? '') ? (raw as Tab) : 'home'

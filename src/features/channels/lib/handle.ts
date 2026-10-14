@@ -23,8 +23,11 @@ export function isReservedHandle(handle: string): boolean {
   return RESERVED_HANDLES.has(handle.toLowerCase())
 }
 
-/** The handle a `/:handle` segment names, lower-cased; null when the segment cannot be a channel. */
-export function handleFromSegment(segment: string | undefined): string | null {
+/**
+ * The handle a `/:handle` segment names, lower-cased; null when the segment cannot be a channel. Under `/c/` a
+ * reserved word is still a handle: channels created before the list existed (the dev seed "creator") keep theirs.
+ */
+export function handleFromSegment(segment: string | undefined, { allowReserved = false } = {}): string | null {
   if (!segment) return null
   let value: string
   try {
@@ -32,7 +35,7 @@ export function handleFromSegment(segment: string | undefined): string | null {
   } catch {
     return null
   }
-  if (!ROUTE_HANDLE.test(value) || isReservedHandle(value)) return null
+  if (!ROUTE_HANDLE.test(value) || (!allowReserved && isReservedHandle(value))) return null
 
   return value.toLowerCase()
 }

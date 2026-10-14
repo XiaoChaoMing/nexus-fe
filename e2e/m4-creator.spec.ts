@@ -41,7 +41,7 @@ test('M4 creator: profile + avatar → schedule → reminder → Upcoming → go
     await expect(studio.getByText('Đã lưu hồ sơ kênh')).toBeVisible()
 
     // The profile shows the new bio.
-    await studio.goto(`/${channel.handle}?tab=about`)
+    await studio.goto(`/c/${channel.handle}?tab=about`)
     await expect(studio.getByTestId('channel-bio')).toHaveText(bio)
 
     // 2. Studio → Lịch phát: a one-off broadcast ~4 minutes ahead (well inside the −30 / +60 min Go Live window).
@@ -75,7 +75,7 @@ test('M4 creator: profile + avatar → schedule → reminder → Upcoming → go
     await api.dispose()
     const viewerCtx = await signedIn(browser, viewer.username, viewer.password)
     const page = await viewerCtx.newPage()
-    await page.goto(`/${channel.handle}?tab=schedule`)
+    await page.goto(`/c/${channel.handle}?tab=schedule`)
     const card = page.getByTestId('schedule-card').filter({ hasText: title })
     await expect(card).toBeVisible()
     await card.getByTestId('remind-button').click()
@@ -118,7 +118,7 @@ test('M4 creator: profile + avatar → schedule → reminder → Upcoming → go
     await expect(studio.getByText('Đã ẩn bản xem lại. Người xem không còn thấy video này.')).toBeVisible()
 
     // 7. Gone from the profile (Video tab) and 404 for anyone but the owner.
-    await page.goto(`/${channel.handle}?tab=videos`)
+    await page.goto(`/c/${channel.handle}?tab=videos`)
     await expect(page.locator(`a[href="/vod/${vodId}"]`)).toHaveCount(0)
     const guest = await apiContext()
     expect((await guest.get(`/v1/vods/${vodId}`)).status()).toBe(404)
