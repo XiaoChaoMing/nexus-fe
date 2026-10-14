@@ -10,6 +10,7 @@ import { channelName } from '@/features/channels/lib/channel-display'
 import { thumbSrc } from '@/features/home/lib/featured'
 import { Thumbnail } from '@/features/home/components/thumbnail'
 import { StreamStatusBadge } from '@/features/streams/components/stream-meta'
+import { ViewerCount } from '@/features/streams/components/viewer-count'
 import type { Stream } from '@/features/streams/types'
 import { languageName, relativeTime } from '@/lib/format'
 
@@ -20,7 +21,7 @@ function HeroChip({ children }: { children: React.ReactNode }) {
 
 /**
  * Featured broadcast (01 · Trang chủ): full-bleed picture with the copy on the left from 768 px; a stacked card
- * on mobile. The viewer count, category and "Đối tác" wait for GĐ3/GĐ4.
+ * on mobile, with the viewer count when the server knows it. Category and "Đối tác" wait for GĐ4.
  */
 export function HomeHero({ stream: s, now }: { stream: Stream; now: number }) {
   const { t } = useTranslation(['home', 'common'])
@@ -37,14 +38,18 @@ export function HomeHero({ stream: s, now }: { stream: Stream; now: number }) {
         <Thumbnail src={thumbSrc(s.thumbnailUrl, now)} className="size-full" eager />
         <div className="absolute inset-0 hidden bg-linear-to-r from-background/95 via-background/60 to-background/0 md:block" aria-hidden />
         <div className="absolute inset-0 hidden bg-linear-to-t from-background/90 via-background/0 to-background/0 md:block" aria-hidden />
-        <StreamStatusBadge status={s.status} className="absolute top-2.5 left-2.5 md:hidden" />
+        <span className="absolute top-2.5 left-2.5 flex items-center gap-1.5 md:hidden">
+          <StreamStatusBadge status={s.status} />
+          <ViewerCount count={s.viewerCount} variant="overlay" />
+        </span>
       </div>
 
-      <div className="relative hidden justify-end md:flex">
+      <div className="relative hidden justify-end gap-2 md:flex">
         <span className="inline-flex items-center gap-2 rounded-lg border bg-overlay px-3 py-1.75 text-label-sm font-bold tracking-wide text-live">
           <span className="size-1.75 rounded-full bg-live" aria-hidden />
           {s.status === 'LIVE' ? t('home:hero.liveNow') : t('common:status.interrupted')}
         </span>
+        <ViewerCount count={s.viewerCount} variant="overlay" className="rounded-lg border px-3 py-1.75" />
       </div>
 
       <div className="relative flex flex-col gap-3 p-4 md:max-w-180 md:gap-4 md:p-0">

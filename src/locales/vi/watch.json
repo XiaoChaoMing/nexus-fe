@@ -5,13 +5,6 @@
   "replay": "Xem lại",
   "noReplay": "Buổi phát này không có bản xem lại.",
   "replayProcessing": "Bản xem lại đang được xử lý…",
-  "chat": {
-    "title": "Chat",
-    "comingSoon": "Chat sẽ sớm có mặt",
-    "comingSoonBody": "Bạn sẽ trò chuyện cùng streamer và người xem khác tại đây.",
-    "collapse": "Thu gọn chat",
-    "expand": "Mở chat"
-  },
   "follow": "Theo dõi",
   "notFoundBody": "Liên kết có thể sai hoặc buổi phát đã bị xóa.",
   "startedAgo": "Bắt đầu {{time}}",

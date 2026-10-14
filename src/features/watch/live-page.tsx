@@ -6,17 +6,20 @@ import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { channelName } from '@/features/channels/lib/channel-display'
+import { ChatColumn, ChatPanel, ChatRail } from '@/features/chat/components/chat-panel'
+import { useChatRoom } from '@/features/chat/hooks/use-chat-room'
 import { HlsPlayer } from '@/features/player/components/hls-player'
 import { usePlayback } from '@/features/streams/hooks/use-playback'
+import { useStreamRealtime } from '@/features/streams/hooks/use-stream-realtime'
 import { useStream } from '@/features/streams/hooks/use-streams'
 import { AboutTabs } from '@/features/watch/components/about-tabs'
 import { ChannelInfo } from '@/features/watch/components/channel-info'
-import { ChatColumn, ChatRail } from '@/features/watch/components/chat-placeholder'
 import { LiveEndedContent } from '@/features/watch/components/ended-content'
 import { MEDIA, useMediaQuery } from '@/hooks/use-media-query'
 import { useLocalFlag } from '@/hooks/use-local-flag'
 import { useNow } from '@/hooks/use-now'
 import { isApiError } from '@/lib/api-error'
+import { useRealtimeStatus } from '@/lib/realtime'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/ui-store'
 
@@ -72,13 +75,23 @@ function LiveNotAvailable({ notFound }: { notFound: boolean }) {
   )
 }
 
+/** Mentions of the viewer while the column was collapsed: a dot on "Mở chat" (NXL-B AF04). */
+function useMentionsWhileCollapsed(mentions: number, collapsed: boolean): boolean {
+  const [seen, setSeen] = useState(mentions)
+  if (!collapsed && seen !== mentions) setSeen(mentions)
+
+  return collapsed && mentions > seen
+}
+
 /**
- * /live/:streamId — 03 · Phòng Live (R3): player, channel card, "Giới thiệu" tab and the chat column kept for
- * GĐ3 (collapsible, remembered). Tablet: chat becomes a tab; mobile: the player sticks to the top.
+ * /live/:streamId — 03 · Phòng Live (R3): player, channel card, "Giới thiệu" tab and the chat column (GĐ3,
+ * collapsible, remembered). Tablet/mobile: chat becomes a tab; mobile: the player sticks to the top.
+ * Status, title, VOD and the viewer count come from `stream:{id}` (polling stays as the fallback).
  */
 export function LivePage() {
   const { streamId = '' } = useParams()
-  const { data: stream, error, isPending } = useStream(streamId)
+  const wsOpen = useRealtimeStatus() === 'open'
+  const { data: stream, error, isPending } = useStream(streamId, { realtime: wsOpen })
   const [theater, setTheater] = useTheater()
   const [chatCollapsed, setChatCollapsed] = useLocalFlag(CHAT_COLLAPSED_KEY)
   const wide = useMediaQuery(MEDIA.xl)
@@ -92,6 +105,11 @@ export function LivePage() {
   const showPlayer = endedOnArrival === false
 
   const playback = usePlayback('stream', streamId, showPlayer)
+
+  // Realtime while there is something to hear: on air, or ended and still waiting for the replay.
+  useStreamRealtime(streamId, Boolean(stream) && (stream?.status !== 'ENDED' || !stream?.vodId))
+  const room = useChatRoom({ streamId, channelId: stream?.channelId ?? '', status: stream?.status, endedOnArrival: endedOnArrival !== false })
+  const mentionedWhileCollapsed = useMentionsWhileCollapsed(room.state.mentions, chatCollapsed)
 
   if (isPending) return <LivePageSkeleton />
   if (error || !stream) return <LiveNotAvailable notFound={isApiError(error) && error.status === 404} />
@@ -119,6 +137,7 @@ export function LivePage() {
               onTheaterChange={setTheater}
               endedContent={<LiveEndedContent stream={stream} now={now} />}
               heading={{ title: name ?? stream.title, subtitle: name ? stream.title : undefined }}
+              viewerCount={stream.viewerCount}
               className="max-md:rounded-none max-md:border-0"
             />
           ) : (
@@ -133,10 +152,18 @@ export function LivePage() {
         </div>
 
         <ChannelInfo stream={stream} now={now} layout={layout} />
-        {!theater && <AboutTabs channel={stream.channel} withChat={!wide} flat={layout === 'mobile'} />}
+        {!theater && (
+          <AboutTabs channel={stream.channel} chat={wide ? undefined : <ChatPanel room={room} channel={stream.channel} toolbar />} flat={layout === 'mobile'} />
+        )}
       </div>
 
-      {wide && !theater && (chatCollapsed ? <ChatRail onExpand={() => setChatCollapsed(false)} /> : <ChatColumn onCollapse={() => setChatCollapsed(true)} />)}
+      {wide &&
+        !theater &&
+        (chatCollapsed ? (
+          <ChatRail onExpand={() => setChatCollapsed(false)} mentioned={mentionedWhileCollapsed} />
+        ) : (
+          <ChatColumn room={room} channel={stream.channel} onCollapse={() => setChatCollapsed(true)} />
+        ))}
     </div>
   )
 }

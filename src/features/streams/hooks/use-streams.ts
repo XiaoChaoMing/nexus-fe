@@ -16,6 +16,8 @@ export const streamKeys = {
 
 const LIVE_LIST_REFRESH = 15_000
 const STREAM_POLL = 5_000
+/** With `stream:{id}` pushing status/title/VOD (GĐ3), polling is only a safety net. */
+const STREAM_POLL_REALTIME = 30_000
 const STUDIO_POLL = 3_000
 const VOD_WAIT_MS = 2 * 60_000
 
@@ -29,8 +31,11 @@ export function useLiveStreams() {
   })
 }
 
-/** Polls while the stream is on air, and while an ended stream still waits for its VOD. */
-export function useStream(id: string) {
+/**
+ * Polls while the stream is on air, and while an ended stream still waits for its VOD. `realtime`: the page
+ * receives `stream:{id}` updates, so polling slows down (it stays as the fallback when the socket is down).
+ */
+export function useStream(id: string, { realtime = false }: { realtime?: boolean } = {}) {
   return useQuery({
     queryKey: streamKeys.stream(id),
     queryFn: () => streamsApi.get(id),
@@ -39,11 +44,12 @@ export function useStream(id: string) {
       const s = q.state.data
       if (!s) return false
 
-      if (isOnAir(s.status)) return STREAM_POLL
+      const every = realtime ? STREAM_POLL_REALTIME : STREAM_POLL
+      if (isOnAir(s.status)) return every
       // Ended: keep asking for the VOD id for a while, then give up (nothing was recorded).
       const waiting = !s.vodId && s.endedAt !== null && Date.now() - new Date(s.endedAt).getTime() < VOD_WAIT_MS
 
-      return waiting ? STREAM_POLL : false
+      return waiting ? every : false
     },
   })
 }

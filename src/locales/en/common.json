@@ -86,5 +86,7 @@
     "INVALID_STATE": "This action is no longer valid. Reload to see the current state.",
     "NOT_CREATOR": "You need a Creator channel to use the Studio.",
     "fallback": "Something went wrong, please try again."
-  }
+  },
+  "viewers_one": "{{count}} viewer",
+  "viewers_other": "{{count}} viewers"
 }

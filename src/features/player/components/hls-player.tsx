@@ -21,6 +21,7 @@ import { createPlayerStore, PlayerStoreContext } from '@/features/player/stores/
 import { PlayerOverlay } from '@/features/player/components/player-overlay'
 import { QualityMenu } from '@/features/player/components/quality-menu'
 import { SeekBar } from '@/features/player/components/seek-bar'
+import { ViewerCount } from '@/features/streams/components/viewer-count'
 import type { StreamStatus } from '@/features/streams/types'
 import { cn } from '@/lib/utils'
 
@@ -53,6 +54,8 @@ export type HlsPlayerProps = {
   endedContent?: ReactNode
   /** Shown on top of the video in fullscreen (mobile landscape): channel name and stream title. */
   heading?: { title: string; subtitle?: string }
+  /** Live only: viewers right now, next to the "TRỰC TIẾP" badge (null/undefined = hidden). */
+  viewerCount?: number | null
   className?: string
 }
 
@@ -105,6 +108,7 @@ export function HlsPlayer({
   onPause,
   endedContent,
   heading,
+  viewerCount,
   className,
 }: HlsPlayerProps) {
   const { t } = useTranslation('player')
@@ -285,7 +289,12 @@ export function HlsPlayer({
           onDoubleClick={actions.toggleFullscreen}
         />
 
-        {liveBadge && !fullscreenHeading && <LiveBadge className="pointer-events-none absolute top-2 left-2 md:top-4 md:left-4" />}
+        {liveBadge && !fullscreenHeading && (
+          <span className="pointer-events-none absolute top-2 left-2 flex items-center gap-1.5 md:top-4 md:left-4">
+            <LiveBadge />
+            <ViewerCount count={viewerCount} variant="overlay" className="md:py-1" />
+          </span>
+        )}
 
         <PlayerOverlay
           state={view}
@@ -309,6 +318,7 @@ export function HlsPlayer({
               {heading.subtitle && <span className="truncate text-body-sm text-muted-foreground">{heading.subtitle}</span>}
             </div>
             {liveBadge && <LiveBadge />}
+            {liveBadge && <ViewerCount count={viewerCount} variant="overlay" />}
           </div>
         )}
 

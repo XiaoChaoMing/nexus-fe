@@ -25,6 +25,8 @@ export type Stream = {
   thumbnailUrl: string
   vodId: string | null
   channel?: ChannelSummary | null
+  /** Viewers right now (TSD GĐ3 §4 S4), null when unknown; absent from servers before GĐ3. */
+  viewerCount?: number | null
 }
 
 export type StreamList = {

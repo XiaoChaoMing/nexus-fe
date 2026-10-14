@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   const identity = env.VITE_DEV_IDENTITY_URL || 'http://localhost:8090'
   const stream = env.VITE_DEV_STREAM_URL || 'http://localhost:8092'
   const channel = env.VITE_DEV_CHANNEL_URL || 'http://localhost:8094'
+  const chat = env.VITE_DEV_CHAT_URL || 'http://localhost:8095'
   const hls = new URL(env.VITE_DEV_HLS_URL || 'http://localhost:9000/nxl-media')
   const bucketPath = hls.pathname.replace(/\/$/, '')
 
@@ -22,13 +23,17 @@ export default defineConfig(({ mode }) => {
       }
     : {
         // Specific prefixes first: Vite uses the first matching key.
+        // chat-svc (GĐ3): the realtime gateway, chat REST and the channel chat settings.
+        '/v1/ws': { target: chat, changeOrigin: true, ws: true },
+        '/v1/chat': { target: chat, changeOrigin: true },
+        '^/v1/channels/[^/]+/chat-settings': { target: chat, changeOrigin: true },
         '/v1/me/watch-progress': { target: stream, changeOrigin: true },
         '/v1/me/continue-watching': { target: stream, changeOrigin: true },
         '/v1/studio': { target: stream, changeOrigin: true },
         '/v1/streams': { target: stream, changeOrigin: true },
         '/v1/vods': { target: stream, changeOrigin: true },
         '/v1/channels': { target: channel, changeOrigin: true },
-        '/v1': { target: identity, changeOrigin: true, ws: true },
+        '/v1': { target: identity, changeOrigin: true },
         // /hls/streams/{id}/master.m3u8 → MinIO bucket nxl-media/streams/{id}/master.m3u8
         '/hls': {
           target: hls.origin,

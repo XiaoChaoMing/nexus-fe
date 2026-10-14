@@ -144,7 +144,7 @@ test('M2: go live, watch with quality switch, interruption, end, replay and resu
     expect(playback.status()).toBe(200)
     expect(playback.request().headers()['x-nxl-anon-id']).toMatch(/^[0-9a-f-]{36}$/)
     expect(((await playback.json()) as { data: { manifestUrl: string | null } }).data.manifestUrl).toContain('master.m3u8')
-    await expect(guest.getByTestId('chat-placeholder').first()).toBeVisible()
+    await expect(guest.getByTestId('chat-panel').first()).toBeVisible()
 
     const decodes = await canDecodeH264(guest)
     const player = guest.getByTestId('player')

@@ -31,14 +31,16 @@ Sao chép `.env.example` thành `.env.local`. Web chỉ gọi một origin (`/v1
 | Tiền tố | Đích (mặc định) | Biến |
 | --- | --- | --- |
 | `/v1/studio`, `/v1/streams`, `/v1/vods`, `/v1/me/watch-progress`, `/v1/me/continue-watching` | stream-svc `http://localhost:8092` | `VITE_DEV_STREAM_URL` |
+| `/v1/ws` (WebSocket), `/v1/chat`, `/v1/channels/{id}/chat-settings` | chat-svc `http://localhost:8095` | `VITE_DEV_CHAT_URL` |
 | `/v1/channels` | channel-svc `http://localhost:8094` | `VITE_DEV_CHANNEL_URL` |
-| `/v1` còn lại (auth, WebSocket sau này) | identity-svc `http://localhost:8090` | `VITE_DEV_IDENTITY_URL` |
+| `/v1` còn lại (auth) | identity-svc `http://localhost:8090` | `VITE_DEV_IDENTITY_URL` |
 | `/hls` | bucket MinIO `http://localhost:9000/nxl-media` | `VITE_DEV_HLS_URL` |
 
 Backend cho cách 2: `make nxl-media-up` trong `nexuslive-be`.
 
 | Biến | Dùng cho | Mặc định |
 | --- | --- | --- |
+| `VITE_WS_URL` | Ghi đè địa chỉ realtime gateway (`ws(s)://…/v1/ws`). Mặc định cùng origin với trang (`ws://localhost:5173/v1/ws` qua Vite proxy, `wss://<host>/v1/ws` khi deploy). | — |
 | `VITE_ADMIN_URL` | Liên kết "Trang quản trị" trong menu avatar (chỉ hiện với tài khoản có vai trò `ADMIN`), mở ở tab mới. Web người dùng **không** có route hay code quản trị — quản trị là ứng dụng riêng `nexuslive-admin`. | `http://localhost:5174` |
 
 Import trong `src/` dùng alias `@/` → `src/`.
@@ -68,7 +70,7 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 
 ## Đa ngôn ngữ (i18n)
 
-- Chuỗi giao diện nằm trong `src/locales/<ngôn ngữ>/<namespace>.json`. Namespace: `common`, `auth`, `account`, `creator`, `system`, `home`, `watch`, `player`, `studio`, `vod`. **Tiếng Việt là nguồn**: thêm key vào `vi` trước, rồi dịch sang `en`.
+- Chuỗi giao diện nằm trong `src/locales/<ngôn ngữ>/<namespace>.json`. Namespace: `common`, `auth`, `account`, `creator`, `system`, `home`, `watch`, `player`, `studio`, `vod`, `chat`. **Tiếng Việt là nguồn**: thêm key vào `vi` trước, rồi dịch sang `en`.
 - Dùng trong component: `const { t } = useTranslation('studio')` → `t('key.title')`; khác namespace: `useTranslation(['studio', 'common'])` → `t('common:status.live')`. Key được kiểm tra kiểu (`src/i18n/i18next.d.ts`), gõ sai key là lỗi `pnpm typecheck`.
 - Chèn giá trị: `"Đã phát {{time}}"` → `t('elapsed', { time })`. Số nhiều: `key_one` / `key_other` + `{ count }` (tiếng Việt chỉ cần `_other`). Định dạng đậm/link trong câu: `<Trans components={{ b: <b /> }} />`.
 - Ngoài component (zod schema, ánh xạ mã lỗi API, cảnh báo health…) không gọi `t`: trả về **key** dạng `"ns:path"`, component dịch bằng `useMessage()` (`src/i18n/messages.ts`).
@@ -86,9 +88,11 @@ Dữ liệu lấy từ API đi qua TanStack Query, không chép vào Zustand. Zu
 | `src/app/` | Router, providers, khung trang (header, sidebar) |
 | `src/components/ui/` | Thành phần dùng chung: `Button`, `TextField` |
 | `src/lib/` | `api-client` (fetch + Bearer + tự refresh một lần khi 401), `api-error`, `query-client` |
+| `src/lib/realtime/` | Một WebSocket `/v1/ws` cho cả app (NXL-00 §10): `auth` (token, hoặc `null` + `anonId` cho Khách; gửi lại khi token gia hạn), `subscribe` đếm tham chiếu theo chủ đề, resume theo `lastSeq`, bỏ `seq` trùng/cũ, `resync`, ping 25 s, nối lại 1→30 s ±20 %, mã đóng 1012/4001/4003/4008/4029; `useRealtimeTopic`, `useRealtimeStatus` |
+| `src/features/chat/` | Chat realtime GĐ3 (NXL-B): lịch sử REST + chủ đề `chat:{streamId}`, gửi lạc quan (`clientMsgId`, ack 5 s → lỗi, Gửi lại), danh sách ảo hóa (`@tanstack/react-virtual`, ≤ 150 tin, bộ đệm 500 khi cuộn lên), emote, @mention, chế độ chat, lỗi `CHAT_*` → ô nhập/thông báo; logic thuần ở `lib/` có unit test |
 | `src/features/<tên>/` | Theo tính năng: `api/`, `components/`, `hooks/`, `stores/`, `schemas/`, `constants/`, `lib/` |
 | `src/features/player/` | Player HLS tự viết (hls.js): DVR, chất lượng, phím tắt, trạng thái (frame 03b); store Zustand riêng cho mỗi player |
-| `src/features/streams/` | Gọi stream-svc (TanStack Query, poll trạng thái); phiên xem `POST …/playback` (cổng 18+, `X-NXL-Anon-Id` = `nxl.anonId` cho Khách) |
+| `src/features/streams/` | Gọi stream-svc (TanStack Query, poll trạng thái); phiên xem `POST …/playback` (cổng 18+, `X-NXL-Anon-Id` = `nxl.anonId` cho Khách); chủ đề `stream:{id}` (trạng thái, số người xem, tiêu đề, VOD) ghi vào cache, polling giữ làm dự phòng (30 s khi WebSocket mở) |
 | `src/features/vod/` | Trang xem lại; tiến độ xem: tài khoản qua `PUT /v1/me/watch-progress` (15 s, tạm dừng, rời trang), Khách ở localStorage, gộp lên tài khoản khi đăng nhập |
 | `src/features/watch/`, `studio/`, `home/` | Trang xem live, Studio phát trực tiếp, lưới "Đang phát" |
 | `src/features/auth/` | Phiên, modal đăng nhập/đăng ký, `pendingAction`, guard, vai trò (`lib/roles.ts`) |

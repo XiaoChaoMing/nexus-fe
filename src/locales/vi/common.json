@@ -85,5 +85,6 @@
     "INVALID_STATE": "Thao tác không còn hợp lệ ở trạng thái hiện tại. Tải lại để xem trạng thái mới.",
     "NOT_CREATOR": "Bạn cần có kênh Creator để dùng Studio.",
     "fallback": "Có lỗi xảy ra, vui lòng thử lại."
-  }
+  },
+  "viewers_other": "{{count}} người xem"
 }

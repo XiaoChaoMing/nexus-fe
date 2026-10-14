@@ -5,13 +5,6 @@
   "replay": "Watch replay",
   "noReplay": "This stream has no replay.",
   "replayProcessing": "The replay is being processed…",
-  "chat": {
-    "title": "Chat",
-    "comingSoon": "Chat is coming soon",
-    "comingSoonBody": "You will talk with the streamer and other viewers here.",
-    "collapse": "Collapse chat",
-    "expand": "Open chat"
-  },
   "follow": "Follow",
   "notFoundBody": "The link may be wrong, or the stream was removed.",
   "startedAgo": "Started {{time}}",

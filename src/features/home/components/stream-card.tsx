@@ -4,6 +4,7 @@ import { channelName } from '@/features/channels/lib/channel-display'
 import { thumbSrc } from '@/features/home/lib/featured'
 import { Thumbnail } from '@/features/home/components/thumbnail'
 import { StreamStatusBadge, StreamTags } from '@/features/streams/components/stream-meta'
+import { ViewerCount } from '@/features/streams/components/viewer-count'
 import type { Stream } from '@/features/streams/types'
 import { cn } from '@/lib/utils'
 
@@ -16,6 +17,7 @@ export function StreamCard({ stream: s, now, className }: { stream: Stream; now:
       <span className="relative block aspect-video overflow-hidden rounded-lg group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-ring">
         <Thumbnail src={thumbSrc(s.thumbnailUrl, now)} className="size-full transition-transform duration-300 group-hover:scale-[1.02]" />
         <StreamStatusBadge status={s.status} className="absolute top-2 left-2" />
+        <ViewerCount count={s.viewerCount} variant="overlay" className="absolute bottom-2 left-2" />
       </span>
       <span className="flex min-w-0 gap-2.5">
         <ChannelAvatar channel={s.channel} size="md" className="mt-0.5" />

@@ -4,6 +4,7 @@ import { FollowButton } from '@/features/channels/components/follow-button'
 import { ShareButton } from '@/features/channels/components/share-button'
 import { channelName } from '@/features/channels/lib/channel-display'
 import { StreamStatusBadge, StreamTags } from '@/features/streams/components/stream-meta'
+import { ViewerCount } from '@/features/streams/components/viewer-count'
 import type { Stream } from '@/features/streams/types'
 import { relativeTime } from '@/lib/format'
 
@@ -33,6 +34,7 @@ export function ChannelInfo({ stream: s, now, layout }: Props) {
                 </span>
               )}
               <StreamStatusBadge status={s.status} />
+              {s.status !== 'ENDED' && <ViewerCount count={s.viewerCount} />}
             </div>
             <h1 className="text-body-lg font-medium break-words text-foreground" title={s.title}>
               {s.title}
@@ -61,6 +63,7 @@ export function ChannelInfo({ stream: s, now, layout }: Props) {
               </span>
             )}
             <StreamStatusBadge status={s.status} />
+            {s.status !== 'ENDED' && <ViewerCount count={s.viewerCount} />}
           </div>
           <FollowButton channel={s.channel} className="h-11" />
           <ShareButton className="size-11" />
@@ -90,6 +93,7 @@ export function ChannelInfo({ stream: s, now, layout }: Props) {
       <div className="flex flex-col gap-2.5 px-4 pb-3">
         <h1 className="text-body-lg leading-5.5 font-semibold break-words text-foreground">{s.title}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
+          {s.status !== 'ENDED' && <ViewerCount count={s.viewerCount} />}
           {tags}
           {s.startedAt && <span className="text-label-sm font-normal text-subtle-foreground">· {started}</span>}
         </div>
