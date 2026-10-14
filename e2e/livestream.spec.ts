@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { freshStreamKey, publish, SEED_CREATOR, SEED_PASSWORD } from './helpers.ts'
+import { freshStreamKey, publish, SEED_CREATOR, SEED_PASSWORD, openLiveFromHome } from './helpers.ts'
 
 /**
  * Creator + viewer journey of the core livestream (L3). Needs the backend stack and ffmpeg on PATH
@@ -51,7 +51,7 @@ test('creator goes live, viewer watches, creator ends, replay is offered', async
     const viewer = await page.context().newPage()
     await viewer.goto('/')
     const manifestResponse = viewer.waitForResponse((r) => r.url().includes('/hls/streams/') && r.url().includes('master.m3u8'))
-    await viewer.getByTestId('stream-card').filter({ hasText: title }).click()
+    await openLiveFromHome(viewer, title)
     await expect(viewer.getByRole('heading', { name: title })).toBeVisible()
     await expect(viewer).toHaveURL(/\/live\/[0-9a-f-]{36}$/)
     // GĐ1: the watch page names the channel instead of a raw id.

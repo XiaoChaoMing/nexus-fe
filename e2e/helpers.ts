@@ -128,3 +128,15 @@ export async function freshStreamKey(page: Page): Promise<string> {
 
   return keyInput.inputValue()
 }
+
+/**
+ * Opens a live stream from the home page. The top recommended stream is the Hero and is left out of the
+ * "Live đề xuất" row (TSD GĐ4 §3.1), so the stream is either behind "Xem ngay" or a stream card.
+ */
+export async function openLiveFromHome(page: Page, title: string) {
+  const hero = page.getByTestId('home-hero').filter({ hasText: title })
+  const card = page.getByTestId('stream-card').filter({ hasText: title })
+  await expect(hero.or(card).first()).toBeVisible({ timeout: 60_000 })
+  if (await hero.count()) await hero.getByTestId('hero-watch').click()
+  else await card.first().click()
+}

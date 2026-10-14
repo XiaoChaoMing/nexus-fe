@@ -58,16 +58,18 @@ function SettingsForm({ channelId, mode, large }: { channelId: string; mode: Cha
   // Until the room's `mode_change` arrives (or if it never does), show what the server answered.
   const current = saved && saved.base === mode ? saved.value : mode
 
+  // The previous mode travels with the request: the room's `mode_change` can arrive over the socket before this
+  // response does, and comparing with the re-rendered mode would then find no change and show no toast.
   const update = useMutation({
-    mutationFn: (next: ChatMode) => chatApi.updateSettings(channelId, next),
-    onSuccess: (res, next) => {
+    mutationFn: ({ next }: { next: ChatMode; prev: ChatMode }) => chatApi.updateSettings(channelId, next),
+    onSuccess: (res, { next, prev }) => {
       setSaved({ base: mode, value: { slowSec: res.slowSec, followersMin: res.followersMin, subsOnly: res.subsOnly } })
-      for (const line of text.toasts(next, current)) toast.success(line)
+      for (const line of text.toasts(next, prev)) toast.success(line)
     },
     onError: () => toast.error(t('settings.failed')),
   })
 
-  const change = (patch: Partial<ChatMode>) => update.mutate({ ...current, ...patch })
+  const change = (patch: Partial<ChatMode>) => update.mutate({ next: { ...current, ...patch }, prev: current })
   const pending = update.isPending
 
   return (

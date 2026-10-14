@@ -1,6 +1,6 @@
 import type { ChildProcess } from 'node:child_process'
 import { expect, test, type APIRequestContext, type Browser, type BrowserContext, type Page } from '@playwright/test'
-import { apiContext, apiLogin, apiRegister, APP_URL, freshStreamKey, hasFfmpeg, publish, SEED_CREATOR, SEED_PASSWORD, uniqueUser } from './helpers.ts'
+import { apiContext, apiLogin, apiRegister, APP_URL, freshStreamKey, hasFfmpeg, publish, SEED_CREATOR, SEED_PASSWORD, uniqueUser, openLiveFromHome } from './helpers.ts'
 
 /**
  * M2 (working plan GĐ2 §11): the seed creator goes live with ffmpeg → a guest finds the stream on Home and
@@ -136,7 +136,7 @@ test('M2: go live, watch with quality switch, interruption, end, replay and resu
     await guest.goto('/')
     await expect(guest.getByTestId('home-hero')).toBeVisible()
     const playbackOpened = guest.waitForResponse((r) => r.url().endsWith(`/v1/streams/${streamId}/playback`) && r.request().method() === 'POST')
-    await guest.getByTestId('stream-card').filter({ hasText: title }).click()
+    await openLiveFromHome(guest, title)
     await expect(guest).toHaveURL(new RegExp(`/live/${streamId}$`))
     await expect(guest.getByRole('heading', { name: title })).toBeVisible()
     // The manifest comes from the playback session (WP1), with the guest's anon id.

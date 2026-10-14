@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { approveApplicationOf, freshStreamKey, hasFfmpeg, linkFromMail, publish, uniqueUser } from './helpers.ts'
+import { approveApplicationOf, freshStreamKey, hasFfmpeg, linkFromMail, publish, uniqueUser, openLiveFromHome } from './helpers.ts'
 
 /**
  * M1 (working plan GĐ1 §12): register in the modal → verify the email from Mailpit → apply as a Creator →
@@ -71,7 +71,7 @@ test('guest registers, verifies email, applies, gets approved and reaches the St
     await expect(page.getByTestId('studio-status').getByText('Live', { exact: true })).toBeVisible({ timeout: 30_000 })
     const viewer = await page.context().newPage()
     await viewer.goto('/')
-    await viewer.getByTestId('stream-card').filter({ hasText: title }).click()
+    await openLiveFromHome(viewer, title)
     await expect(viewer.getByRole('heading', { name: title })).toBeVisible()
     await expect(viewer.getByTestId('channel-name').first()).toHaveText(user.username)
 
