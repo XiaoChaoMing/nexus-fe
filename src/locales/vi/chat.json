@@ -1,0 +1,129 @@
+{
+  "title": "Chat",
+  "collapse": "Thu gọn chat",
+  "expand": "Mở chat",
+  "newMentions": "Có người nhắc đến bạn",
+  "skipToChat": "Chuyển tới chat",
+  "list": "Tin nhắn trong chat",
+  "loading": "Đang tải tin nhắn…",
+  "empty": "Chưa có tin nhắn nào. Hãy là người đầu tiên chào streamer!",
+  "newMessages": "Có tin mới ↓",
+  "newMessagesCount_other": "Có {{count}} tin mới ↓",
+  "missed": "Có thể bạn đã bỏ lỡ một số tin",
+  "sampling": "Chat đang rất nhanh — hiển thị rút gọn",
+  "deleted": "Tin nhắn đã bị xóa",
+  "pending": "Đang gửi",
+  "failed": "Gửi lỗi",
+  "resend": "Gửi lại",
+  "mentionedYou": "{{name}} nhắc đến bạn: {{text}}",
+  "banner": {
+    "reconnecting": "Đang kết nối lại…",
+    "failed": "Không thể kết nối chat",
+    "retry": "Thử lại",
+    "unavailable": "Chat tạm thời không khả dụng",
+    "unsupported": "Không thể kết nối chat trên trình duyệt này",
+    "disabled": "Chat đang tạm tắt"
+  },
+  "badge": {
+    "STREAMER": "Streamer",
+    "MODERATOR": "Moderator",
+    "VIP": "VIP",
+    "SUB_T1": "Subscriber Tier 1",
+    "SUB_T2": "Subscriber Tier 2",
+    "SUB_T3": "Subscriber Tier 3",
+    "VERIFIED": "Đã xác minh"
+  },
+  "mode": {
+    "bar": "Chế độ chat đang bật",
+    "slow": "Chậm {{count}} giây",
+    "followersAny": "Chỉ người theo dõi",
+    "followers": "Chỉ người theo dõi ({{duration}})",
+    "subs": "Chỉ Subscriber"
+  },
+  "notice": {
+    "slowOn": "Chế độ chậm đã bật: {{count}} giây",
+    "slowOff": "Chế độ chậm đã tắt",
+    "followersOnAny": "Chế độ chỉ người theo dõi đã bật",
+    "followersOn": "Chế độ chỉ người theo dõi đã bật: theo dõi ít nhất {{duration}}",
+    "followersOff": "Chế độ chỉ người theo dõi đã tắt",
+    "subsOn": "Chế độ chỉ Subscriber đã bật",
+    "subsOff": "Chế độ chỉ Subscriber đã tắt"
+  },
+  "duration": {
+    "m10": "10 phút",
+    "m30": "30 phút",
+    "h1": "1 giờ",
+    "d1": "1 ngày",
+    "w1": "1 tuần",
+    "mo1": "1 tháng",
+    "mo3": "3 tháng",
+    "minutes_other": "{{count}} phút"
+  },
+  "input": {
+    "label": "Tin nhắn chat",
+    "placeholder": "Gửi tin nhắn…",
+    "guest": "Đăng nhập để trò chuyện",
+    "connecting": "Đang kết nối chat…",
+    "reconnecting": "Đang kết nối lại…",
+    "failed": "Không thể kết nối chat",
+    "unavailable": "Chat tạm thời không khả dụng",
+    "readOnly": "Buổi phát đã kết thúc — chat chỉ đọc",
+    "closed": "Chat đã đóng",
+    "notOpen": "Chat sẽ mở khi buổi phát bắt đầu",
+    "disabled": "Chat đang tạm tắt",
+    "followersAny": "Theo dõi kênh để trò chuyện",
+    "followers": "Theo dõi kênh ít nhất {{duration}} để trò chuyện",
+    "subs": "Chỉ Subscriber được trò chuyện",
+    "timeout": "Bạn bị tạm khóa chat đến {{time}}",
+    "timeoutNoEnd": "Bạn đang bị tạm khóa chat",
+    "banned": "Bạn bị cấm chat trong kênh này",
+    "emailUnverified": "Xác minh email để trò chuyện",
+    "resendEmail": "Gửi lại email xác minh",
+    "send": "Gửi",
+    "sendIn_other": "Gửi sau {{count}} giây",
+    "emotes": "Emote",
+    "counter": "{{count}}/{{max}} ký tự",
+    "tooLong": "Tin nhắn tối đa {{max}} ký tự.",
+    "tooManyLines": "Tin nhắn tối đa {{max}} dòng."
+  },
+  "error": {
+    "slow_other": "Chế độ chậm đang bật. Bạn gửi lại sau {{count}} giây.",
+    "rateLimited_other": "Bạn gửi quá nhanh. Thử lại sau {{count}} giây.",
+    "duplicate": "Bạn vừa gửi tin giống hệt.",
+    "invalid": "Tin nhắn trống hoặc quá dài.",
+    "contentBlocked": "Tin nhắn không được gửi do vi phạm quy tắc kênh.",
+    "forbidden": "Bạn không có quyền thực hiện thao tác này.",
+    "failed": "Không gửi được tin nhắn. Thử lại sau."
+  },
+  "emote": {
+    "title": "Emote",
+    "search": "Tìm emote",
+    "recent": "Gần đây",
+    "global": "Emote toàn cầu",
+    "none": "Không tìm thấy emote",
+    "loadFailed": "Không tải được emote"
+  },
+  "mention": {
+    "label": "Gợi ý nhắc tên"
+  },
+  "settings": {
+    "open": "Cài đặt chế độ chat",
+    "title": "Chế độ chat",
+    "slow": "Chế độ chậm",
+    "followers": "Chỉ người theo dõi",
+    "subs": "Chỉ Subscriber",
+    "off": "Tắt",
+    "seconds_other": "{{count}} giây",
+    "anyFollower": "Mọi người theo dõi",
+    "hint": "Thay đổi áp dụng ngay cho cả phòng.",
+    "toast": {
+      "slowOn": "Đã bật chế độ chậm {{count}} giây",
+      "slowOff": "Đã tắt chế độ chậm",
+      "followersOnAny": "Đã bật chế độ chỉ người theo dõi",
+      "followersOn": "Đã bật chế độ chỉ người theo dõi ({{duration}})",
+      "followersOff": "Đã tắt chế độ chỉ người theo dõi",
+      "subsOn": "Đã bật chế độ chỉ Subscriber",
+      "subsOff": "Đã tắt chế độ chỉ Subscriber"
+    }
+  }
+}

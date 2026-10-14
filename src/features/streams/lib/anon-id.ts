@@ -23,7 +23,8 @@ export function isAnonId(value: unknown): value is string {
   return typeof value === 'string' && UUID.test(value)
 }
 
-function randomUuid(): string {
+/** A v4 UUID (`crypto.randomUUID` where available). */
+export function randomUuid(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID()
   const hex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16))
   hex[12] = '4'

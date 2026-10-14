@@ -6,6 +6,9 @@ type UiState = {
   /** Theater mode of a player page: the sidebar shrinks to icons while it lasts (not persisted). */
   theater: boolean
   setTheater: (on: boolean) => void
+  /** Bumped to ask the live page to show and focus the chat input (after a guest signs in to chat, AF10). */
+  chatFocusRequest: number
+  requestChatFocus: () => void
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
 }
@@ -23,6 +26,8 @@ export const useUiStore = create<UiState>()(
       sidebarCollapsed: defaultCollapsed(),
       theater: false,
       setTheater: (theater) => set({ theater }),
+      chatFocusRequest: 0,
+      requestChatFocus: () => set((s) => ({ chatFocusRequest: s.chatFocusRequest + 1 })),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
     }),

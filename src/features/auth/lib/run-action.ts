@@ -1,5 +1,6 @@
 import { toast } from 'sonner'
 import i18n from '@/i18n'
+import { useUiStore } from '@/stores/ui-store'
 import { recordFollowIntent } from '@/features/channels/lib/follow-intent'
 import { goLiveTarget } from '@/features/auth/lib/roles'
 import { sanitizeReturnTo, type PendingAction } from '@/features/auth/lib/pending-action'
@@ -28,6 +29,13 @@ export function runAction(action: Pick<PendingAction, 'type' | 'params' | 'retur
       if (back !== currentPath) navigate(back)
       recordFollowIntent(action.params.channelId ?? '')
       toast.info(i18n.t('auth:pending.followSoon', { name: action.params.channelName || i18n.t('auth:pending.thisChannel') }))
+
+      return
+    }
+    case 'chat': {
+      const back = sanitizeReturnTo(action.returnTo, currentPath)
+      if (back !== currentPath) navigate(back)
+      useUiStore.getState().requestChatFocus()
 
       return
     }

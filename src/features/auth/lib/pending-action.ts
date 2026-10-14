@@ -17,6 +17,8 @@ export type PendingActionType =
   | 'follow'
   /** Open a page that needs an account (Following, Profile, session-expired return). */
   | 'navigate'
+  /** Chat in a live room (NXL-B AF10): back to the stream with the chat input focused. */
+  | 'chat'
 
 export type PendingAction = {
   type: PendingActionType
@@ -28,7 +30,7 @@ export type PendingAction = {
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
-const TYPES: readonly PendingActionType[] = ['goLive', 'becomeCreator', 'follow', 'navigate']
+const TYPES: readonly PendingActionType[] = ['goLive', 'becomeCreator', 'follow', 'navigate', 'chat']
 
 function defaultStorage(): StorageLike | null {
   try {
