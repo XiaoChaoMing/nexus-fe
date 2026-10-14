@@ -3,9 +3,7 @@ import { RadioTowerIcon, RotateCwIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { SkeletonStreamCard } from '@/components/ui/skeleton'
-import { SectionHeader } from '@/features/home/components/section-header'
 import { StreamCard } from '@/features/home/components/stream-card'
-import { useLiveStreams } from '@/features/streams/hooks/use-streams'
 import type { Stream } from '@/features/streams/types'
 import { useNow } from '@/hooks/use-now'
 
@@ -71,24 +69,5 @@ export function StreamGrid({ items, loading }: { items: Stream[] | undefined; lo
         <StreamCard key={s.id} stream={s} now={now} />
       ))}
     </div>
-  )
-}
-
-/** Live channels with their own loading/empty/error states (Browse page). */
-export function LiveGrid({ heading }: { heading?: string } = {}) {
-  const { t } = useTranslation('home')
-  const { data, isPending, isError, refetch } = useLiveStreams()
-
-  return (
-    <section aria-labelledby="live-heading" className="flex flex-col gap-4">
-      <SectionHeader id="live-heading" icon={<span className="size-2.5 rounded-full bg-live" aria-hidden />} title={heading ?? t('live.heading')} />
-      {isError && !data ? (
-        <ListError onRetry={() => void refetch()} />
-      ) : data && data.items.length === 0 ? (
-        <NoLiveChannels />
-      ) : (
-        <StreamGrid items={data?.items} loading={isPending} />
-      )}
-    </section>
   )
 }

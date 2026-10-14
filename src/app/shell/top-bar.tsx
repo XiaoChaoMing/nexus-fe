@@ -1,6 +1,5 @@
-import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink, useNavigate } from 'react-router'
+import { Link, NavLink } from 'react-router'
 import { BellIcon, PlusIcon, RadioIcon, SearchIcon } from 'lucide-react'
 import { LanguageMenu } from '@/app/shell/language-menu'
 import { Button } from '@/components/ui/button'
@@ -12,6 +11,7 @@ import { unreadBadge } from '@/features/auth/lib/roles'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { useAuthModal } from '@/features/auth/stores/auth-modal-store'
 import { cn } from '@/lib/utils'
+import { useUiStore } from '@/stores/ui-store'
 
 export function Logo() {
   return (
@@ -51,22 +51,6 @@ function NotificationBell() {
   )
 }
 
-/** Ctrl/⌘+K opens search from anywhere (the hint shown in the search box). */
-function useSearchShortcut() {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== 'k' || !(e.ctrlKey || e.metaKey) || e.altKey) return
-      e.preventDefault()
-      navigate('/search')
-    }
-    window.addEventListener('keydown', onKey)
-
-    return () => window.removeEventListener('keydown', onKey)
-  }, [navigate])
-}
-
 /** Guests on a phone get one "Đăng nhập" button (Top Nav/Mobile — Khách). */
 function GuestMobileLogin() {
   const { t } = useTranslation('auth')
@@ -90,7 +74,7 @@ export function TopBar() {
   const { t } = useTranslation()
   const signedIn = useAuthStore((s) => s.status === 'authenticated')
   const gated = useGatedAction()
-  useSearchShortcut()
+  const openSearch = useUiStore((s) => s.setSearchOpen)
 
   return (
     <header className="z-30 flex h-14 items-center gap-3 border-b bg-surface pr-2 pl-4 md:sticky md:top-0 md:h-16 md:gap-6 md:px-4 xl:px-6">
@@ -105,14 +89,18 @@ export function TopBar() {
           </NavLink>
         </nav>
       </div>
-      <Link
-        to="/search"
-        className="mx-auto hidden h-10 w-full max-w-md min-w-0 items-center gap-2.5 rounded-lg border bg-surface px-3 text-body-md text-subtle-foreground hover:border-border-strong md:flex"
+      <button
+        type="button"
+        onClick={() => openSearch(true)}
+        aria-label={t('nav.searchOpen')}
+        aria-haspopup="dialog"
+        data-testid="search-trigger"
+        className="mx-auto hidden h-10 w-full max-w-md min-w-0 items-center gap-2.5 rounded-lg border bg-surface px-3 text-left text-body-md text-subtle-foreground outline-none hover:border-border-strong focus-visible:outline-2 focus-visible:outline-ring md:flex"
       >
         <SearchIcon className="size-5 shrink-0" aria-hidden />
         <span className="flex-1 truncate">{t('nav.searchPlaceholder')}</span>
         <Kbd className="hidden h-auto border bg-transparent px-1.5 py-0.5 text-[11px] font-normal text-subtle-foreground lg:inline-flex">Ctrl+K</Kbd>
-      </Link>
+      </button>
       <div className={cn('ml-auto flex items-center gap-1 md:ml-0 md:gap-3')}>
         {/* NXL-C BR28: Creator → Studio, Viewer → Creator application, Guest → login modal. */}
         <Button onClick={() => gated({ type: 'goLive' })} data-testid="go-live" aria-label={t('nav.goLive')} className="hidden md:inline-flex max-xl:size-10 max-xl:px-0">

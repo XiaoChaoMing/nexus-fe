@@ -7,6 +7,7 @@ import { TopBar } from '@/app/shell/top-bar'
 import { EmailVerifyBanner } from '@/features/account/components/email-verify-banner'
 import { AuthModal } from '@/features/auth/components/auth-modal'
 import { PendingActionRunner } from '@/features/auth/components/pending-action-runner'
+import { SearchPalette } from '@/features/search/components/search-palette'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { OfflineBanner } from '@/features/system/components/offline-banner'
 import { SessionWatcher } from '@/features/system/components/session-watcher'
@@ -47,6 +48,7 @@ export function AppShell() {
       </div>
       <BottomNav />
       <AuthModal />
+      <SearchPalette />
       <PendingActionRunner />
       <SessionWatcher />
     </div>
