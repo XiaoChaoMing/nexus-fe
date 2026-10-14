@@ -2,6 +2,12 @@
 
 export type StreamStatus = 'LIVE' | 'INTERRUPTED' | 'ENDED'
 
+/** `GET /v1/streams/{id}` may also return a scheduled broadcast (TSD GĐ4 §5.1); lists never do. */
+export type ScheduledStatus = 'SCHEDULED' | 'CANCELLED'
+
+/** stream-svc only carries the category id; names and slugs come from `GET /v1/categories`. */
+export type CategoryIdRef = { id: string }
+
 /** Channel shown with a stream, VOD or the Studio (TSD GĐ1 §4.3); null for data from before GĐ1. */
 export type ChannelSummary = {
   id: string
@@ -27,6 +33,14 @@ export type Stream = {
   channel?: ChannelSummary | null
   /** Viewers right now (TSD GĐ3 §4 S4), null when unknown; absent from servers before GĐ3. */
   viewerCount?: number | null
+  category?: CategoryIdRef | null
+}
+
+/** A stream as `GET /v1/streams/{id}` returns it: it can be an upcoming (or cancelled) scheduled broadcast. */
+export type StreamDetail = Omit<Stream, 'status'> & {
+  status: StreamStatus | ScheduledStatus
+  scheduleId?: string | null
+  scheduledStartAt?: string | null
 }
 
 export type StreamList = {
@@ -46,6 +60,9 @@ export type Vod = {
   createdAt: string
   expiresAt: string
   channel?: ChannelSummary | null
+  category?: CategoryIdRef | null
+  isMature?: boolean
+  visibility?: 'PUBLIC' | 'HIDDEN'
   /** Only with a token: where this account stopped watching (null = never watched). */
   viewer?: { positionSec: number | null }
 }
@@ -69,7 +86,12 @@ export type ContinueWatchingItem = {
   updatedAt: string
 }
 
-/** `GET /v1/channels/{handle}` (channel-svc, GĐ1 minimal profile). */
+export type VodList = {
+  items: Vod[]
+  nextCursor: string | null
+}
+
+/** `GET /v1/channels/{handle}`: the GĐ1 fields, plus the GĐ4 profile (TSD GĐ4 §5.1) — see `features/channels/types`. */
 export type ChannelProfile = {
   id: string
   handle: string
@@ -95,6 +117,8 @@ export type StreamSettings = {
   tags: string[]
   language: string
   isMature: boolean
+  /** GĐ4: absent from older servers. */
+  categoryId?: string | null
   updatedAt: string | null
 }
 
@@ -129,8 +153,15 @@ export type SettingsInput = {
   tags: string[]
   language: string
   isMature: boolean
+  /** PUT semantics: leaving it out clears the category (TSD GĐ4 §5.3), so it is always sent. */
+  categoryId: string | null
 }
 
 export function isOnAir(status: StreamStatus | undefined): boolean {
   return status === 'LIVE' || status === 'INTERRUPTED'
+}
+
+/** A detail that is a regular (on-air or ended) stream, not an upcoming or cancelled broadcast. */
+export function isRegularStream(s: StreamDetail): s is Stream {
+  return s.status === 'LIVE' || s.status === 'INTERRUPTED' || s.status === 'ENDED'
 }

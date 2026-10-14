@@ -1,4 +1,4 @@
-import type { Stream, StreamStatus } from '@/features/streams/types'
+import type { ScheduledStatus, StreamDetail, StreamStatus } from '@/features/streams/types'
 
 /** `stream:{streamId}` (TSD GĐ3 §5.1): snapshot and events merged into the cached `Stream`. */
 
@@ -8,11 +8,14 @@ function isRec(v: unknown): v is Rec {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
 }
 
-const STATUSES: readonly StreamStatus[] = ['LIVE', 'INTERRUPTED', 'ENDED']
+type AnyStatus = StreamStatus | ScheduledStatus
+type Stream = StreamDetail
+
+const STATUSES: readonly AnyStatus[] = ['LIVE', 'INTERRUPTED', 'ENDED', 'SCHEDULED', 'CANCELLED']
 const END_REASONS = ['creator', 'ingest_timeout', 'admin_takedown'] as const
 
-function status(v: unknown): StreamStatus | null {
-  return typeof v === 'string' && (STATUSES as readonly string[]).includes(v) ? (v as StreamStatus) : null
+function status(v: unknown): AnyStatus | null {
+  return typeof v === 'string' && (STATUSES as readonly string[]).includes(v) ? (v as AnyStatus) : null
 }
 
 function count(v: unknown): number | null | undefined {
@@ -21,7 +24,14 @@ function count(v: unknown): number | null | undefined {
   return typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.round(v) : undefined
 }
 
-function withStatus(s: Stream, next: StreamStatus, data: Rec, now: number): Stream {
+function withStatus<S extends Stream>(s: S, next: AnyStatus, data: Rec, now: number): S {
+  // A moved broadcast comes back as SCHEDULED with its new start (TSD GĐ4 §5.4).
+  if (next === 'SCHEDULED') {
+    const at = typeof data.scheduledStartAt === 'string' && data.scheduledStartAt ? data.scheduledStartAt : s.scheduledStartAt
+
+    return { ...s, status: next, scheduledStartAt: at }
+  }
+  if (next === 'LIVE' && s.status === 'SCHEDULED') return { ...s, status: next, startedAt: s.startedAt ?? new Date(now).toISOString() }
   if (next !== 'ENDED') return { ...s, status: next }
   const reason = (END_REASONS as readonly unknown[]).includes(data.endReason) ? (data.endReason as Stream['endReason']) : s.endReason
 
@@ -29,7 +39,7 @@ function withStatus(s: Stream, next: StreamStatus, data: Rec, now: number): Stre
 }
 
 /** `subscribed.snapshot` = `{status, viewerCount}`. */
-export function applyStreamSnapshot(s: Stream, snapshot: unknown, now = Date.now()): Stream {
+export function applyStreamSnapshot<S extends Stream>(s: S, snapshot: unknown, now = Date.now()): S {
   if (!isRec(snapshot)) return s
   const next = status(snapshot.status)
   const viewers = count(snapshot.viewerCount)
@@ -40,11 +50,12 @@ export function applyStreamSnapshot(s: Stream, snapshot: unknown, now = Date.now
 }
 
 /** One event; returns the same object when nothing changed. */
-export function applyStreamEvent(s: Stream, type: string, data: unknown, now = Date.now()): Stream {
+export function applyStreamEvent<S extends Stream>(s: S, type: string, data: unknown, now = Date.now()): S {
   const d = isRec(data) ? data : {}
   switch (type) {
     case 'status_changed': {
       const next = status(d.status)
+      if (next === 'SCHEDULED' && s.status === 'SCHEDULED') return withStatus(s, next, d, now)
 
       return next && next !== s.status ? withStatus(s, next, d, now) : s
     }

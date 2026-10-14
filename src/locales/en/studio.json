@@ -1,6 +1,6 @@
 {
   "breadcrumb": {
-    "studio": "Creator Studio",
+    "studio": "Studio",
     "streamManager": "Stream Manager"
   },
   "title": "Go live",
@@ -148,5 +148,263 @@
     "body": "The Studio is for Creators. Apply to become one; once approved, your channel is created automatically and the Studio opens.",
     "apply": "Apply as a Creator",
     "preparing": "Your channel is being prepared, the Studio opens in a moment…"
+  },
+  "nav": {
+    "label": "Studio menu",
+    "dashboard": "Dashboard",
+    "stream": "Go live",
+    "content": "Content",
+    "schedule": "Schedule",
+    "channel": "Channel",
+    "viewChannel": "View channel"
+  },
+  "category": {
+    "label": "Category",
+    "placeholder": "No category selected",
+    "search": "Search categories",
+    "none": "No matching category",
+    "clear": "Remove category",
+    "liveHint": "While live, a new category applies right away to the live card and Browse."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "refresh": "Refresh",
+    "live": "Live",
+    "openManager": "Open Stream Manager",
+    "offline": "Offline",
+    "nextUp": "Next up: {{title}} · {{when}}",
+    "noUpcoming": "No streams scheduled.",
+    "goLive": "Go live",
+    "failed": "Couldn't load",
+    "range": {
+      "label": "Period",
+      "7d": "7 days",
+      "28d": "28 days"
+    },
+    "stats": {
+      "streams": "Streams",
+      "hours": "Hours live",
+      "hoursValue": "{{value}} h",
+      "vods": "Replays stored",
+      "vodsSplit": "{{public}} public, {{hidden}} hidden",
+      "followers": "Followers",
+      "newFollowers": "+{{value}} in {{days}} days"
+    },
+    "recent": {
+      "title": "Recent streams",
+      "colTitle": "Title",
+      "colDate": "Date",
+      "colDuration": "Duration",
+      "colEnd": "End reason",
+      "colPeak": "Peak viewers",
+      "colVod": "Replay",
+      "endCreator": "You ended it",
+      "endTimeout": "Signal lost",
+      "endAdmin": "Ended by an admin",
+      "watch": "Watch",
+      "hidden": "Hidden",
+      "emptyTitle": "No streams yet"
+    },
+    "upcoming": {
+      "title": "Coming up",
+      "reminders_one": "{{count}} reminder",
+      "reminders_other": "{{count}} reminders",
+      "manage": "Manage schedule"
+    }
+  },
+  "content": {
+    "title": "Content",
+    "filters": {
+      "label": "Filter replays",
+      "all": "All",
+      "public": "Public",
+      "hidden": "Hidden",
+      "expired": "Expired"
+    },
+    "col": {
+      "video": "Replay",
+      "date": "Streamed",
+      "duration": "Duration",
+      "visibility": "Visibility",
+      "expiry": "Expires",
+      "actions": "Actions"
+    },
+    "public": "Public",
+    "hidden": "Hidden",
+    "daysLeft_one": "{{count}} day left",
+    "daysLeft_other": "{{count}} days left",
+    "expired": "Expired",
+    "actions": {
+      "label": "Actions for {{title}}",
+      "view": "View",
+      "rename": "Rename",
+      "hide": "Hide",
+      "unhide": "Unhide",
+      "delete": "Delete"
+    },
+    "renameLabel": "New title",
+    "renameError": "Titles are 1 to 140 characters",
+    "renameSave": "Save",
+    "renamed": "Replay renamed",
+    "hiddenToast": "Replay hidden. Viewers can no longer see this video.",
+    "unhiddenToast": "Replay is visible again.",
+    "deleteTitle": "Delete replay?",
+    "deleteBody": "“{{title}}” will be deleted permanently. This can't be undone.",
+    "deleteConfirm": "Delete",
+    "deleted": "Replay deleted",
+    "failed": "That didn't work. Try again later.",
+    "emptyTitle": "No replays yet",
+    "emptyBody": "Replays appear after each stream and are kept for 14 days",
+    "filterEmpty": "No replays in this view",
+    "loadFailed": "Couldn't load the list"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "create": "Create schedule",
+    "activeCount": "{{count}}/{{max}} active schedules",
+    "upcomingTitle": "Streams in the next 14 days",
+    "yoursTitle": "Your schedules",
+    "reminders_one": "{{count}} reminder",
+    "reminders_other": "{{count}} reminders",
+    "status": {
+      "active": "Active",
+      "ended": "Ended",
+      "cancelled": "Cancelled"
+    },
+    "once": "Once · {{when}}",
+    "weekly": "Every {{days}} at {{time}}",
+    "days": {
+      "MO": "Monday",
+      "TU": "Tuesday",
+      "WE": "Wednesday",
+      "TH": "Thursday",
+      "FR": "Friday",
+      "SA": "Saturday",
+      "SU": "Sunday"
+    },
+    "daysShort": {
+      "MO": "Mon",
+      "TU": "Tue",
+      "WE": "Wed",
+      "TH": "Thu",
+      "FR": "Fri",
+      "SA": "Sat",
+      "SU": "Sun"
+    },
+    "actions": {
+      "label": "Actions for {{title}}",
+      "move": "Reschedule",
+      "cancelOne": "Cancel this one",
+      "edit": "Edit",
+      "cancelSeries": "Cancel schedule"
+    },
+    "emptyTitle": "No schedules yet",
+    "emptyBody": "Create a schedule so viewers know when you're on.",
+    "upcomingEmpty": "No streams in the next 14 days.",
+    "loadFailed": "Couldn't load your schedule",
+    "form": {
+      "createTitle": "Create schedule",
+      "editTitle": "Edit schedule",
+      "title": "Title",
+      "category": "Category",
+      "date": "Date",
+      "time": "Start time",
+      "duration": "Expected duration",
+      "repeat": "Repeat",
+      "repeatNone": "Doesn't repeat",
+      "repeatWeekly": "Weekly",
+      "weekdays": "Days of the week",
+      "timezone": "Times in {{zone}} ({{offset}}) · Change it in Account settings",
+      "preview": "Next 5 streams",
+      "submitCreate": "Create schedule",
+      "submitEdit": "Save changes",
+      "created": "Schedule created",
+      "saved": "Schedule saved",
+      "timingWarning": "Changing the time or repeat days removes reminders for upcoming streams. {{count}} people set reminders.",
+      "overlap": "Overlaps with “{{title}}”. You can still save.",
+      "errors": {
+        "titleLength": "Titles are 1 to 140 characters",
+        "startRequired": "Pick a start date and time",
+        "startMin": "The start time must be in the future",
+        "startMax": "You can only schedule within the next 90 days",
+        "duration": "Duration is 15 minutes to 12 hours",
+        "days": "Pick at least one day of the week",
+        "limit": "You already have 20 active schedules. Cancel some to create a new one.",
+        "generic": "Couldn't save the schedule. Try again later."
+      }
+    },
+    "move": {
+      "title": "Reschedule stream",
+      "body": "People with reminders are moved to the new time.",
+      "date": "New date",
+      "time": "New time",
+      "confirm": "Reschedule",
+      "moved": "Stream rescheduled"
+    },
+    "cancelOne": {
+      "title": "Cancel the {{when}} stream?",
+      "body_one": "{{count}} reminder will be removed.",
+      "body_other": "{{count}} reminders will be removed.",
+      "confirm": "Cancel stream",
+      "keep": "Keep it",
+      "done": "Stream cancelled"
+    },
+    "cancelSeries": {
+      "title": "Cancel “{{title}}”?",
+      "body": "Every upcoming stream of this schedule will be removed.",
+      "confirm": "Cancel schedule",
+      "done": "Schedule cancelled"
+    }
+  },
+  "channelSettings": {
+    "title": "Channel",
+    "avatar": "Profile picture",
+    "avatarHint": "JPEG, PNG or WebP, up to 2 MB. Cropped to a 256×256 square.",
+    "banner": "Banner",
+    "bannerHint": "JPEG, PNG or WebP, up to 5 MB. Size 1600×500.",
+    "choose": "Choose image",
+    "change": "Change image",
+    "drop": "Drag an image here or",
+    "uploading": "Uploading…",
+    "avatarSaved": "Profile picture updated",
+    "bannerSaved": "Banner updated",
+    "tooLarge": "Image is larger than {{size}} MB",
+    "badFormat": "Unsupported format. Use JPEG, PNG or WebP.",
+    "tooSmall": "Image is too small: at least {{size}}.",
+    "uploadFailed": "Couldn't upload the image. Try again later.",
+    "displayName": "Display name",
+    "handle": "Handle",
+    "handlePrefix": "nexuslive/",
+    "handleHint": "3–25 characters: lowercase letters, digits and underscores",
+    "handleNote": "You can change your handle once every 30 days. The old handle won't redirect.",
+    "handleLocked": "You can change your handle after {{date}}",
+    "handleTaken": "This handle is already taken",
+    "handleInvalid": "This handle isn't allowed",
+    "bio": "About",
+    "bioMax": "About is at most 300 characters",
+    "links": "Links",
+    "linkType": "Link type",
+    "linkUrl": "Link address",
+    "addLink": "Add link",
+    "linksMax": "Up to 5 links",
+    "removeLink": "Remove link",
+    "linkFormat": "Links must start with https://",
+    "mature": "Mark new streams as 18+ content",
+    "nameLength": "Display names are 1 to 50 characters",
+    "unsaved": "You have unsaved changes",
+    "discard": "Discard",
+    "save": "Save changes",
+    "saved": "Channel profile saved",
+    "saveFailed": "Couldn't save the channel profile. Try again later.",
+    "handleConfirmTitle": "Change handle to @{{handle}}?",
+    "handleConfirmBody": "The old link nexuslive/{{old}} will stop working and you can only change it again after 30 days.",
+    "handleConfirm": "Change handle",
+    "preview": "Preview",
+    "loadFailed": "Couldn't load the channel profile"
+  },
+  "common": {
+    "loadFailed": "Couldn't load",
+    "retry": "Try again",
+    "more": "Actions"
   }
 }

@@ -17,5 +17,17 @@
   "about": {
     "heading": "Về {{name}}",
     "noBio": "Kênh chưa có phần giới thiệu."
+  },
+  "upcoming": {
+    "badge": "SẮP DIỄN RA",
+    "startsIn": "Bắt đầu sau",
+    "waiting": "Đang chờ streamer bắt đầu…",
+    "cancelledTitle": "Buổi phát đã bị hủy",
+    "cancelledBody": "Streamer đã hủy hoặc không bắt đầu buổi phát này.",
+    "otherSchedule": "Xem lịch khác",
+    "expected": "Dự kiến {{value}}",
+    "chatClosedTitle": "Chat mở khi buổi phát bắt đầu",
+    "chatClosedInput": "Chat chưa mở",
+    "chat": "Chat"
   }
 }

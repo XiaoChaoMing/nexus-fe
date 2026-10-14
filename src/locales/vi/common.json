@@ -17,7 +17,8 @@
     "following": "Đang theo dõi",
     "search": "Tìm kiếm",
     "profile": "Tôi",
-    "searchPlaceholder": "Tìm kiếm kênh, trò chơi, streamer..."
+    "searchPlaceholder": "Tìm kiếm kênh, trò chơi, streamer...",
+    "searchOpen": "Mở tìm kiếm (Ctrl+K)"
   },
   "actions": {
     "cancel": "Hủy",
@@ -49,8 +50,7 @@
     "suggested": "Kênh đề xuất",
     "noSuggestions": "Chưa có kênh nào đang phát.",
     "loginInvite": "Đăng nhập để theo dõi kênh yêu thích",
-    "following": "Kênh đang theo dõi",
-    "followingEmpty": "Bạn chưa theo dõi kênh nào. Tính năng theo dõi sẽ có ở giai đoạn 4."
+    "following": "Kênh đang theo dõi"
   },
   "notifications": {
     "label": "Thông báo",
@@ -84,7 +84,11 @@
     "UNDERAGE": "Bạn cần đủ 18 tuổi để trở thành Creator.",
     "INVALID_STATE": "Thao tác không còn hợp lệ ở trạng thái hiện tại. Tải lại để xem trạng thái mới.",
     "NOT_CREATOR": "Bạn cần có kênh Creator để dùng Studio.",
-    "fallback": "Có lỗi xảy ra, vui lòng thử lại."
+    "fallback": "Có lỗi xảy ra, vui lòng thử lại.",
+    "HANDLE_TAKEN": "Handle này đã có người dùng.",
+    "CANNOT_FOLLOW_SELF": "Bạn không thể theo dõi kênh của chính mình.",
+    "CHANNEL_SUSPENDED": "Kênh này đang bị tạm khóa.",
+    "PAYLOAD_TOO_LARGE": "Tệp quá lớn."
   },
   "viewers_other": "{{count}} người xem"
 }

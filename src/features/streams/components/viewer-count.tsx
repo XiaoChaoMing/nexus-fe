@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { UserIcon } from 'lucide-react'
-import { formatViewers } from '@/lib/format'
+import { compactCount, formatViewers } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -10,7 +10,10 @@ type Props = {
   className?: string
 }
 
-/** Viewer Count (Components GĐ3 · Chat): red person icon + "1.234" (≥ 1 million: "1,2 Tr"); hidden when unknown. */
+/**
+ * Viewer Count (Components GĐ3 · Chat): red person icon + "1.234" (≥ 1 million: "1,2 Tr"); on pictures the GĐ4 card
+ * style "1,2K". Hidden when unknown.
+ */
 export function ViewerCount({ count, variant = 'plain', className }: Props) {
   const { t } = useTranslation()
   if (typeof count !== 'number') return null
@@ -28,7 +31,7 @@ export function ViewerCount({ count, variant = 'plain', className }: Props) {
       data-testid="viewer-count"
     >
       <UserIcon className={cn('fill-live text-live', variant === 'overlay' ? 'size-3.75' : 'size-4')} aria-hidden />
-      {formatViewers(count)}
+      {variant === 'overlay' ? compactCount(count) : formatViewers(count)}
     </span>
   )
 }

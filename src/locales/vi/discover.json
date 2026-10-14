@@ -1,0 +1,101 @@
+{
+  "browse": {
+    "title": "Khám phá",
+    "groupsLabel": "Nhóm danh mục",
+    "groups": {
+      "ALL": "Tất cả",
+      "GAMES": "Games",
+      "ESPORTS": "Esports",
+      "MUSIC": "Âm nhạc",
+      "IRL": "IRL/Trò chuyện",
+      "CREATIVE": "Sáng tạo"
+    },
+    "viewLabel": "Chế độ xem",
+    "views": {
+      "categories": "Danh mục",
+      "live": "Kênh live"
+    },
+    "sortLabel": "Sắp xếp:",
+    "sorts": {
+      "viewers": "Nhiều người xem",
+      "newest": "Mới nhất"
+    },
+    "languageLabel": "Ngôn ngữ:",
+    "languages": {
+      "all": "Tất cả",
+      "vi": "Tiếng Việt",
+      "en": "English"
+    },
+    "removeTag": "Bỏ lọc {{tag}}",
+    "clearFilters": "Xóa bộ lọc",
+    "liveCount_other": "{{count}} kênh đang phát",
+    "emptyTitle": "Chưa có kênh nào đang phát",
+    "emptyBody": "Xem danh mục hoặc bản xem lại trong lúc chờ.",
+    "seeCategories": "Xem danh mục",
+    "noMatchTitle": "Không có kết quả phù hợp",
+    "noMatchBody": "Thử bỏ bớt bộ lọc hoặc chọn nhóm khác.",
+    "loadFailed": "Không tải được danh sách",
+    "loadFailedBody": "Đã có lỗi khi tải nội dung. Kiểm tra kết nối mạng rồi thử lại.",
+    "loadMoreFailed": "Không tải thêm được",
+    "updates": "Có cập nhật mới",
+    "categoriesEmpty": "Chưa có danh mục nào trong nhóm này."
+  },
+  "category": {
+    "breadcrumb": "Vị trí",
+    "viewersNow": "{{value}} người đang xem",
+    "viewers": "{{value}} người xem",
+    "tabs": {
+      "live": "Live",
+      "videos": "Video"
+    },
+    "liveEmptyTitle": "Chưa có ai phát {{name}} lúc này",
+    "seeVideos": "Xem tab Video",
+    "videosEmptyTitle": "Chưa có bản xem lại nào",
+    "notFoundTitle": "Không tìm thấy danh mục",
+    "notFoundBody": "Danh mục này không tồn tại hoặc đã được đổi tên.",
+    "backToBrowse": "Về Khám phá",
+    "popular": "Danh mục phổ biến",
+    "seeAll": "Xem tất cả"
+  },
+  "following": {
+    "title": "Đang theo dõi",
+    "tabs": {
+      "live": "Live",
+      "all": "Tất cả"
+    },
+    "liveGroup": "Đang phát · {{count}}",
+    "offlineGroup": "Ngoại tuyến · {{count}}",
+    "liveEmptyTitle": "Chưa có kênh nào bạn theo dõi đang phát",
+    "seeAllChannels": "Xem tất cả kênh",
+    "emptyTitle": "Bạn chưa theo dõi kênh nào",
+    "emptyBody": "Theo dõi kênh để biết khi họ phát trực tiếp.",
+    "discover": "Khám phá kênh",
+    "guestTitle": "Theo dõi kênh yêu thích",
+    "guestBody": "Đăng nhập để xem kênh bạn theo dõi đang phát.",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "explore": "Khám phá",
+    "loadFailed": "Không tải được danh sách theo dõi"
+  },
+  "card": {
+    "streamed": "Phát {{time}}",
+    "ended": "Đã kết thúc",
+    "matureContent": "Nội dung 18+",
+    "hidden": "Đã ẩn",
+    "followers": "@{{handle}} · {{value}} người theo dõi",
+    "liveSub": "{{category}} · {{value}} người xem",
+    "liveSubNoCategory": "{{value}} người xem",
+    "lastLive": "Phát lần cuối {{time}}",
+    "neverLive": "Chưa phát"
+  },
+  "sidebar": {
+    "offline": "Ngoại tuyến",
+    "empty": "Theo dõi kênh để thấy họ ở đây",
+    "showMore": "Xem thêm",
+    "showLess": "Thu gọn",
+    "liveTooltip": "{{name}} · {{category}} · {{viewers}}",
+    "liveTooltipNoCategory": "{{name}} · {{viewers}}",
+    "offlineTooltip": "{{name}} · Ngoại tuyến"
+  },
+  "loadMore": "Tải thêm"
+}

@@ -17,5 +17,17 @@
   "about": {
     "heading": "About {{name}}",
     "noBio": "This channel has no description yet."
+  },
+  "upcoming": {
+    "badge": "UPCOMING",
+    "startsIn": "Starts in",
+    "waiting": "Waiting for the streamer to start…",
+    "cancelledTitle": "This stream was cancelled",
+    "cancelledBody": "The streamer cancelled or didn't start this stream.",
+    "otherSchedule": "See other streams",
+    "expected": "About {{value}}",
+    "chatClosedTitle": "Chat opens when the stream starts",
+    "chatClosedInput": "Chat isn't open yet",
+    "chat": "Chat"
   }
 }

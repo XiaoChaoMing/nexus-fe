@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => {
   const emotes = env.VITE_DEV_EMOTES_URL || 'http://localhost:8080'
   const hls = new URL(env.VITE_DEV_HLS_URL || 'http://localhost:9000/nxl-media')
   const bucketPath = hls.pathname.replace(/\/$/, '')
+  // Public images of channel-svc (avatars, banners, category posters): /media/... → bucket nxl-public.
+  const media = new URL(env.VITE_DEV_MEDIA_URL || 'http://localhost:9000/nxl-public')
+  const mediaPath = media.pathname.replace(/\/$/, '')
 
   // Web chỉ gọi một origin nên không cần CORS. Có VITE_DEV_GATEWAY_URL thì mọi thứ đi qua Nginx edge;
   // không có thì Vite tự định tuyến theo tiền tố tới từng service (chạy service ngoài Docker).
@@ -21,6 +24,7 @@ export default defineConfig(({ mode }) => {
     ? {
         '/v1': { target: gateway, changeOrigin: true, ws: true },
         '/hls': { target: gateway, changeOrigin: true },
+        '/media': { target: gateway, changeOrigin: true },
         '/emotes': { target: gateway, changeOrigin: true },
       }
     : {
@@ -31,6 +35,15 @@ export default defineConfig(({ mode }) => {
         '^/v1/channels/[^/]+/chat-settings': { target: chat, changeOrigin: true },
         // Global emote images (/emotes/<code>.webp) are static files of the Nginx edge.
         '/emotes': { target: emotes, changeOrigin: true },
+        // GĐ4 (TSD §3.2): channel VODs live in stream-svc; following, search, categories, schedules and the
+        // Studio channel / schedule pages in channel-svc — before the broader /v1/studio and /v1/channels keys.
+        '^/v1/channels/[^/]+/vods': { target: stream, changeOrigin: true },
+        '/v1/me/following': { target: channel, changeOrigin: true },
+        '/v1/me/search-history': { target: channel, changeOrigin: true },
+        '^/v1/studio/(channel|schedules)': { target: channel, changeOrigin: true },
+        '/v1/categories': { target: channel, changeOrigin: true },
+        '/v1/search': { target: channel, changeOrigin: true },
+        '/v1/schedules': { target: channel, changeOrigin: true },
         '/v1/me/watch-progress': { target: stream, changeOrigin: true },
         '/v1/me/continue-watching': { target: stream, changeOrigin: true },
         '/v1/studio': { target: stream, changeOrigin: true },
@@ -43,6 +56,11 @@ export default defineConfig(({ mode }) => {
           target: hls.origin,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/hls/, bucketPath),
+        },
+        '/media': {
+          target: media.origin,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/media/, mediaPath),
         },
       }
 

@@ -1,0 +1,45 @@
+{
+  "label": "Tìm kiếm",
+  "placeholder": "Tìm kênh, danh mục, video…",
+  "close": "Đóng tìm kiếm",
+  "back": "Quay lại",
+  "clear": "Xóa nội dung tìm kiếm",
+  "groups": {
+    "channel": "Kênh",
+    "stream": "Live",
+    "category": "Danh mục",
+    "vod": "Video"
+  },
+  "recent": "Gần đây",
+  "trending": "Thịnh hành",
+  "clearAll": "Xóa tất cả",
+  "removeEntry": "Xóa \"{{query}}\" khỏi lịch sử",
+  "historyCleared": "Đã xóa lịch sử tìm kiếm",
+  "undo": "Hoàn tác",
+  "seeAllFor": "Xem tất cả kết quả cho \"{{query}}\"",
+  "noResultsTitle": "Không tìm thấy kết quả",
+  "noResultsBody": "Thử từ khóa khác, có dấu hoặc không dấu đều được.",
+  "failedTitle": "Không thể tìm kiếm lúc này",
+  "hints": {
+    "move": "Di chuyển",
+    "open": "Mở",
+    "close": "Đóng"
+  },
+  "results": {
+    "title": "Kết quả cho \"{{query}}\"",
+    "pageTitle": "Tìm kiếm",
+    "tabsLabel": "Loại kết quả",
+    "tabs": {
+      "all": "Tất cả",
+      "channel": "Kênh",
+      "stream": "Live",
+      "category": "Danh mục",
+      "vod": "Video"
+    },
+    "seeMore": "Xem thêm",
+    "blockFailed": "Không tải được",
+    "followers": "{{value}} người theo dõi",
+    "viewers": "{{value}} người xem"
+  },
+  "resultCount_other": "{{count}} kết quả"
+}

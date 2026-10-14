@@ -1,0 +1,102 @@
+{
+  "browse": {
+    "title": "Browse",
+    "groupsLabel": "Category groups",
+    "groups": {
+      "ALL": "All",
+      "GAMES": "Games",
+      "ESPORTS": "Esports",
+      "MUSIC": "Music",
+      "IRL": "IRL/Just chatting",
+      "CREATIVE": "Creative"
+    },
+    "viewLabel": "View",
+    "views": {
+      "categories": "Categories",
+      "live": "Live channels"
+    },
+    "sortLabel": "Sort:",
+    "sorts": {
+      "viewers": "Most viewers",
+      "newest": "Newest"
+    },
+    "languageLabel": "Language:",
+    "languages": {
+      "all": "All",
+      "vi": "Tiếng Việt",
+      "en": "English"
+    },
+    "removeTag": "Remove filter {{tag}}",
+    "clearFilters": "Clear filters",
+    "liveCount_one": "{{count}} channel live",
+    "liveCount_other": "{{count}} channels live",
+    "emptyTitle": "No channels are live",
+    "emptyBody": "Browse categories or replays in the meantime.",
+    "seeCategories": "See categories",
+    "noMatchTitle": "No matching results",
+    "noMatchBody": "Try removing a filter or picking another group.",
+    "loadFailed": "Couldn't load the list",
+    "loadFailedBody": "Something went wrong while loading. Check your connection and try again.",
+    "loadMoreFailed": "Couldn't load more",
+    "updates": "New updates",
+    "categoriesEmpty": "No categories in this group yet."
+  },
+  "category": {
+    "breadcrumb": "Location",
+    "viewersNow": "{{value}} watching now",
+    "viewers": "{{value}} viewers",
+    "tabs": {
+      "live": "Live",
+      "videos": "Videos"
+    },
+    "liveEmptyTitle": "Nobody is streaming {{name}} right now",
+    "seeVideos": "See Videos",
+    "videosEmptyTitle": "No replays yet",
+    "notFoundTitle": "Category not found",
+    "notFoundBody": "This category doesn't exist or was renamed.",
+    "backToBrowse": "Back to Browse",
+    "popular": "Popular categories",
+    "seeAll": "See all"
+  },
+  "following": {
+    "title": "Following",
+    "tabs": {
+      "live": "Live",
+      "all": "All"
+    },
+    "liveGroup": "Live · {{count}}",
+    "offlineGroup": "Offline · {{count}}",
+    "liveEmptyTitle": "None of the channels you follow are live",
+    "seeAllChannels": "See all channels",
+    "emptyTitle": "You don't follow any channels yet",
+    "emptyBody": "Follow channels to know when they go live.",
+    "discover": "Discover channels",
+    "guestTitle": "Follow your favorite channels",
+    "guestBody": "Sign in to see which of your channels are live.",
+    "login": "Sign in",
+    "register": "Sign up",
+    "explore": "Browse",
+    "loadFailed": "Couldn't load the channels you follow"
+  },
+  "card": {
+    "streamed": "Streamed {{time}}",
+    "ended": "Ended",
+    "matureContent": "18+ content",
+    "hidden": "Hidden",
+    "followers": "@{{handle}} · {{value}} followers",
+    "liveSub": "{{category}} · {{value}} viewers",
+    "liveSubNoCategory": "{{value}} viewers",
+    "lastLive": "Last live {{time}}",
+    "neverLive": "Not streamed yet"
+  },
+  "sidebar": {
+    "offline": "Offline",
+    "empty": "Follow channels to see them here",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "liveTooltip": "{{name}} · {{category}} · {{viewers}}",
+    "liveTooltipNoCategory": "{{name}} · {{viewers}}",
+    "offlineTooltip": "{{name}} · Offline"
+  },
+  "loadMore": "Load more"
+}

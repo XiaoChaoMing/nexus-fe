@@ -17,7 +17,8 @@
     "following": "Following",
     "search": "Search",
     "profile": "Me",
-    "searchPlaceholder": "Search channels, games, streamers..."
+    "searchPlaceholder": "Search channels, games, streamers...",
+    "searchOpen": "Open search (Ctrl+K)"
   },
   "actions": {
     "cancel": "Cancel",
@@ -49,8 +50,7 @@
     "suggested": "Suggested channels",
     "noSuggestions": "No channel is live right now.",
     "loginInvite": "Sign in to follow your favourite channels",
-    "following": "Followed channels",
-    "followingEmpty": "You do not follow any channel yet. Following arrives in phase 4."
+    "following": "Followed channels"
   },
   "notifications": {
     "label": "Notifications",
@@ -85,7 +85,11 @@
     "UNDERAGE": "You must be 18 or older to become a Creator.",
     "INVALID_STATE": "This action is no longer valid. Reload to see the current state.",
     "NOT_CREATOR": "You need a Creator channel to use the Studio.",
-    "fallback": "Something went wrong, please try again."
+    "fallback": "Something went wrong, please try again.",
+    "HANDLE_TAKEN": "This handle is already taken.",
+    "CANNOT_FOLLOW_SELF": "You can't follow your own channel.",
+    "CHANNEL_SUSPENDED": "This channel is suspended.",
+    "PAYLOAD_TOO_LARGE": "The file is too large."
   },
   "viewers_one": "{{count}} viewer",
   "viewers_other": "{{count}} viewers"

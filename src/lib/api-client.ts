@@ -29,7 +29,9 @@ type RequestOptions = {
 
 async function send(path: string, opts: RequestOptions): Promise<Response> {
   const headers: Record<string, string> = { Accept: 'application/json', ...opts.headers }
-  if (opts.body !== undefined) headers['Content-Type'] = 'application/json'
+  // FormData sets its own multipart boundary header.
+  const multipart = typeof FormData !== 'undefined' && opts.body instanceof FormData
+  if (opts.body !== undefined && !multipart) headers['Content-Type'] = 'application/json'
 
   const token = opts.auth ? authHooks.getAccessToken() : null
   if (token) headers.Authorization = `Bearer ${token}`
@@ -38,7 +40,7 @@ async function send(path: string, opts: RequestOptions): Promise<Response> {
     return await fetch(path, {
       method: opts.method ?? 'GET',
       headers,
-      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      body: opts.body === undefined ? undefined : multipart ? (opts.body as FormData) : JSON.stringify(opts.body),
       // Same-origin cookie carries the refresh token (HttpOnly, Path=/v1/auth).
       credentials: 'same-origin',
       signal: opts.signal,

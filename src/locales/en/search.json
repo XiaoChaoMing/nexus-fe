@@ -1,0 +1,46 @@
+{
+  "label": "Search",
+  "placeholder": "Search channels, categories, videos…",
+  "close": "Close search",
+  "back": "Back",
+  "clear": "Clear search",
+  "groups": {
+    "channel": "Channels",
+    "stream": "Live",
+    "category": "Categories",
+    "vod": "Videos"
+  },
+  "recent": "Recent",
+  "trending": "Trending",
+  "clearAll": "Clear all",
+  "removeEntry": "Remove \"{{query}}\" from history",
+  "historyCleared": "Search history cleared",
+  "undo": "Undo",
+  "seeAllFor": "See all results for \"{{query}}\"",
+  "noResultsTitle": "No results found",
+  "noResultsBody": "Try another keyword, with or without diacritics.",
+  "failedTitle": "Search isn't available right now",
+  "hints": {
+    "move": "Move",
+    "open": "Open",
+    "close": "Close"
+  },
+  "results": {
+    "title": "Results for \"{{query}}\"",
+    "pageTitle": "Search",
+    "tabsLabel": "Result type",
+    "tabs": {
+      "all": "All",
+      "channel": "Channels",
+      "stream": "Live",
+      "category": "Categories",
+      "vod": "Videos"
+    },
+    "seeMore": "See more",
+    "blockFailed": "Couldn't load",
+    "followers": "{{value}} followers",
+    "viewers": "{{value}} viewers"
+  },
+  "resultCount_one": "{{count}} result",
+  "resultCount_other": "{{count}} results"
+}

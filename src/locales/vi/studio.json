@@ -1,6 +1,6 @@
 {
   "breadcrumb": {
-    "studio": "Creator Studio",
+    "studio": "Studio",
     "streamManager": "Stream Manager"
   },
   "title": "Phát trực tiếp",
@@ -146,5 +146,259 @@
     "body": "Studio dành cho Creator. Nộp đơn đăng ký Creator; khi được duyệt, kênh của bạn được tạo tự động và Studio mở ra.",
     "apply": "Đăng ký Creator",
     "preparing": "Kênh của bạn đang được chuẩn bị, Studio sẽ mở trong giây lát…"
+  },
+  "nav": {
+    "label": "Menu Studio",
+    "dashboard": "Tổng quan",
+    "stream": "Phát trực tiếp",
+    "content": "Nội dung",
+    "schedule": "Lịch phát",
+    "channel": "Kênh",
+    "viewChannel": "Xem kênh"
+  },
+  "category": {
+    "label": "Danh mục",
+    "placeholder": "Chưa chọn danh mục",
+    "search": "Tìm danh mục",
+    "none": "Không có danh mục phù hợp",
+    "clear": "Bỏ danh mục",
+    "liveHint": "Khi đang phát, đổi danh mục áp dụng ngay cho thẻ live và Khám phá."
+  },
+  "dashboard": {
+    "title": "Tổng quan",
+    "refresh": "Làm mới",
+    "live": "Đang phát",
+    "openManager": "Mở Stream Manager",
+    "offline": "Offline",
+    "nextUp": "Buổi sắp tới: {{title}} · {{when}}",
+    "noUpcoming": "Chưa có buổi phát nào được lên lịch.",
+    "goLive": "Phát trực tiếp",
+    "failed": "Không tải được",
+    "range": {
+      "label": "Khoảng thời gian",
+      "7d": "7 ngày",
+      "28d": "28 ngày"
+    },
+    "stats": {
+      "streams": "Buổi phát",
+      "hours": "Giờ phát",
+      "hoursValue": "{{value}} giờ",
+      "vods": "Bản xem lại đang lưu",
+      "vodsSplit": "{{public}} công khai, {{hidden}} đã ẩn",
+      "followers": "Người theo dõi",
+      "newFollowers": "+{{value}} trong {{days}} ngày"
+    },
+    "recent": {
+      "title": "Buổi phát gần đây",
+      "colTitle": "Tiêu đề",
+      "colDate": "Ngày",
+      "colDuration": "Thời lượng",
+      "colEnd": "Lý do kết thúc",
+      "colPeak": "Đỉnh người xem",
+      "colVod": "Bản xem lại",
+      "endCreator": "Bạn kết thúc",
+      "endTimeout": "Mất tín hiệu",
+      "endAdmin": "Quản trị viên kết thúc",
+      "watch": "Xem",
+      "hidden": "Đã ẩn",
+      "emptyTitle": "Chưa có buổi phát nào"
+    },
+    "upcoming": {
+      "title": "Sắp tới",
+      "reminders_other": "{{count}} người đặt nhắc",
+      "manage": "Quản lý lịch"
+    }
+  },
+  "content": {
+    "title": "Nội dung",
+    "filters": {
+      "label": "Lọc bản xem lại",
+      "all": "Tất cả",
+      "public": "Công khai",
+      "hidden": "Đã ẩn",
+      "expired": "Đã hết hạn"
+    },
+    "col": {
+      "video": "Bản xem lại",
+      "date": "Ngày phát",
+      "duration": "Thời lượng",
+      "visibility": "Hiển thị",
+      "expiry": "Thời hạn",
+      "actions": "Thao tác"
+    },
+    "public": "Công khai",
+    "hidden": "Đã ẩn",
+    "daysLeft_other": "Còn {{count}} ngày",
+    "expired": "Đã hết hạn",
+    "actions": {
+      "label": "Thao tác cho {{title}}",
+      "view": "Xem",
+      "rename": "Đổi tên",
+      "hide": "Ẩn",
+      "unhide": "Hiện",
+      "delete": "Xóa"
+    },
+    "renameLabel": "Tiêu đề mới",
+    "renameError": "Tiêu đề từ 1 đến 140 ký tự",
+    "renameSave": "Lưu",
+    "renamed": "Đã đổi tên bản xem lại",
+    "hiddenToast": "Đã ẩn bản xem lại. Người xem không còn thấy video này.",
+    "unhiddenToast": "Đã hiện lại bản xem lại.",
+    "deleteTitle": "Xóa bản xem lại?",
+    "deleteBody": "“{{title}}” sẽ bị xóa vĩnh viễn. Không thể khôi phục.",
+    "deleteConfirm": "Xóa",
+    "deleted": "Đã xóa bản xem lại",
+    "failed": "Không thực hiện được. Thử lại sau.",
+    "emptyTitle": "Chưa có bản xem lại",
+    "emptyBody": "VOD xuất hiện sau mỗi buổi phát và được giữ 14 ngày",
+    "filterEmpty": "Không có bản xem lại nào ở mục này",
+    "loadFailed": "Không tải được danh sách"
+  },
+  "schedule": {
+    "title": "Lịch phát",
+    "create": "Tạo lịch",
+    "activeCount": "{{count}}/{{max}} lịch đang hoạt động",
+    "upcomingTitle": "Buổi phát 14 ngày tới",
+    "yoursTitle": "Lịch của bạn",
+    "reminders_other": "{{count}} người đặt nhắc",
+    "status": {
+      "active": "Đang hoạt động",
+      "ended": "Đã kết thúc",
+      "cancelled": "Đã hủy"
+    },
+    "once": "Một lần · {{when}}",
+    "weekly": "{{days}} hằng tuần lúc {{time}}",
+    "days": {
+      "MO": "Thứ 2",
+      "TU": "Thứ 3",
+      "WE": "Thứ 4",
+      "TH": "Thứ 5",
+      "FR": "Thứ 6",
+      "SA": "Thứ 7",
+      "SU": "Chủ nhật"
+    },
+    "daysShort": {
+      "MO": "T2",
+      "TU": "T3",
+      "WE": "T4",
+      "TH": "T5",
+      "FR": "T6",
+      "SA": "T7",
+      "SU": "CN"
+    },
+    "actions": {
+      "label": "Thao tác cho {{title}}",
+      "move": "Dời",
+      "cancelOne": "Hủy lần này",
+      "edit": "Sửa",
+      "cancelSeries": "Hủy lịch"
+    },
+    "emptyTitle": "Chưa có lịch phát",
+    "emptyBody": "Tạo lịch để người xem biết khi nào bạn lên sóng.",
+    "upcomingEmpty": "Không có buổi phát nào trong 14 ngày tới.",
+    "loadFailed": "Không tải được lịch phát",
+    "form": {
+      "createTitle": "Tạo lịch",
+      "editTitle": "Sửa lịch",
+      "title": "Tiêu đề",
+      "category": "Danh mục",
+      "date": "Ngày",
+      "time": "Giờ bắt đầu",
+      "duration": "Thời lượng dự kiến",
+      "repeat": "Lặp lại",
+      "repeatNone": "Không lặp",
+      "repeatWeekly": "Hằng tuần",
+      "weekdays": "Ngày trong tuần",
+      "timezone": "Giờ theo {{zone}} ({{offset}}) · Đổi trong Cài đặt tài khoản",
+      "preview": "5 buổi tiếp theo",
+      "submitCreate": "Tạo lịch",
+      "submitEdit": "Lưu thay đổi",
+      "created": "Đã tạo lịch",
+      "saved": "Đã lưu lịch",
+      "timingWarning": "Đổi giờ hoặc ngày lặp sẽ gỡ nhắc của các buổi sắp tới. {{count}} người đã đặt nhắc.",
+      "overlap": "Trùng giờ với lịch “{{title}}”. Bạn vẫn có thể lưu.",
+      "errors": {
+        "titleLength": "Tiêu đề từ 1 đến 140 ký tự",
+        "startRequired": "Chọn ngày và giờ bắt đầu",
+        "startMin": "Thời gian bắt đầu phải ở tương lai",
+        "startMax": "Chỉ đặt lịch trong vòng 90 ngày tới",
+        "duration": "Thời lượng từ 15 phút đến 12 giờ",
+        "days": "Chọn ít nhất một ngày trong tuần",
+        "limit": "Bạn đã có 20 lịch đang hoạt động. Hủy bớt lịch để tạo mới.",
+        "generic": "Không lưu được lịch. Thử lại sau."
+      }
+    },
+    "move": {
+      "title": "Dời buổi phát",
+      "body": "Người đã đặt nhắc sẽ được chuyển sang giờ mới.",
+      "date": "Ngày mới",
+      "time": "Giờ mới",
+      "confirm": "Dời buổi phát",
+      "moved": "Đã dời buổi phát"
+    },
+    "cancelOne": {
+      "title": "Hủy buổi phát {{when}}?",
+      "body_other": "{{count}} người đã đặt nhắc sẽ bị gỡ nhắc.",
+      "confirm": "Hủy buổi phát",
+      "keep": "Giữ lại",
+      "done": "Đã hủy buổi phát"
+    },
+    "cancelSeries": {
+      "title": "Hủy lịch “{{title}}”?",
+      "body": "Mọi buổi sắp tới của lịch này sẽ bị gỡ.",
+      "confirm": "Hủy lịch",
+      "done": "Đã hủy lịch"
+    }
+  },
+  "channelSettings": {
+    "title": "Kênh",
+    "avatar": "Ảnh đại diện",
+    "avatarHint": "JPEG, PNG hoặc WebP, tối đa 2 MB. Ảnh được cắt vuông 256×256.",
+    "banner": "Ảnh bìa",
+    "bannerHint": "JPEG, PNG hoặc WebP, tối đa 5 MB. Kích thước 1600×500.",
+    "choose": "Chọn ảnh",
+    "change": "Đổi ảnh",
+    "drop": "Kéo ảnh vào đây hoặc",
+    "uploading": "Đang tải lên…",
+    "avatarSaved": "Đã cập nhật ảnh đại diện",
+    "bannerSaved": "Đã cập nhật ảnh bìa",
+    "tooLarge": "Ảnh vượt quá {{size}} MB",
+    "badFormat": "Định dạng không hỗ trợ. Hãy dùng JPEG, PNG hoặc WebP.",
+    "tooSmall": "Ảnh quá nhỏ: tối thiểu {{size}}.",
+    "uploadFailed": "Không tải ảnh lên được. Thử lại sau.",
+    "displayName": "Tên hiển thị",
+    "handle": "Handle",
+    "handlePrefix": "nexuslive/",
+    "handleHint": "3–25 ký tự: chữ thường, số và dấu gạch dưới",
+    "handleNote": "Bạn có thể đổi handle 30 ngày một lần. Handle cũ sẽ không chuyển hướng.",
+    "handleLocked": "Bạn đổi được handle sau ngày {{date}}",
+    "handleTaken": "Handle này đã có người dùng",
+    "handleInvalid": "Handle này không được phép sử dụng",
+    "bio": "Giới thiệu",
+    "bioMax": "Giới thiệu tối đa 300 ký tự",
+    "links": "Liên kết",
+    "linkType": "Loại liên kết",
+    "linkUrl": "Địa chỉ liên kết",
+    "addLink": "Thêm liên kết",
+    "linksMax": "Tối đa 5 liên kết",
+    "removeLink": "Xóa liên kết",
+    "linkFormat": "Liên kết phải bắt đầu bằng https://",
+    "mature": "Đánh dấu buổi phát mới là nội dung 18+",
+    "nameLength": "Tên hiển thị từ 1 đến 50 ký tự",
+    "unsaved": "Bạn có thay đổi chưa lưu",
+    "discard": "Hủy",
+    "save": "Lưu thay đổi",
+    "saved": "Đã lưu hồ sơ kênh",
+    "saveFailed": "Không lưu được hồ sơ kênh. Thử lại sau.",
+    "handleConfirmTitle": "Đổi handle thành @{{handle}}?",
+    "handleConfirmBody": "Liên kết cũ nexuslive/{{old}} sẽ không còn hoạt động và bạn chỉ đổi lại được sau 30 ngày.",
+    "handleConfirm": "Đổi handle",
+    "preview": "Xem trước",
+    "loadFailed": "Không tải được hồ sơ kênh"
+  },
+  "common": {
+    "loadFailed": "Không tải được",
+    "retry": "Thử lại",
+    "more": "Thao tác"
   }
 }

@@ -6,25 +6,6 @@
     "emptyBody": "This list updates by itself when a creator goes live.",
     "loadFailedBody": "Something went wrong while loading. Check your connection and try again."
   },
-  "browse": {
-    "title": "Browse",
-    "live": "Live channels"
-  },
-  "following": {
-    "title": "Following",
-    "guestTitle": "Follow the channels you love",
-    "guestBody": "Sign in to see what your channels are streaming and hear when they go live.",
-    "login": "Sign in",
-    "register": "Sign up",
-    "emptyTitle": "You do not follow any channel yet",
-    "emptyBody": "Following arrives in phase 4. Meanwhile, discover who is live.",
-    "discover": "Discover channels"
-  },
-  "search": {
-    "title": "Search",
-    "soonTitle": "Search is coming",
-    "soonBody": "Searching channels, streams and categories arrives in phase 2."
-  },
   "title": "Home",
   "hero": {
     "featured": "Top pick",
@@ -44,5 +25,19 @@
     "body": "Come back later, or become the first creator",
     "becomeCreator": "Become a Creator",
     "goLive": "Go live"
+  },
+  "followedLive": {
+    "heading": "Followed channels live now",
+    "seeAll": "See all"
+  },
+  "popularCategories": {
+    "heading": "Popular categories",
+    "seeAll": "See all"
+  },
+  "recommendedVideos": {
+    "heading": "Recommended videos"
+  },
+  "section": {
+    "failed": "Couldn't load"
   }
 }

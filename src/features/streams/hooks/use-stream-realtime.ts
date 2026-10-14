@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { streamKeys } from '@/features/streams/hooks/use-streams'
 import { applyStreamEvent, applyStreamSnapshot } from '@/features/streams/lib/stream-events'
-import type { Stream } from '@/features/streams/types'
+import type { StreamDetail } from '@/features/streams/types'
 import { useRealtimeStatus, useRealtimeTopic } from '@/lib/realtime'
 
 /**
@@ -13,14 +13,15 @@ export function useStreamRealtime(streamId: string, enabled: boolean): boolean {
   const status = useRealtimeStatus()
   const key = streamKeys.stream(streamId)
 
-  const update = (fn: (s: Stream) => Stream) => {
-    const before = qc.getQueryData<Stream>(key)
+  const update = (fn: (s: StreamDetail) => StreamDetail) => {
+    const before = qc.getQueryData<StreamDetail>(key)
     if (!before) return
     const after = fn(before)
     if (after === before) return
-    qc.setQueryData<Stream>(key, after)
+    qc.setQueryData<StreamDetail>(key, after)
     // The end of a broadcast: fetch the authoritative row (endedAt, VOD) right away.
-    if (before.status !== 'ENDED' && after.status === 'ENDED') void qc.invalidateQueries({ queryKey: key })
+    // The end of a broadcast, or an upcoming one going live: fetch the authoritative row (endedAt, VOD, manifest).
+    if (before.status !== after.status && (after.status === 'ENDED' || before.status === 'SCHEDULED')) void qc.invalidateQueries({ queryKey: key })
   }
 
   useRealtimeTopic(enabled && streamId ? `stream:${streamId}` : null, {
