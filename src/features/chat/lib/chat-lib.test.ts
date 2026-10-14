@@ -20,8 +20,13 @@ describe('username colours (BR16)', () => {
     expect(used.size).toBe(12)
   })
 
+  it('picks like chat-svc (FNV-1a 32 of the id, mod 12)', () => {
+    // fnv32a("a") = 0xe40c292c → 3826002220 % 12 = 4
+    expect(usernameColor('a')).toBe(USERNAME_PALETTE[3826002220 % 12])
+  })
+
   it('uses the server colour only when it is in the palette', () => {
-    expect(usernameColor('x', '#fb923c')).toBe('#FB923C')
+    expect(usernameColor('x', '#ffa94d')).toBe('#FFA94D')
     expect(usernameColor('x', '#000000')).toBe(usernameColor('x'))
   })
 })
@@ -102,6 +107,7 @@ describe('error mapping (NXL-B §13)', () => {
   it('slow mode and rate limit start a countdown from retryAfterSec', () => {
     expect(errorEffect('CHAT_SLOW_MODE', { retryAfterSec: 8 }, 1000)).toEqual({ cooldownUntil: 9000, notice: { kind: 'slow', untilMs: 9000 } })
     expect(errorEffect('RATE_LIMITED', { retryAfterSec: '5' }, 0)).toMatchObject({ cooldownUntil: 5000 })
+    expect(errorEffect('CHAT_FOLLOWERS_ONLY', { requiredMin: '60', followedMin: '30' }, 0)).toEqual({ lock: { kind: 'followers', requiredMin: 60 } })
   })
 
   it('a snapshot refusal locks without a notice or a modal', () => {
@@ -175,6 +181,12 @@ describe('parsing untrusted payloads', () => {
       room: { status: 'READ_ONLY', mode: { slowSec: 10, followersMin: null, subsOnly: true } },
       me: { role: 'STREAMER', canSend: true },
     })
+    // chat-svc: no room yet, and a guest.
+    expect(parseChatSnapshot({ room: { status: 'NOT_OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false } }, me: { role: 'GUEST', canSend: false, reason: 'UNAUTHORIZED' } })).toMatchObject({
+      room: { status: 'NOT_OPEN' },
+      me: { role: 'GUEST', reason: 'UNAUTHORIZED' },
+    })
+    expect(parseChatSnapshot({ room: {}, me: { canSend: false, reason: 'CHAT_SLOW_MODE', details: { retryAfterSec: '7' } } }).me?.retryAfterSec).toBe(7)
     expect(parseChatSnapshot(null)).toEqual({ room: { status: 'OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false } }, me: null })
   })
 
@@ -182,7 +194,8 @@ describe('parsing untrusted payloads', () => {
     expect(parseChatEvent('ack', { clientMsgId: 'c', messageId: 'm' })).toEqual({ type: 'ack', clientMsgId: 'c', messageId: 'm' })
     expect(parseChatEvent('mode_change', { slowSec: 5, followersMin: 0, subsOnly: false })).toEqual({ type: 'mode_change', mode: { slowSec: 5, followersMin: 0, subsOnly: false } })
     expect(parseChatEvent('room_state', { status: 'READ_ONLY' })).toEqual({ type: 'room_state', status: 'READ_ONLY' })
-    expect(parseChatEvent('system', { type: 'MODE_CHANGE', text: 'x' })).toBeNull()
+    expect(parseChatEvent('system', { type: 'MODE_CHANGE', text: 'x', meta: {} })).toBeNull()
+    expect(parseChatEvent('system', { type: 'Mode_Change', text: 'x' })).toBeNull()
     expect(parseChatEvent('system', { type: 'notice', text: 'x' })).toEqual({ type: 'system', text: 'x' })
     expect(parseChatEvent('delete', {})).toBeNull()
   })

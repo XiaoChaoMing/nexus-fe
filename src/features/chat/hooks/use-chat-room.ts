@@ -165,7 +165,7 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
   const onError = useCallback(
     (err: ErrorFrame) => {
       const effect = errorEffect(err.code, err.details)
-      if (err.ref) {
+      if (err.ref && err.ref !== topic) {
         clearTimer(err.ref)
         const body = bodies.current.get(err.ref)
         bodies.current.delete(err.ref)
@@ -178,7 +178,7 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
       // Without ref: a refused subscribe or a room-wide refusal; only locks make sense here.
       if (effect.lock) dispatch({ type: 'rejected', clientMsgId: null, effect: { lock: effect.lock } })
     },
-    [clearTimer, gated, streamId],
+    [clearTimer, gated, streamId, topic],
   )
 
   useRealtimeTopic(topic, {

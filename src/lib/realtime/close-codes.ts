@@ -38,7 +38,8 @@ export function closeAction(code: number, reason?: string): CloseAction {
     case CLOSE.restart:
       return { kind: 'restart' }
     case CLOSE.unauthorized:
-      return { kind: 'reauth' }
+      // The connection's identity changed (sign-in/out raced a renewal): reconnect with the current one.
+      return /identity changed/i.test(reason ?? '') ? { kind: 'restart' } : { kind: 'reauth' }
     case CLOSE.forbidden:
       return { kind: 'stop' }
     case CLOSE.tooMany:

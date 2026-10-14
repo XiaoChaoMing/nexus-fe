@@ -279,7 +279,8 @@ export class RealtimeClient {
         return
       }
       case 'error': {
-        const topic = (frame.ref && this.refs.get(frame.ref)?.topic) || frame.topic
+        // `ref` is a clientMsgId (refused send) or the topic itself (refused subscribe).
+        const topic = (frame.ref && (this.refs.get(frame.ref)?.topic ?? (this.topics.has(frame.ref) ? frame.ref : null))) || frame.topic
         if (frame.ref) this.refs.delete(frame.ref)
         const targets = topic ? this.topics.listeners(topic) : this.topics.allListeners()
         for (const l of targets) l.onError?.(frame)

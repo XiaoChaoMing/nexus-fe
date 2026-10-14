@@ -69,6 +69,7 @@ describe('closeAction', () => {
   it.each([
     [1012, undefined, { kind: 'restart' }],
     [4001, undefined, { kind: 'reauth' }],
+    [4001, 'identity changed, reconnect', { kind: 'restart' }],
     [4003, undefined, { kind: 'stop' }],
     [4008, undefined, { kind: 'backoff' }],
     [1006, undefined, { kind: 'backoff' }],

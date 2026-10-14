@@ -159,6 +159,18 @@ describe('RealtimeClient', () => {
     expect(b.errors).toHaveLength(0)
   })
 
+  it('routes a refused subscribe (ref = topic) to that topic only', () => {
+    const c = makeClient()
+    const a = listener()
+    const b = listener()
+    c.subscribe('chat:s1', a)
+    c.subscribe('user:x', b)
+    connectReady()
+    last().receive({ op: 'error', code: 'FORBIDDEN', message: '', ref: 'user:x' })
+    expect(b.errors).toHaveLength(1)
+    expect(a.errors).toHaveLength(0)
+  })
+
   it('refuses to send before the topic is subscribed', () => {
     const c = makeClient()
     c.subscribe('chat:s1', listener())

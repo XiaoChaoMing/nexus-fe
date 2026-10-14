@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
   const stream = env.VITE_DEV_STREAM_URL || 'http://localhost:8092'
   const channel = env.VITE_DEV_CHANNEL_URL || 'http://localhost:8094'
   const chat = env.VITE_DEV_CHAT_URL || 'http://localhost:8095'
+  const emotes = env.VITE_DEV_EMOTES_URL || 'http://localhost:8080'
   const hls = new URL(env.VITE_DEV_HLS_URL || 'http://localhost:9000/nxl-media')
   const bucketPath = hls.pathname.replace(/\/$/, '')
 
@@ -20,6 +21,7 @@ export default defineConfig(({ mode }) => {
     ? {
         '/v1': { target: gateway, changeOrigin: true, ws: true },
         '/hls': { target: gateway, changeOrigin: true },
+        '/emotes': { target: gateway, changeOrigin: true },
       }
     : {
         // Specific prefixes first: Vite uses the first matching key.
@@ -27,6 +29,8 @@ export default defineConfig(({ mode }) => {
         '/v1/ws': { target: chat, changeOrigin: true, ws: true },
         '/v1/chat': { target: chat, changeOrigin: true },
         '^/v1/channels/[^/]+/chat-settings': { target: chat, changeOrigin: true },
+        // Global emote images (/emotes/<code>.svg) are static files of the Nginx edge.
+        '/emotes': { target: emotes, changeOrigin: true },
         '/v1/me/watch-progress': { target: stream, changeOrigin: true },
         '/v1/me/continue-watching': { target: stream, changeOrigin: true },
         '/v1/studio': { target: stream, changeOrigin: true },

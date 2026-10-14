@@ -33,8 +33,12 @@ function strOrNull(v: unknown): string | null {
   return typeof v === 'string' && v !== '' ? v : null
 }
 
+/** Numbers may come as strings (chat-svc sends `details` values as strings: "retryAfterSec": "10"). */
 function num(v: unknown): number | null {
-  return typeof v === 'number' && Number.isFinite(v) ? v : null
+  if (typeof v === 'number' && Number.isFinite(v)) return v
+  if (typeof v === 'string' && /^-?\d+(\.\d+)?$/.test(v.trim())) return Number(v)
+
+  return null
 }
 
 const BADGES: readonly ChatBadge[] = ['STREAMER', 'MODERATOR', 'VIP', 'SUB_T1', 'SUB_T2', 'SUB_T3', 'VERIFIED']

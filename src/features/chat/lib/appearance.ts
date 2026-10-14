@@ -21,29 +21,29 @@ export function visibleBadges(badges: readonly ChatBadge[]): ChatBadge[] {
 }
 
 /**
- * BR16: 12 fixed username colours, each ≥ 4.5:1 on the chat column (`surface` #18181B) and on `card`
- * (#202024). No crimson (Live/error) and no Electric Pulse green (mentions).
+ * BR16: the 12 username colours of chat-svc (`entity/author.go`, same FNV-1a pick by user id), each ≥ 4.5:1 on
+ * the chat column (`surface` #18181B) and on `card` (#202024).
  */
 export const USERNAME_PALETTE = [
-  '#FB923C',
-  '#FBBF24',
-  '#A3E635',
-  '#2DD4BF',
-  '#22D3EE',
-  '#38BDF8',
-  '#60A5FA',
-  '#818CF8',
-  '#A78BFA',
-  '#C084FC',
-  '#E879F9',
-  '#F472B6',
+  '#FF8A8A',
+  '#FFA94D',
+  '#FFD43B',
+  '#A9E34B',
+  '#69DB7C',
+  '#63E6BE',
+  '#66D9E8',
+  '#74C0FC',
+  '#91A7FF',
+  '#B197FC',
+  '#E599F7',
+  '#FAA2C1',
 ] as const
 
-/** FNV-1a: a stable, well spread hash of the user id. */
+/** FNV-1a 32 over the UTF-8 bytes of the user id: the same pick as chat-svc's `ColorOf`. */
 function hash(s: string): number {
   let h = 0x811c9dc5
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i)
+  for (const byte of new TextEncoder().encode(s)) {
+    h ^= byte
     h = Math.imul(h, 0x01000193)
   }
 

@@ -24,7 +24,7 @@ Frontend SPA của NexusLive — React + TypeScript + Vite. Kiến trúc và lý
 
 Sao chép `.env.example` thành `.env.local`. Web chỉ gọi một origin (`/v1`, `/hls` qua Vite proxy), nên không cần CORS. Có hai cách nối backend:
 
-**1. Qua Nginx edge (khuyên dùng).** Backend chạy cả stack: `make nxl-up-all` trong `nexuslive-be`. Đặt `VITE_DEV_GATEWAY_URL=http://localhost:8080` — mọi `/v1` và `/hls` đi qua edge, định tuyến giống hệt khi deploy.
+**1. Qua Nginx edge (khuyên dùng).** Backend chạy cả stack: `make nxl-up-all` trong `nexuslive-be`. Đặt `VITE_DEV_GATEWAY_URL=http://localhost:8080` — mọi `/v1`, `/hls` và `/emotes` đi qua edge, định tuyến giống hệt khi deploy.
 
 **2. Gọi thẳng từng service** (khi chạy service ngoài Docker, không đặt `VITE_DEV_GATEWAY_URL`): Vite tự định tuyến theo tiền tố.
 
@@ -32,6 +32,7 @@ Sao chép `.env.example` thành `.env.local`. Web chỉ gọi một origin (`/v1
 | --- | --- | --- |
 | `/v1/studio`, `/v1/streams`, `/v1/vods`, `/v1/me/watch-progress`, `/v1/me/continue-watching` | stream-svc `http://localhost:8092` | `VITE_DEV_STREAM_URL` |
 | `/v1/ws` (WebSocket), `/v1/chat`, `/v1/channels/{id}/chat-settings` | chat-svc `http://localhost:8095` | `VITE_DEV_CHAT_URL` |
+| `/emotes` (ảnh emote toàn cầu, file tĩnh của edge) | Nginx edge `http://localhost:8080` | `VITE_DEV_EMOTES_URL` |
 | `/v1/channels` | channel-svc `http://localhost:8094` | `VITE_DEV_CHANNEL_URL` |
 | `/v1` còn lại (auth) | identity-svc `http://localhost:8090` | `VITE_DEV_IDENTITY_URL` |
 | `/hls` | bucket MinIO `http://localhost:9000/nxl-media` | `VITE_DEV_HLS_URL` |
