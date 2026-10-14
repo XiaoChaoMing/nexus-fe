@@ -1,4 +1,6 @@
 import { configureAuth } from '@/lib/api-client'
+import { configureRealtime, realtime } from '@/lib/realtime'
+import { anonId } from '@/features/streams/lib/anon-id'
 import { detailString, errorCode } from '@/lib/api-error'
 import { authApi, meApi } from '@/features/auth/api/auth-api'
 import { normalizeMe } from '@/features/auth/lib/roles'
@@ -67,12 +69,34 @@ export function refreshSession(): Promise<boolean> {
   return inflight
 }
 
+/**
+ * Realtime (`/v1/ws`): the access token, or `null` + the guest id (viewer count, TSD GĐ3 §5.1). A renewed token
+ * of the same account is sent as `auth` on the open connection; another account (or sign-out) reconnects so
+ * every topic gets a fresh `me` snapshot.
+ */
+function wireRealtime() {
+  configureRealtime({
+    getAuth: () => {
+      const token = useAuthStore.getState().accessToken
+
+      return token ? { token } : { token: null, anonId: anonId() }
+    },
+    refreshAuth: refreshSession,
+  })
+  useAuthStore.subscribe((s, prev) => {
+    if (s.accessToken === prev.accessToken) return
+    if ((s.user?.id ?? null) !== (prev.user?.id ?? null)) realtime().reconnect()
+    else realtime().reauthenticate()
+  })
+}
+
 /** Wires the HTTP layer to the auth store and restores the session from the refresh cookie. */
 export function initAuth(): Promise<boolean> {
   configureAuth({
     getAccessToken: () => useAuthStore.getState().accessToken,
     refresh: refreshSession,
   })
+  wireRealtime()
 
   return refreshSession()
 }
