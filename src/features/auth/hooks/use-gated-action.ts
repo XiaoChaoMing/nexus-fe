@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { savePendingAction, type PendingActionType } from '@/features/auth/lib/pending-action'
 import { runAction } from '@/features/auth/lib/run-action'
-import { useAuthModal, type AuthTab } from '@/features/auth/stores/auth-modal-store'
+import { useAuthModal, type AuthContext, type AuthTab } from '@/features/auth/stores/auth-modal-store'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 
 export type GatedAction = {
@@ -12,6 +12,8 @@ export type GatedAction = {
   returnTo?: string
   /** Tab the modal opens on for guests. */
   tab?: AuthTab
+  /** Context line of the modal. */
+  context?: AuthContext
 }
 
 /**
@@ -35,7 +37,7 @@ export function useGatedAction() {
         return
       }
       savePendingAction(full)
-      show(action.tab ?? 'login')
+      show(action.tab ?? 'login', action.context ?? null)
     },
     [signedIn, me, currentPath, navigate, show],
   )

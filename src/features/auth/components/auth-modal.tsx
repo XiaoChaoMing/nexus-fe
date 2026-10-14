@@ -15,6 +15,7 @@ export function AuthModal() {
   const tab = useAuthModal((s) => s.tab)
   const setTab = useAuthModal((s) => s.setTab)
   const close = useAuthModal((s) => s.close)
+  const context = useAuthModal((s) => s.context)
   const signedIn = () => close({ signedIn: true })
   // Links inside the forms (forgot password) leave the page; the remembered action no longer applies.
   const leave = () => close()
@@ -28,7 +29,7 @@ export function AuthModal() {
       >
         <DialogHeader>
           <DialogTitle>{tab === 'login' ? t('modal.loginTitle') : t('modal.registerTitle')}</DialogTitle>
-          <DialogDescription id="auth-modal-desc">{t('modal.subtitle')}</DialogDescription>
+          <DialogDescription id="auth-modal-desc">{context ? t(`modal.context.${context}`) : t('modal.subtitle')}</DialogDescription>
         </DialogHeader>
         <Tabs value={tab} onValueChange={(v) => setTab(v as AuthTab)}>
           <TabsList aria-label={t('modal.tabs')}>

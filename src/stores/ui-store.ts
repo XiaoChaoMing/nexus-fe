@@ -12,6 +12,9 @@ type UiState = {
   /** The Chat tab of a live room is open (mobile: bottom nav and stream title give it their space). */
   chatTabOpen: boolean
   setChatTabOpen: (open: boolean) => void
+  /** The Ctrl+K search palette is open. */
+  searchOpen: boolean
+  setSearchOpen: (open: boolean) => void
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
 }
@@ -33,6 +36,8 @@ export const useUiStore = create<UiState>()(
       requestChatFocus: () => set((s) => ({ chatFocusRequest: s.chatFocusRequest + 1 })),
       chatTabOpen: false,
       setChatTabOpen: (chatTabOpen) => set({ chatTabOpen }),
+      searchOpen: false,
+      setSearchOpen: (searchOpen) => set({ searchOpen }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
     }),

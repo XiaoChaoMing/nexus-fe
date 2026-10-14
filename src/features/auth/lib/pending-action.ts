@@ -13,8 +13,10 @@ export type PendingActionType =
   | 'goLive'
   /** Creator CTA: the Creator application (or Studio for an existing creator). */
   | 'becomeCreator'
-  /** Follow a channel (the follow API ships in GĐ4; GĐ1 only records the intent). */
+  /** Follow a channel (`channelId`, `channelName`). */
   | 'follow'
+  /** Set a reminder for a scheduled broadcast (`scheduleId`, `occurrenceAt`). */
+  | 'remind'
   /** Open a page that needs an account (Following, Profile, session-expired return). */
   | 'navigate'
   /** Chat in a live room (NXL-B AF10): back to the stream with the chat input focused. */
@@ -30,7 +32,7 @@ export type PendingAction = {
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
-const TYPES: readonly PendingActionType[] = ['goLive', 'becomeCreator', 'follow', 'navigate', 'chat']
+const TYPES: readonly PendingActionType[] = ['goLive', 'becomeCreator', 'follow', 'remind', 'navigate', 'chat']
 
 function defaultStorage(): StorageLike | null {
   try {
