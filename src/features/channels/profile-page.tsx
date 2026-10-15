@@ -42,7 +42,7 @@ import { useChannelProfile } from '@/features/streams/hooks/use-streams'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { MEDIA, useMediaQuery } from '@/hooks/use-media-query'
 import { useNow } from '@/hooks/use-now'
-import { errorCode, isApiError } from '@/lib/api-error'
+import { detailString, errorCode, isApiError } from '@/lib/api-error'
 import { compactCount, formatDate, formatDuration, formatNumber, relativeTime } from '@/lib/format'
 import { browserTimeZone, gmtLabel } from '@/lib/timezone'
 import { cn } from '@/lib/utils'
@@ -413,23 +413,27 @@ function ProfileNotFound() {
  * handles; reserved words resolve to a channel only under `/c/`.
  */
 /**
- * 04 · Trang Creator — Kênh tạm ngưng: the profile answers 403 CHANNEL_SUSPENDED (no data), so only the handle is
- * shown, faded; no Follow, no tabs, no reason.
+ * 04 · Trang Creator — Kênh tạm ngưng: the profile answers 403 CHANNEL_SUSPENDED with only the public name and
+ * avatar in `details` (handle as the fallback), shown faded; no Follow, no tabs, no reason.
  */
-function ChannelSuspended({ handle }: { handle: string }) {
+function ChannelSuspended({ handle, error }: { handle: string; error: unknown }) {
   const { t } = useTranslation(['channel', 'common'])
+  const shownHandle = detailString(error, 'handle') ?? handle
+  const name = detailString(error, 'displayName') || shownHandle
+  const avatarUrl = detailString(error, 'avatarUrl')
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 py-8 md:px-12 md:py-10" data-testid="channel-suspended">
       <header className="flex items-center gap-5 border-b pb-6">
         <Avatar className="size-18 opacity-40 outline outline-border md:size-24">
+          {avatarUrl && <AvatarImage src={avatarUrl} alt="" className="object-cover" />}
           <AvatarFallback className="text-[22px] md:text-[28px]" aria-hidden>
-            {handle.slice(0, 2).toUpperCase()}
+            {channelInitials({ displayName: name, handle: shownHandle })}
           </AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="truncate font-heading text-[22px] leading-8 font-bold text-muted-foreground md:text-[28px] md:leading-9">{handle}</h1>
-          <p className="text-body-md text-subtle-foreground">@{handle}</p>
+          <h1 className="truncate font-heading text-[22px] leading-8 font-bold text-muted-foreground md:text-[28px] md:leading-9">{name}</h1>
+          <p className="text-body-md text-subtle-foreground">@{shownHandle}</p>
         </div>
       </header>
       <div className="flex justify-center">
@@ -463,7 +467,7 @@ export function ProfilePage() {
   const setTab = (next: Tab) => setSp(next === 'home' ? new URLSearchParams() : new URLSearchParams({ tab: next }), { replace: false })
 
   if (!handle || (query.isError && isApiError(query.error) && query.error.status === 404)) return <ProfileNotFound />
-  if (query.isError && errorCode(query.error) === 'CHANNEL_SUSPENDED') return <ChannelSuspended handle={handle} />
+  if (query.isError && errorCode(query.error) === 'CHANNEL_SUSPENDED') return <ChannelSuspended handle={handle} error={query.error} />
   if (query.isError) {
     return (
       <div className="mx-auto max-w-[1200px] px-4 py-16">

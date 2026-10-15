@@ -98,7 +98,7 @@ export function parsePayload(type: NotificationType | null, raw: unknown): Notif
 /** Server links are app paths ("/live/…", "/kaelen?tab=schedule"); anything else is not followed. */
 export function safeLink(v: unknown): string | null {
   if (typeof v !== 'string' || !v.startsWith('/') || v.startsWith('//') || v.startsWith('/\\') || v.length > 512) return null
-  // NEW_FOLLOWER points at "/studio/dashboard"; the Studio overview of this app is "/studio".
+  // NEW_FOLLOWER rows stored before the backend fix point at "/studio/dashboard"; the Studio overview is "/studio".
   if (v === '/studio/dashboard') return '/studio'
 
   return v
