@@ -63,7 +63,7 @@ export function RowButton({ children, onClick, disabled, label, testId }: { chil
       disabled={disabled}
       aria-label={label}
       data-testid={testId}
-      className="h-9 shrink-0 rounded-lg border bg-card px-3.5 text-body-md font-medium text-foreground outline-none hover:border-border-strong focus-visible:outline-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 max-md:h-11"
+      className="h-9 shrink-0 rounded-lg border bg-card px-3.5 text-body-md font-medium whitespace-nowrap text-foreground outline-none hover:border-border-strong focus-visible:outline-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 max-md:h-11"
     >
       {children}
     </button>

@@ -12,8 +12,8 @@ import type { Restriction, RestrictionType } from '@/features/moderation/types'
 import { MEDIA, useMediaQuery } from '@/hooks/use-media-query'
 import { useNow } from '@/hooks/use-now'
 import { formatDate } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import { useSearchParams } from 'react-router'
+import { cn } from '@/lib/utils'
 
 const FILTERS = ['all', 'BAN', 'TIMEOUT'] as const
 type Filter = (typeof FILTERS)[number]
@@ -147,11 +147,11 @@ export function RestrictionsPanel({ channelId, readOnly = false }: { channelId: 
             <tr className="h-10 bg-card text-label-sm font-semibold text-muted-foreground">
               <th className="w-50 px-3 font-semibold">{t('restrictions.colUser')}</th>
               <th className="w-22 px-3 font-semibold">{t('restrictions.colType')}</th>
-              <th className="w-44 px-3 font-semibold">{t('restrictions.colExpires')}</th>
+              <th className="w-52 px-3 font-semibold">{t('restrictions.colExpires')}</th>
               <th className="w-32 px-3 font-semibold">{t('restrictions.colActor')}</th>
               <th className="px-3 font-semibold">{t('restrictions.colReason')}</th>
               <th className="w-30 px-3 font-semibold">{t('restrictions.colAt')}</th>
-              <th className="w-28 px-3" />
+              <th className="w-32 px-3" />
             </tr>
           </thead>
           <tbody>
@@ -169,10 +169,10 @@ export function RestrictionsPanel({ channelId, readOnly = false }: { channelId: 
                 <td className="px-3">
                   <TypeBadge type={r.type} />
                 </td>
-                <td className="px-3 tabular-nums">{times.expires(r, now)}</td>
+                <td className="px-3 whitespace-nowrap tabular-nums">{times.expires(r, now)}</td>
                 <td className="truncate px-3">{r.actor ? `@${r.actor.username}` : t('restrictions.none')}</td>
                 <td className="px-3 break-words">{r.reason ?? t('restrictions.none')}</td>
-                <td className="px-3">{times.at(r.createdAt, now)}</td>
+                <td className="px-3 whitespace-nowrap">{times.at(r.createdAt, now)}</td>
                 <td className="px-3 text-right">{action(r)}</td>
               </tr>
             ))}
