@@ -13,6 +13,8 @@ export const blockKeys = {
 }
 
 const EMPTY: ReadonlySet<string> = new Set()
+// Module-level so the Set keeps its identity between renders (an inline `select` runs again on every render).
+const toSet = (ids: string[]): ReadonlySet<string> => new Set(ids)
 
 /** People the account blocked (≤ 1000 ids, loaded once per session): their chat lines are hidden everywhere. */
 export function useBlockedIds(): ReadonlySet<string> {
@@ -22,7 +24,7 @@ export function useBlockedIds(): ReadonlySet<string> {
     queryFn: blocksApi.ids,
     enabled: userId !== null,
     staleTime: Infinity,
-    select: (ids) => new Set(ids),
+    select: toSet,
   })
 
   return query.data ?? EMPTY

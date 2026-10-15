@@ -93,6 +93,8 @@ export function ChatModProvider({ room, children }: { room: ChatRoom; children: 
   const blocked = useBlockedIds()
   const { ids: muted, toggle } = useMuted()
   const { block, unblock } = useBlockActions()
+  // `useMutation` results are new objects every render; only `mutate` is stable (keeps the context value steady).
+  const unblockUser = unblock.mutate
   const gated = useGatedAction()
   const report = useReport()
   const [card, setCard] = useState<{ user: ModTarget & { displayName: string }; anchor: Anchor } | null>(null)
@@ -138,13 +140,13 @@ export function ChatModProvider({ room, children }: { room: ChatRoom; children: 
       openCard: (user, anchor) => setCard({ user, anchor }),
       askBan: setBan,
       askBlock: (u) => (signedIn ? setBlockTarget(u) : gated({ type: 'chat', params: { streamId: room.streamId } })),
-      unblock: (u) => unblock.mutate({ id: u.id, username: u.username }),
+      unblock: (u) => unblockUser({ id: u.id, username: u.username }),
       customTimeout: (user, anchor) => setCustom({ user, anchor }),
       toggleMute,
       report,
       reportMessage,
     }),
-    [room.streamId, room.channelId, room.me?.id, mod, canModerate, me?.role, pinnedId, blocked, muted, signedIn, gated, unblock, toggleMute, report, reportMessage],
+    [room.streamId, room.channelId, room.me?.id, mod, canModerate, me?.role, pinnedId, blocked, muted, signedIn, gated, unblockUser, toggleMute, report, reportMessage],
   )
 
   return (
