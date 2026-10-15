@@ -54,3 +54,14 @@ Không thêm thư viện. Không sửa repo backend / admin / docs.
 3. Refresh sau khi Admin khóa trả `401 SESSION_EXPIRED` thay vì `ACCOUNT_LOCKED` → tải lại trang thành Khách (khớp ghi
    chú design, nhưng mất màn khóa sau reload).
 4. Thẻ người dùng chat: `createdAt` trả `null`.
+
+## 5. Sau close-out backend (2026-10-16)
+
+Backend sửa cả bốn mục ở §4 (TSD backend v1.1 §16):
+
+1. `NEW_FOLLOWER` trỏ `/studio`; web giữ đổi hướng `/studio/dashboard` → `/studio` cho thông báo đã lưu.
+2. `403 CHANNEL_SUSPENDED` của hồ sơ kèm `details {handle, displayName, avatarUrl?}` → trang "Kênh tạm ngưng" hiện tên hiển thị
+   và ảnh đại diện (handle khi thiếu).
+3. Refresh của tài khoản bị khóa → `403 ACCOUNT_LOCKED` (+ `lockedUntil`): tải lại trang vẫn ra `/account-locked?until=`; lỗi
+   khóa không còn bật thêm toast "phiên hết hạn". E2E `m4-moderator` kiểm thêm bước tải lại.
+4. Thẻ người dùng chat có `createdAt`.
