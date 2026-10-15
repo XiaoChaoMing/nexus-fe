@@ -20,7 +20,8 @@
     "retry": "Thử lại",
     "unavailable": "Chat tạm thời không khả dụng",
     "unsupported": "Không thể kết nối chat trên trình duyệt này",
-    "disabled": "Chat đang tạm tắt"
+    "disabled": "Chat đang tạm tắt",
+    "accountLocked": "Tài khoản của bạn đã bị khóa"
   },
   "badge": {
     "STREAMER": "Streamer",
@@ -82,7 +83,9 @@
     "emotes": "Emote",
     "tooLong": "Tin nhắn tối đa {{max}} ký tự.",
     "tooManyLines": "Tin nhắn tối đa {{max}} dòng.",
-    "closeNotice": "Đóng thông báo"
+    "closeNotice": "Đóng thông báo",
+    "accountLocked": "Tài khoản của bạn đã bị khóa",
+    "timeoutLeft": "Bạn bị tạm khóa chat đến {{time}} · còn {{left}}"
   },
   "error": {
     "slow_other": "Chế độ chậm đang bật. Bạn gửi lại sau {{count}} giây.",
@@ -91,7 +94,8 @@
     "invalid": "Tin nhắn trống hoặc quá dài.",
     "contentBlocked": "Tin nhắn không được gửi do vi phạm quy tắc kênh.",
     "forbidden": "Bạn không có quyền thực hiện thao tác này.",
-    "failed": "Không gửi được tin nhắn. Thử lại sau."
+    "failed": "Không gửi được tin nhắn. Thử lại sau.",
+    "contentBlockedLink": "Kênh này không cho phép gửi liên kết."
   },
   "emote": {
     "title": "Emote",
@@ -133,5 +137,9 @@
     "close": "Đóng"
   },
   "emptyTitle": "Chưa có tin nhắn nào.",
-  "emptyBody": "Hãy là người đầu tiên chào streamer!"
+  "emptyBody": "Hãy là người đầu tiên chào streamer!",
+  "blocked": {
+    "TERM": "Tin nhắn không được gửi do vi phạm quy tắc kênh.",
+    "LINK": "Kênh này không cho phép gửi liên kết."
+  }
 }

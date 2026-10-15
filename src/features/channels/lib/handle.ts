@@ -7,7 +7,7 @@ export const RESERVED_HANDLES: ReadonlySet<string> = new Set([
   'c', 'media', 'hls', 'emotes', 'api', 'v1', 'ws', 'help', 'about', 'terms', 'privacy', 'notifications',
   'messages', 'home', 'categories', 'schedule', 'explore', 'nexuslive',
   // Pages of this app that the server list does not name.
-  'account', 'dev', 'verify-email', 'forgot-password', 'reset-password', 'session-expired', 'account-locked',
+  'account', 'dev', 'moderation', 'verify-email', 'forgot-password', 'reset-password', 'session-expired', 'account-locked',
 ])
 
 /** New handles (BR-D14): 3–25 lower-case letters, digits or "_". */

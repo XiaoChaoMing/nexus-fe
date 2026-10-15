@@ -151,6 +151,14 @@ export class RealtimeClient {
 
   /** Another account (or sign-out): a fresh connection, topics resumed from their `lastSeq`. */
   reconnect() {
+    // A 4003 belongs to the account that was refused (locked): another identity may connect again.
+    if (this.statusValue === 'forbidden') {
+      this.setStatus('idle')
+      this.attempt = 0
+      this.ensureConnected()
+
+      return
+    }
     if (this.statusValue === 'failed') {
       this.retry()
 

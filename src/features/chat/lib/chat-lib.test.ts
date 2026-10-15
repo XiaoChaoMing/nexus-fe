@@ -111,7 +111,7 @@ describe('error mapping (NXL-B §13)', () => {
   })
 
   it('a snapshot refusal locks without a notice or a modal', () => {
-    const me: ChatMe = { role: 'GUEST', badges: [], color: null, canSend: false, reason: 'UNAUTHORIZED', retryAfterSec: null, until: null, requiredMin: null }
+    const me: ChatMe = { role: 'GUEST', badges: [], color: null, canSend: false, reason: 'UNAUTHORIZED', retryAfterSec: null, until: null, requiredMin: null, canModerate: false, restriction: null }
     expect(effectFromMe(me)).toEqual({})
     expect(effectFromMe({ ...me, role: 'VIEWER', reason: 'CHAT_SLOW_MODE', retryAfterSec: 4 }, 0)).toEqual({ cooldownUntil: 4000 })
   })
@@ -177,22 +177,22 @@ describe('parsing untrusted payloads', () => {
   })
 
   it('parses the chat snapshot with defaults', () => {
-    expect(parseChatSnapshot({ room: { status: 'read_only', mode: { slowSec: 10, followersMin: null, subsOnly: true } }, me: { role: 'broadcaster', canSend: true } })).toMatchObject({
-      room: { status: 'READ_ONLY', mode: { slowSec: 10, followersMin: null, subsOnly: true } },
+    expect(parseChatSnapshot({ room: { status: 'read_only', mode: { slowSec: 10, followersMin: null, subsOnly: true, blockLinks: false } }, me: { role: 'broadcaster', canSend: true } })).toMatchObject({
+      room: { status: 'READ_ONLY', mode: { slowSec: 10, followersMin: null, subsOnly: true, blockLinks: false } },
       me: { role: 'STREAMER', canSend: true },
     })
     // chat-svc: no room yet, and a guest.
-    expect(parseChatSnapshot({ room: { status: 'NOT_OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false } }, me: { role: 'GUEST', canSend: false, reason: 'UNAUTHORIZED' } })).toMatchObject({
+    expect(parseChatSnapshot({ room: { status: 'NOT_OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: false } }, me: { role: 'GUEST', canSend: false, reason: 'UNAUTHORIZED' } })).toMatchObject({
       room: { status: 'NOT_OPEN' },
       me: { role: 'GUEST', reason: 'UNAUTHORIZED' },
     })
     expect(parseChatSnapshot({ room: {}, me: { canSend: false, reason: 'CHAT_SLOW_MODE', details: { retryAfterSec: '7' } } }).me?.retryAfterSec).toBe(7)
-    expect(parseChatSnapshot(null)).toEqual({ room: { status: 'OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false } }, me: null })
+    expect(parseChatSnapshot(null)).toEqual({ room: { status: 'OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: false }, pinned: null }, me: null })
   })
 
   it('parses chat events', () => {
     expect(parseChatEvent('ack', { clientMsgId: 'c', messageId: 'm' })).toEqual({ type: 'ack', clientMsgId: 'c', messageId: 'm' })
-    expect(parseChatEvent('mode_change', { slowSec: 5, followersMin: 0, subsOnly: false })).toEqual({ type: 'mode_change', mode: { slowSec: 5, followersMin: 0, subsOnly: false } })
+    expect(parseChatEvent('mode_change', { slowSec: 5, followersMin: 0, subsOnly: false, blockLinks: false })).toEqual({ type: 'mode_change', mode: { slowSec: 5, followersMin: 0, subsOnly: false, blockLinks: false } })
     expect(parseChatEvent('room_state', { status: 'READ_ONLY' })).toEqual({ type: 'room_state', status: 'READ_ONLY' })
     expect(parseChatEvent('system', { type: 'MODE_CHANGE', text: 'x', meta: {} })).toBeNull()
     expect(parseChatEvent('system', { type: 'Mode_Change', text: 'x' })).toBeNull()
@@ -220,5 +220,43 @@ describe('localFragments', () => {
       { type: 'text', text: ' hay' },
     ])
     expect(localFragments('<script>Kappa2', emotes)).toEqual([{ type: 'text', text: '<script>Kappa2' }])
+  })
+})
+
+describe('GĐ5 chat payloads', () => {
+  it('snapshot: pinned message, own restriction, canModerate, blockLinks', () => {
+    const s = parseChatSnapshot({
+      room: { status: 'OPEN', mode: { slowSec: 0, blockLinks: true }, pinned: { id: 'p', user: { id: 'u', username: 'k' }, body: 'hi', type: 'NORMAL', pinned: true } },
+      me: { role: 'VIEWER', canSend: false, canModerate: false, restriction: { type: 'TIMEOUT', until: '2026-10-15T10:05:00Z' }, reason: 'CHAT_TIMED_OUT' },
+    })
+    expect(s.room.mode.blockLinks).toBe(true)
+    expect(s.room.pinned).toMatchObject({ id: 'p', pinned: true })
+    expect(s.me).toMatchObject({ canModerate: false, restriction: { type: 'TIMEOUT', until: '2026-10-15T10:05:00Z' }, until: '2026-10-15T10:05:00Z' })
+    expect(parseChatSnapshot({ me: { role: 'MODERATOR' } }).me?.canModerate).toBe(true)
+  })
+
+  it('events delete, user_cleared, user_restored, pin, unpin', () => {
+    expect(parseChatEvent('delete', { messageId: 'm' })).toEqual({ type: 'delete', messageId: 'm' })
+    expect(parseChatEvent('delete', {})).toBeNull()
+    expect(parseChatEvent('user_cleared', { userId: 'u', reason: 'ban', until: null })).toEqual({ type: 'user_cleared', userId: 'u', reason: 'ban', until: null })
+    expect(parseChatEvent('user_cleared', { userId: 'u', reason: 'timeout', until: '2026-10-15T10:00:00Z' })).toMatchObject({ reason: 'timeout', until: '2026-10-15T10:00:00Z' })
+    expect(parseChatEvent('user_restored', { userId: 'u' })).toEqual({ type: 'user_restored', userId: 'u' })
+    expect(parseChatEvent('pin', { message: { id: 'm', user: { id: 'u' }, body: 'x' } })).toMatchObject({ type: 'pin', message: { id: 'm' } })
+    expect(parseChatEvent('unpin', {})).toEqual({ type: 'unpin' })
+  })
+
+  it('content blocked and account lock in the composer', () => {
+    expect(errorEffect('CHAT_CONTENT_BLOCKED', { reason: 'TERM' })).toEqual({ notice: { kind: 'contentBlocked', reason: 'TERM' }, blocked: 'TERM' })
+    expect(errorEffect('CHAT_CONTENT_BLOCKED', {}).blocked).toBe('TERM')
+    const base: ComposerInput = { signedIn: true, connection: 'locked', roomStatus: 'OPEN', streamEnded: false, lock: null, cooldownUntil: null, now: 0 }
+    expect(composerView(base)).toEqual({ kind: 'locked', lock: { kind: 'accountLocked' } })
+    expect(composerView({ ...base, signedIn: false })).toEqual({ kind: 'guest' })
+  })
+
+  it('effectFromMe takes the ban / running timeout of the snapshot', () => {
+    const me: ChatMe = { role: 'VIEWER', badges: [], color: null, canSend: false, reason: null, retryAfterSec: null, until: null, requiredMin: null, canModerate: false, restriction: { type: 'BAN', until: null } }
+    expect(effectFromMe(me)).toEqual({ lock: { kind: 'banned' } })
+    expect(effectFromMe({ ...me, restriction: { type: 'TIMEOUT', until: '2026-10-15T10:05:00Z' } }, Date.parse('2026-10-15T10:00:00Z'))).toEqual({ lock: { kind: 'timeout', until: '2026-10-15T10:05:00Z' } })
+    expect(effectFromMe({ ...me, canSend: true, restriction: { type: 'TIMEOUT', until: '2026-10-15T09:00:00Z' } }, Date.parse('2026-10-15T10:00:00Z'))).toEqual({})
   })
 })

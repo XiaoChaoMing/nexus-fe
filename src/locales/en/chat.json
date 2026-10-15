@@ -21,7 +21,8 @@
     "retry": "Try again",
     "unavailable": "Chat is temporarily unavailable",
     "unsupported": "Chat can't connect in this browser",
-    "disabled": "Chat is temporarily off"
+    "disabled": "Chat is temporarily off",
+    "accountLocked": "Your account has been locked"
   },
   "badge": {
     "STREAMER": "Streamer",
@@ -87,7 +88,9 @@
     "emotes": "Emotes",
     "tooLong": "Messages can be at most {{max}} characters.",
     "tooManyLines": "Messages can be at most {{max}} lines.",
-    "closeNotice": "Close notice"
+    "closeNotice": "Close notice",
+    "accountLocked": "Your account has been locked",
+    "timeoutLeft": "You're timed out of the chat until {{time}} · {{left}} left"
   },
   "error": {
     "slow_one": "Slow mode is on. You can send again in {{count}} second.",
@@ -96,9 +99,10 @@
     "rateLimited_other": "You're sending too fast. Try again in {{count}} seconds.",
     "duplicate": "You just sent the same message.",
     "invalid": "The message is empty or too long.",
-    "contentBlocked": "The message was not sent because it breaks the channel's rules.",
+    "contentBlocked": "Message not sent because it breaks the channel's rules.",
     "forbidden": "You don't have permission to do this.",
-    "failed": "Couldn't send the message. Try again later."
+    "failed": "Couldn't send the message. Try again later.",
+    "contentBlockedLink": "This channel doesn't allow links."
   },
   "emote": {
     "title": "Emotes",
@@ -142,5 +146,9 @@
     "close": "Close"
   },
   "emptyTitle": "No messages yet.",
-  "emptyBody": "Be the first to say hi to the streamer!"
+  "emptyBody": "Be the first to say hi to the streamer!",
+  "blocked": {
+    "TERM": "Message not sent because it breaks the channel's rules.",
+    "LINK": "This channel doesn't allow links."
+  }
 }

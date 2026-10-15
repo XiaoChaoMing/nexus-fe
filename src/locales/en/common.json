@@ -92,5 +92,13 @@
     "PAYLOAD_TOO_LARGE": "The file is too large."
   },
   "viewers_one": "{{count}} viewer",
-  "viewers_other": "{{count}} viewers"
+  "viewers_other": "{{count}} viewers",
+  "settingsNav": {
+    "title": "Settings",
+    "label": "Settings sections",
+    "profile": "Profile",
+    "security": "Account & security",
+    "notifications": "Notifications",
+    "privacy": "Privacy"
+  }
 }

@@ -1,0 +1,115 @@
+{
+  "bell": {
+    "label": "Thông báo",
+    "labelCount_other": "Thông báo, {{count}} chưa đọc"
+  },
+  "title": "Thông báo",
+  "openSettings": "Cài đặt thông báo",
+  "markAllRead": "Đánh dấu tất cả đã đọc",
+  "seeAll": "Xem tất cả",
+  "back": "Quay lại",
+  "groups": {
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "week": "7 ngày qua",
+    "older": "Cũ hơn"
+  },
+  "tabs": {
+    "label": "Lọc thông báo",
+    "all": "Tất cả",
+    "unread": "Chưa đọc"
+  },
+  "empty": {
+    "all": "Bạn đã xem hết thông báo",
+    "unread": "Không có thông báo chưa đọc"
+  },
+  "loadFailed": "Không tải được thông báo",
+  "loadMoreFailed": "Không tải thêm được",
+  "loadingMore": "Đang tải thêm…",
+  "retry": "Thử lại",
+  "options": "Tùy chọn thông báo",
+  "markRead": "Đánh dấu đã đọc",
+  "delete": "Xóa",
+  "deleted": "Đã xóa thông báo",
+  "actionFailed": "Không thực hiện được. Thử lại sau.",
+  "list": "Danh sách thông báo",
+  "unreadMark": "Chưa đọc",
+  "item": {
+    "creatorLive": "<b>{{channel}}</b> đang phát: {{title}}",
+    "streamStarting_other": "<b>{{channel}}</b> sẽ phát sau {{count}} phút: {{title}}",
+    "scheduleCancelled": "<b>{{channel}}</b> đã hủy buổi phát {{title}} lúc {{time}}",
+    "scheduleMoved": "<b>{{channel}}</b> đã dời buổi phát {{title}} sang {{when}}",
+    "scheduleSeries": "Lịch {{title}} đã thay đổi — đặt lại nhắc nếu cần",
+    "scheduleCreated": "<b>{{channel}}</b> có lịch phát mới: {{title}} · {{when}}",
+    "mention": "<b>{{sender}}</b> đã nhắc bạn trong chat của {{channel}}: “{{excerpt}}”",
+    "mentionGrouped_other": "<b>{{sender}}</b> đã nhắc bạn trong chat của {{channel}}: “{{excerpt}}” · {{count}} lần nhắc",
+    "follower": "<b>{{name}}</b> đã theo dõi kênh của bạn",
+    "followerGrouped_other": "<b>{{name}}</b> và {{count}} người khác đã theo dõi kênh của bạn",
+    "creatorApproved": "Đơn đăng ký Creator của bạn đã được duyệt",
+    "creatorRejected": "Đơn đăng ký Creator của bạn chưa được duyệt: {{reason}}",
+    "creatorRejectedNoReason": "Đơn đăng ký Creator của bạn chưa được duyệt",
+    "reportResolved": "Báo cáo của bạn đã được xử lý",
+    "reportDismissed": "Báo cáo của bạn đã được xem xét: không phát hiện vi phạm",
+    "channelSuspended": "Kênh của bạn đã bị tạm ngưng: {{reason}}",
+    "channelRestored": "Kênh của bạn đã được mở lại",
+    "streamTakedown": "Buổi phát “{{title}}” đã bị gỡ do vi phạm quy định",
+    "streamTakedownNoTitle": "Buổi phát của bạn đã bị gỡ do vi phạm quy định",
+    "unknown": "Bạn có một thông báo mới",
+    "someone": "Một người dùng",
+    "aChannel": "Một kênh"
+  },
+  "toast": {
+    "live": "<b>{{channel}}</b> đang phát",
+    "starting_other": "<b>{{channel}}</b> sẽ phát sau {{count}} phút",
+    "watch": "Xem",
+    "close": "Đóng thông báo"
+  },
+  "settings": {
+    "title": "Thông báo",
+    "description": "Chọn loại thông báo bạn muốn nhận và kênh nhận.",
+    "mobileTitle": "Cài đặt thông báo",
+    "colType": "Loại thông báo",
+    "colInApp": "Trong ứng dụng",
+    "colEmail": "Email",
+    "required": "Bắt buộc",
+    "notApplicable": "Không áp dụng",
+    "saved": "Đã lưu",
+    "saveFailed": "Không lưu được cài đặt. Thử lại sau.",
+    "loadFailed": "Không tải được cài đặt thông báo",
+    "verifyBanner": "Xác minh email để nhận thông báo qua email",
+    "resend": "Gửi lại email xác minh",
+    "perChannelTitle": "Thông báo theo kênh",
+    "perChannelBody": "Mỗi kênh bạn theo dõi có chuông riêng: Tất cả · Chỉ khi live · Tắt.",
+    "manageFollowing": "Quản lý kênh đang theo dõi",
+    "toggle": "{{type}} — {{channel}}",
+    "types": {
+      "CREATOR_LIVE": "Kênh đang phát",
+      "STREAM_STARTING": "Nhắc lịch phát",
+      "SCHEDULE": "Thay đổi lịch phát",
+      "MENTION": "Được nhắc trong chat",
+      "NEW_FOLLOWER": "Người theo dõi mới",
+      "REPORT_RESULT": "Kết quả báo cáo",
+      "CREATOR_APPLICATION": "Kết quả đơn Creator",
+      "SYSTEM": "Thông báo hệ thống"
+    },
+    "descriptions": {
+      "CREATOR_LIVE": "Khi kênh bạn theo dõi bắt đầu phát",
+      "STREAM_STARTING": "10 phút trước buổi phát bạn đã đặt nhắc",
+      "SCHEDULE": "Khi buổi phát bạn đặt nhắc bị hủy hoặc dời",
+      "MENTION": "Khi ai đó @nhắc bạn",
+      "NEW_FOLLOWER": "Khi có người theo dõi kênh của bạn",
+      "REPORT_RESULT": "Khi báo cáo của bạn được xử lý",
+      "CREATOR_APPLICATION": "Khi đơn đăng ký Creator được duyệt hoặc từ chối",
+      "SYSTEM": "Về tài khoản và kênh của bạn"
+    }
+  },
+  "unsubscribe": {
+    "pending": "Đang xử lý…",
+    "doneTitle": "Bạn sẽ không nhận email loại này nữa",
+    "doneBody": "Đã tắt email “{{type}}”. Bạn có thể bật lại bất cứ lúc nào.",
+    "doneBodyGeneric": "Đã tắt email loại này. Bạn có thể bật lại bất cứ lúc nào.",
+    "invalidTitle": "Liên kết hủy nhận không hợp lệ hoặc đã hết hiệu lực",
+    "failedTitle": "Không xử lý được yêu cầu. Thử lại sau.",
+    "openSettings": "Mở cài đặt thông báo"
+  }
+}

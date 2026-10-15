@@ -4,7 +4,7 @@ import { clearPendingAction } from '@/features/auth/lib/pending-action'
 export type AuthTab = 'login' | 'register'
 
 /** Why the modal opened (frames 04/05: "Đăng nhập để theo dõi kênh" / "Đăng nhập để đặt nhắc"). */
-export type AuthContext = 'follow' | 'remind'
+export type AuthContext = 'follow' | 'remind' | 'report'
 
 type AuthModalState = {
   open: boolean

@@ -250,6 +250,19 @@ describe('RealtimeClient', () => {
     expect(sockets).toHaveLength(1)
   })
 
+  it('after a 4003, another identity (sign-out) connects again', () => {
+    const c = makeClient()
+    c.subscribe('chat:s1', listener())
+    connectReady()
+    last().drop(4003)
+    expect(c.status).toBe('forbidden')
+    c.retry()
+    expect(sockets).toHaveLength(1)
+    c.reconnect()
+    expect(sockets).toHaveLength(2)
+    expect(c.status).toBe('connecting')
+  })
+
   it('4029 waits for Retry-After', () => {
     const c = makeClient()
     c.subscribe('chat:s1', listener())

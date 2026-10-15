@@ -29,5 +29,8 @@
     "chatClosedTitle": "Chat mở khi buổi phát bắt đầu",
     "chatClosedInput": "Chat chưa mở",
     "chat": "Chat"
-  }
+  },
+  "takenDown": "Buổi phát đã bị gỡ do vi phạm quy định",
+  "unavailable": "Nội dung này không còn khả dụng",
+  "browse": "Khám phá"
 }

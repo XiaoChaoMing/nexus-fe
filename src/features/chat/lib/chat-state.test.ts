@@ -18,6 +18,7 @@ function msg(over: Partial<ChatMessage> & { userId?: string; username?: string }
     type: 'NORMAL',
     createdAt: '2026-10-14T10:00:00Z',
     deleted: false,
+    pinned: false,
     clientMsgId: null,
     ...rest,
   }
@@ -153,15 +154,15 @@ describe('chatReducer — room', () => {
     type: 'snapshot',
     now: 0,
     snapshot: {
-      room: { status: 'OPEN', mode: { slowSec: 0, followersMin: 10, subsOnly: false } },
-      me: { role: 'VIEWER', badges: [], color: null, canSend: false, reason: 'CHAT_FOLLOWERS_ONLY', retryAfterSec: null, until: null, requiredMin: 10, ...over },
+      room: { status: 'OPEN', mode: { slowSec: 0, followersMin: 10, subsOnly: false, blockLinks: false }, pinned: null },
+      me: { role: 'VIEWER', badges: [], color: null, canSend: false, reason: 'CHAT_FOLLOWERS_ONLY', retryAfterSec: null, until: null, requiredMin: 10, canModerate: false, restriction: null, ...over },
     },
   })
 
   it('takes the lock from the snapshot and drops it when the mode is switched off', () => {
     let s = run(ready, snapshot())
     expect(s.lock).toEqual({ kind: 'followers', requiredMin: 10 })
-    s = run(s, batch({ type: 'mode_change', mode: { slowSec: 0, followersMin: null, subsOnly: false } }))
+    s = run(s, batch({ type: 'mode_change', mode: { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: false } }))
     expect(s.lock).toBeNull()
     expect(s.items.at(-1)).toMatchObject({ kind: 'notice', notice: { type: 'mode' } })
   })
@@ -172,7 +173,7 @@ describe('chatReducer — room', () => {
   })
 
   it('ignores a mode_change that changes nothing', () => {
-    const s = run(ready, snapshot(), batch({ type: 'mode_change', mode: { slowSec: 0, followersMin: 10, subsOnly: false } }))
+    const s = run(ready, snapshot(), batch({ type: 'mode_change', mode: { slowSec: 0, followersMin: 10, subsOnly: false, blockLinks: false } }))
     expect(s.items).toHaveLength(0)
   })
 
@@ -200,5 +201,92 @@ describe('helpers', () => {
   it('recentChatters lists distinct people, newest first, without me', () => {
     const s = run(ready, batch(...[msg({ userId: 'a', username: 'an' }), msg({ userId: 'b', username: 'binh' }), msg({ userId: 'a', username: 'an' }), msg({ userId: 'me', username: 'minh' })].map((message) => ({ type: 'message', message }) as const)))
     expect(recentChatters(s.items, 'me').map((c) => c.username)).toEqual(['an', 'binh'])
+  })
+})
+
+describe('chatReducer — moderation (GĐ5)', () => {
+  const room = (pinned: ChatMessage | null = null): ChatAction => ({
+    type: 'snapshot',
+    now: 0,
+    snapshot: {
+      room: { status: 'OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: false }, pinned },
+      me: { role: 'VIEWER', badges: [], color: null, canSend: true, reason: null, retryAfterSec: null, until: null, requiredMin: null, canModerate: false, restriction: null },
+    },
+  })
+  const line = (s: ChatState, id: string) => s.items.find((i) => i.kind === 'message' && i.message.id === id)
+
+  it('delete keeps the line and its author, empties the text and drops the pin', () => {
+    const m = msg({ userId: 'x' })
+    let s = run(ready, room(), batch({ type: 'message', message: m }, { type: 'pin', message: m }))
+    expect(s.room?.pinned?.id).toBe(m.id)
+    s = run(s, batch({ type: 'delete', messageId: m.id }))
+    expect(line(s, m.id)).toMatchObject({ message: { deleted: true, body: '', fragments: [], user: { id: 'x' } } })
+    expect(s.room?.pinned).toBeNull()
+  })
+
+  it('user_cleared deletes every line of that user; for me it locks the input', () => {
+    const a = msg({ userId: 'x' })
+    const b = msg({ userId: 'x' })
+    const c = msg({ userId: 'y' })
+    let s = run(ready, room(), batch(...[a, b, c].map((message) => ({ type: 'message', message }) as const)))
+    s = run(s, batch({ type: 'user_cleared', userId: 'x', reason: 'timeout', until: '2026-10-15T10:10:00Z' }))
+    expect([a, b, c].map((m) => line(s, m.id)?.kind === 'message' && (line(s, m.id) as { message: ChatMessage }).message.deleted)).toEqual([true, true, false])
+    expect(s.lock).toBeNull()
+    s = run(s, batch({ type: 'user_cleared', userId: 'me', reason: 'ban', until: null }))
+    expect(s.lock).toEqual({ kind: 'banned' })
+    s = run(s, batch({ type: 'user_restored', userId: 'someone' }))
+    expect(s.lock).toEqual({ kind: 'banned' })
+    s = run(s, batch({ type: 'user_restored', userId: 'me' }))
+    expect(s.lock).toBeNull()
+  })
+
+  it('a timeout of me carries its end; the pinned line of a cleared user goes', () => {
+    const p = msg({ userId: 'x' })
+    let s = run(ready, room(p))
+    s = run(s, batch({ type: 'user_cleared', userId: 'me', reason: 'timeout', until: '2026-10-15T10:10:00Z' }))
+    expect(s.lock).toEqual({ kind: 'timeout', until: '2026-10-15T10:10:00Z' })
+    s = run(s, batch({ type: 'user_cleared', userId: 'x', reason: 'ban', until: null }))
+    expect(s.room?.pinned).toBeNull()
+  })
+
+  it('pin replaces the previous pin, unpin clears it', () => {
+    const a = msg()
+    const b = msg()
+    let s = run(ready, room(), batch({ type: 'message', message: a }, { type: 'message', message: b }, { type: 'pin', message: a }, { type: 'pin', message: b }))
+    expect(s.room?.pinned?.id).toBe(b.id)
+    expect((line(s, a.id) as { message: ChatMessage }).message.pinned).toBe(false)
+    expect((line(s, b.id) as { message: ChatMessage }).message.pinned).toBe(true)
+    s = run(s, batch({ type: 'unpin' }))
+    expect(s.room?.pinned).toBeNull()
+    expect((line(s, b.id) as { message: ChatMessage }).message.pinned).toBe(false)
+  })
+
+  it('a blocked send stays for its sender, marked, without being returned to the input', () => {
+    const mine = msg({ userId: 'me', clientMsgId: 'c1' })
+    let s = run(ready, room(), { type: 'send', message: mine, clientMsgId: 'c1', slowSec: 0, now: 0 })
+    s = run(s, { type: 'rejected', clientMsgId: 'c1', effect: errorEffect('CHAT_CONTENT_BLOCKED', { reason: 'LINK' }) })
+    expect(s.items.at(-1)).toMatchObject({ delivery: 'BLOCKED', blockedReason: 'LINK' })
+    expect(s.notice).toEqual({ kind: 'contentBlocked', reason: 'LINK' })
+  })
+
+  it('the snapshot restriction locks; modLost hides the tools', () => {
+    let s = run(ready, {
+      type: 'snapshot',
+      now: Date.parse('2026-10-15T10:00:00Z'),
+      snapshot: {
+        room: { status: 'OPEN', mode: { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: true }, pinned: null },
+        me: { role: 'MODERATOR', badges: [], color: null, canSend: true, reason: null, retryAfterSec: null, until: null, requiredMin: null, canModerate: true, restriction: { type: 'TIMEOUT', until: '2026-10-15T10:05:00Z' } },
+      },
+    })
+    expect(s.lock).toEqual({ kind: 'timeout', until: '2026-10-15T10:05:00Z' })
+    s = run(s, { type: 'modLost' })
+    expect(s.me).toMatchObject({ canModerate: false, role: 'VIEWER' })
+  })
+
+  it('a mode change of blockLinks only updates the mode silently', () => {
+    let s = run(ready, room())
+    s = run(s, batch({ type: 'mode_change', mode: { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: true } }))
+    expect(s.room?.mode.blockLinks).toBe(true)
+    expect(s.items).toHaveLength(0)
   })
 })

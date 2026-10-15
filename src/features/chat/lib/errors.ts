@@ -16,6 +16,8 @@ export type ChatLock =
   | { kind: 'readOnly' }
   | { kind: 'closed' }
   | { kind: 'notOpen' }
+  /** The account was locked (socket closed with 4003): nothing more can be sent from this page. */
+  | { kind: 'accountLocked' }
 
 /** A short message under the input. `untilMs` makes it count down ("…sau 8 giây"). */
 export type InputNotice =
@@ -23,11 +25,16 @@ export type InputNotice =
   | { kind: 'rateLimited'; untilMs: number }
   | { kind: 'duplicate' }
   | { kind: 'invalid' }
-  | { kind: 'contentBlocked' }
+  | { kind: 'contentBlocked'; reason: BlockedReason }
   | { kind: 'forbidden' }
   | { kind: 'failed' }
 
+/** `CHAT_CONTENT_BLOCKED` `details.reason`: a blocked term or a link (TSD GĐ5 S3). */
+export type BlockedReason = 'TERM' | 'LINK'
+
 export type ErrorEffect = {
+  /** The message was refused by auto-mod: it stays in the list for its sender only, without "Gửi lại". */
+  blocked?: BlockedReason
   notice?: InputNotice
   /** Sending is blocked until then (slow mode, rate limit): countdown on the send button. */
   cooldownUntil?: number
@@ -90,8 +97,11 @@ export function errorEffect(code: string, details: Record<string, unknown> = {},
       return { login: true }
     case 'VALIDATION_FAILED':
       return { notice: { kind: 'invalid' } }
-    case 'CHAT_CONTENT_BLOCKED':
-      return { notice: { kind: 'contentBlocked' } }
+    case 'CHAT_CONTENT_BLOCKED': {
+      const reason: BlockedReason = stringDetail(details, 'reason') === 'LINK' ? 'LINK' : 'TERM'
+
+      return { notice: { kind: 'contentBlocked', reason }, blocked: reason }
+    }
     case 'FORBIDDEN':
       return { notice: { kind: 'forbidden' } }
     default:
@@ -101,6 +111,11 @@ export function errorEffect(code: string, details: Record<string, unknown> = {},
 
 /** `snapshot.me`: a refusal known before sending (Followers-only, banned, slow mode still running…). */
 export function effectFromMe(me: ChatMe | null, now = Date.now()): ErrorEffect {
+  if (me?.restriction) {
+    // GĐ5 snapshot: the viewer's own ban / timeout, with its end, even when `reason` is missing.
+    if (me.restriction.type === 'BAN') return { lock: { kind: 'banned' } }
+    if (!me.restriction.until || Date.parse(me.restriction.until) > now) return { lock: { kind: 'timeout', until: me.restriction.until } }
+  }
   if (!me || me.canSend || !me.reason) return {}
   const effect = errorEffect(me.reason, { retryAfterSec: me.retryAfterSec ?? undefined, until: me.until ?? undefined, requiredMin: me.requiredMin ?? undefined }, now)
   // A guest's UNAUTHORIZED is the guest input itself, not a modal popping up on arrival.
@@ -121,7 +136,8 @@ export function canManageChat(role: ChatMe['role'] | undefined): boolean {
   return role === 'STREAMER' || role === 'MODERATOR' || role === 'ADMIN'
 }
 
-export type ConnectionView = 'connecting' | 'open' | 'reconnecting' | 'failed' | 'unavailable'
+/** `locked`: the server closed the socket with 4003 (account locked, TSD GĐ5 §5.8). */
+export type ConnectionView = 'connecting' | 'open' | 'reconnecting' | 'failed' | 'unavailable' | 'locked'
 
 /** What the input shows (NXL-B §9B/§9C). */
 export type ComposerView =
@@ -155,6 +171,7 @@ export function composerView(i: ComposerInput): ComposerView {
   const lock = activeLock(i.lock, i.now)
   if (lock && (lock.kind === 'disabled' || lock.kind === 'readOnly' || lock.kind === 'closed' || lock.kind === 'notOpen')) return { kind: 'locked', lock }
   if (!i.signedIn) return { kind: 'guest' }
+  if (i.connection === 'locked') return { kind: 'locked', lock: { kind: 'accountLocked' } }
   if (i.connection !== 'open') return { kind: 'offline', reason: i.connection }
   if (lock) return { kind: 'locked', lock }
   const left = i.cooldownUntil ? Math.ceil((i.cooldownUntil - i.now) / 1000) : 0

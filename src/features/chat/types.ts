@@ -9,6 +9,8 @@ export type ChatMode = {
   /** null = off; minutes of following required (0 = any follower). */
   followersMin: number | null
   subsOnly: boolean
+  /** GĐ5: links are refused (`CHAT_CONTENT_BLOCKED`, reason LINK) for people other than the owner, Mods and VIPs. */
+  blockLinks: boolean
 }
 
 /** The viewer's role in this room (`snapshot.me.role`). */
@@ -29,9 +31,14 @@ export type ChatMe = {
   until: string | null
   /** `requiredMin` of Followers-only, when the server says. */
   requiredMin: number | null
+  /** GĐ5: the moderation tools are offered (owner, Moderator, Admin). */
+  canModerate: boolean
+  /** GĐ5: the viewer's own ban or running timeout in this channel. */
+  restriction: { type: 'BAN' | 'TIMEOUT'; until: string | null } | null
 }
 
-export type ChatRoomState = { status: RoomStatus; mode: ChatMode }
+/** `pinned`: the one pinned message of the room (GĐ5), null when none. */
+export type ChatRoomState = { status: RoomStatus; mode: ChatMode; pinned: ChatMessage | null }
 
 export type ChatSnapshot = { room: ChatRoomState; me: ChatMe | null }
 
@@ -59,6 +66,8 @@ export type ChatMessage = {
   type: ChatMessageType
   createdAt: string
   deleted: boolean
+  /** GĐ5: this is the room's pinned message. */
+  pinned: boolean
   /** Echoed by the server for the sender's own message, when it does. */
   clientMsgId: string | null
 }

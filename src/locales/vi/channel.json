@@ -60,7 +60,9 @@
     "loadFailed": "Không tải được kênh",
     "loadFailedBody": "Đã có lỗi khi tải kênh. Kiểm tra kết nối mạng rồi thử lại.",
     "verified": "Đã xác minh",
-    "share": "Chia sẻ kênh"
+    "share": "Chia sẻ kênh",
+    "suspendedTitle": "Kênh tạm thời không khả dụng",
+    "suspendedBody": "Kênh này đang bị tạm ngưng do vi phạm quy định."
   },
   "links": {
     "YOUTUBE": "YouTube",

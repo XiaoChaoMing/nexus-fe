@@ -90,5 +90,13 @@
     "CHANNEL_SUSPENDED": "Kênh này đang bị tạm khóa.",
     "PAYLOAD_TOO_LARGE": "Tệp quá lớn."
   },
-  "viewers_other": "{{count}} người xem"
+  "viewers_other": "{{count}} người xem",
+  "settingsNav": {
+    "title": "Cài đặt",
+    "label": "Mục cài đặt",
+    "profile": "Hồ sơ",
+    "security": "Tài khoản & bảo mật",
+    "notifications": "Thông báo",
+    "privacy": "Quyền riêng tư"
+  }
 }

@@ -107,6 +107,7 @@ export function parseMode(v: unknown): ChatMode {
     slowSec: slow !== null && slow > 0 ? Math.round(slow) : 0,
     followersMin: followers !== null && followers >= 0 ? Math.round(followers) : null,
     subsOnly: r.subsOnly === true,
+    blockLinks: r.blockLinks === true,
   }
 }
 
@@ -118,23 +119,35 @@ export function parseRoomStatus(v: unknown): RoomStatus | null {
 
 function parseRoom(v: unknown): ChatRoomState {
   const r = isRec(v) ? v : {}
+  const pinned = r.pinned ? parseMessage(r.pinned) : null
 
-  return { status: parseRoomStatus(r.status) ?? 'OPEN', mode: parseMode(r.mode) }
+  return { status: parseRoomStatus(r.status) ?? 'OPEN', mode: parseMode(r.mode), pinned: pinned && !pinned.deleted ? pinned : null }
+}
+
+function parseRestriction(v: unknown): ChatMe['restriction'] {
+  if (!isRec(v) || (v.type !== 'BAN' && v.type !== 'TIMEOUT')) return null
+
+  return { type: v.type, until: strOrNull(v.until) }
 }
 
 function parseMe(v: unknown): ChatMe | null {
   if (!isRec(v)) return null
   const details = isRec(v.details) ? v.details : {}
+  const role = parseRole(v.role)
+  const restriction = parseRestriction(v.restriction)
 
   return {
-    role: parseRole(v.role),
+    role,
     badges: parseBadges(v.badges),
     color: parseColor(v.color),
     canSend: v.canSend === true,
     reason: strOrNull(v.reason),
     retryAfterSec: num(v.retryAfterSec) ?? num(details.retryAfterSec),
-    until: strOrNull(v.until) ?? strOrNull(details.until),
+    until: strOrNull(v.until) ?? strOrNull(details.until) ?? (restriction?.type === 'TIMEOUT' ? restriction.until : null),
     requiredMin: num(v.requiredMin) ?? num(details.requiredMin),
+    // Servers before GĐ5 have no flag: the roles that could already change the chat modes.
+    canModerate: typeof v.canModerate === 'boolean' ? v.canModerate : role === 'STREAMER' || role === 'MODERATOR' || role === 'ADMIN',
+    restriction,
   }
 }
 
@@ -198,6 +211,7 @@ export function parseMessage(v: unknown): ChatMessage | null {
     type,
     createdAt: str(v.createdAt),
     deleted: v.deleted === true || flags.deleted === true || typeof v.deletedAt === 'string',
+    pinned: v.pinned === true,
     clientMsgId: strOrNull(v.clientMsgId),
   }
 }
@@ -274,6 +288,29 @@ export function parseChatEvent(type: string, data: unknown): IncomingEvent | nul
     }
     case 'sampling':
       return { type: 'sampling', active: isRec(data) && data.active === true }
+    case 'delete': {
+      const messageId = isRec(data) ? str(data.messageId) : ''
+
+      return messageId ? { type: 'delete', messageId } : null
+    }
+    case 'user_cleared': {
+      const r = isRec(data) ? data : {}
+      const userId = str(r.userId)
+
+      return userId ? { type: 'user_cleared', userId, reason: r.reason === 'ban' ? 'ban' : 'timeout', until: strOrNull(r.until) } : null
+    }
+    case 'user_restored': {
+      const userId = isRec(data) ? str(data.userId) : ''
+
+      return userId ? { type: 'user_restored', userId } : null
+    }
+    case 'pin': {
+      const message = parseMessage(isRec(data) ? data.message : null)
+
+      return message ? { type: 'pin', message } : null
+    }
+    case 'unpin':
+      return { type: 'unpin' }
     default:
       return null
   }

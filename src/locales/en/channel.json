@@ -60,7 +60,9 @@
     "loadFailed": "Couldn't load the channel",
     "loadFailedBody": "Something went wrong while loading the channel. Check your connection and try again.",
     "verified": "Verified",
-    "share": "Share channel"
+    "share": "Share channel",
+    "suspendedTitle": "This channel is temporarily unavailable",
+    "suspendedBody": "This channel is suspended for breaking the rules."
   },
   "links": {
     "YOUTUBE": "YouTube",

@@ -1,0 +1,120 @@
+{
+  "bell": {
+    "label": "Notifications",
+    "labelCount_one": "Notifications, {{count}} unread",
+    "labelCount_other": "Notifications, {{count}} unread"
+  },
+  "title": "Notifications",
+  "openSettings": "Notification settings",
+  "markAllRead": "Mark all as read",
+  "seeAll": "See all",
+  "back": "Back",
+  "groups": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "week": "Last 7 days",
+    "older": "Older"
+  },
+  "tabs": {
+    "label": "Filter notifications",
+    "all": "All",
+    "unread": "Unread"
+  },
+  "empty": {
+    "all": "You're all caught up",
+    "unread": "No unread notifications"
+  },
+  "loadFailed": "Couldn't load notifications",
+  "loadMoreFailed": "Couldn't load more",
+  "loadingMore": "Loading more…",
+  "retry": "Try again",
+  "options": "Notification options",
+  "markRead": "Mark as read",
+  "delete": "Delete",
+  "deleted": "Notification deleted",
+  "actionFailed": "That didn't work. Try again later.",
+  "list": "Notification list",
+  "unreadMark": "Unread",
+  "item": {
+    "creatorLive": "<b>{{channel}}</b> is live: {{title}}",
+    "streamStarting_one": "<b>{{channel}}</b> goes live in {{count}} minute: {{title}}",
+    "streamStarting_other": "<b>{{channel}}</b> goes live in {{count}} minutes: {{title}}",
+    "scheduleCancelled": "<b>{{channel}}</b> cancelled the stream {{title}} at {{time}}",
+    "scheduleMoved": "<b>{{channel}}</b> moved the stream {{title}} to {{when}}",
+    "scheduleSeries": "The schedule {{title}} changed — set your reminder again if needed",
+    "scheduleCreated": "<b>{{channel}}</b> scheduled a new stream: {{title}} · {{when}}",
+    "mention": "<b>{{sender}}</b> mentioned you in {{channel}}'s chat: “{{excerpt}}”",
+    "mentionGrouped_one": "<b>{{sender}}</b> mentioned you in {{channel}}'s chat: “{{excerpt}}” · {{count}} mention",
+    "mentionGrouped_other": "<b>{{sender}}</b> mentioned you in {{channel}}'s chat: “{{excerpt}}” · {{count}} mentions",
+    "follower": "<b>{{name}}</b> followed your channel",
+    "followerGrouped_one": "<b>{{name}}</b> and {{count}} other followed your channel",
+    "followerGrouped_other": "<b>{{name}}</b> and {{count}} others followed your channel",
+    "creatorApproved": "Your Creator application was approved",
+    "creatorRejected": "Your Creator application was not approved: {{reason}}",
+    "creatorRejectedNoReason": "Your Creator application was not approved",
+    "reportResolved": "Your report has been handled",
+    "reportDismissed": "Your report was reviewed: no violation found",
+    "channelSuspended": "Your channel has been suspended: {{reason}}",
+    "channelRestored": "Your channel has been restored",
+    "streamTakedown": "The stream “{{title}}” was taken down for breaking the rules",
+    "streamTakedownNoTitle": "Your stream was taken down for breaking the rules",
+    "unknown": "You have a new notification",
+    "someone": "Someone",
+    "aChannel": "A channel"
+  },
+  "toast": {
+    "live": "<b>{{channel}}</b> is live",
+    "starting_one": "<b>{{channel}}</b> goes live in {{count}} minute",
+    "starting_other": "<b>{{channel}}</b> goes live in {{count}} minutes",
+    "watch": "Watch",
+    "close": "Dismiss notification"
+  },
+  "settings": {
+    "title": "Notifications",
+    "description": "Choose which notifications you get and where.",
+    "mobileTitle": "Notification settings",
+    "colType": "Notification type",
+    "colInApp": "In the app",
+    "colEmail": "Email",
+    "required": "Required",
+    "notApplicable": "Not applicable",
+    "saved": "Saved",
+    "saveFailed": "Couldn't save the setting. Try again later.",
+    "loadFailed": "Couldn't load notification settings",
+    "verifyBanner": "Verify your email to get notifications by email",
+    "resend": "Resend verification email",
+    "perChannelTitle": "Per-channel notifications",
+    "perChannelBody": "Each channel you follow has its own bell: All · Live only · Off.",
+    "manageFollowing": "Manage followed channels",
+    "toggle": "{{type}} — {{channel}}",
+    "types": {
+      "CREATOR_LIVE": "Channel goes live",
+      "STREAM_STARTING": "Stream reminders",
+      "SCHEDULE": "Schedule changes",
+      "MENTION": "Mentions in chat",
+      "NEW_FOLLOWER": "New followers",
+      "REPORT_RESULT": "Report results",
+      "CREATOR_APPLICATION": "Creator application result",
+      "SYSTEM": "System notifications"
+    },
+    "descriptions": {
+      "CREATOR_LIVE": "When a channel you follow starts streaming",
+      "STREAM_STARTING": "10 minutes before a stream you set a reminder for",
+      "SCHEDULE": "When a stream you set a reminder for is cancelled or moved",
+      "MENTION": "When someone @mentions you",
+      "NEW_FOLLOWER": "When someone follows your channel",
+      "REPORT_RESULT": "When your report has been handled",
+      "CREATOR_APPLICATION": "When your Creator application is approved or rejected",
+      "SYSTEM": "About your account and channel"
+    }
+  },
+  "unsubscribe": {
+    "pending": "Working on it…",
+    "doneTitle": "You won't get these emails anymore",
+    "doneBody": "“{{type}}” emails are off. You can turn them back on at any time.",
+    "doneBodyGeneric": "These emails are off. You can turn them back on at any time.",
+    "invalidTitle": "This unsubscribe link is invalid or no longer works",
+    "failedTitle": "We couldn't process the request. Try again later.",
+    "openSettings": "Open notification settings"
+  }
+}

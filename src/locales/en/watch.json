@@ -29,5 +29,8 @@
     "chatClosedTitle": "Chat opens when the stream starts",
     "chatClosedInput": "Chat isn't open yet",
     "chat": "Chat"
-  }
+  },
+  "takenDown": "This stream was taken down for breaking the rules",
+  "unavailable": "This content is no longer available",
+  "browse": "Explore"
 }

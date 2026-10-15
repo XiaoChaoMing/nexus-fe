@@ -156,7 +156,8 @@
     "content": "Content",
     "schedule": "Schedule",
     "channel": "Channel",
-    "viewChannel": "View channel"
+    "viewChannel": "View channel",
+    "community": "Community"
   },
   "category": {
     "label": "Category",

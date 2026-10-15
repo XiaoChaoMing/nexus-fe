@@ -31,6 +31,8 @@ export type ChatRoom = {
   setPaused: (paused: boolean) => void
   clearNotice: () => void
   reconnect: () => void
+  /** A moderation call was refused (role removed): hide the tools until the next snapshot. */
+  modLost: () => void
 }
 
 type Options = {
@@ -41,7 +43,7 @@ type Options = {
   endedOnArrival: boolean
 }
 
-function connectionView(status: ConnectionStatus, subscribed: boolean): ConnectionView {
+function connectionView(status: ConnectionStatus, subscribed: boolean, signedIn: boolean): ConnectionView {
   switch (status) {
     case 'open':
       return subscribed ? 'open' : 'connecting'
@@ -49,6 +51,8 @@ function connectionView(status: ConnectionStatus, subscribed: boolean): Connecti
     case 'failed':
       return status
     case 'forbidden':
+      // 4003 for an account: it was locked (TSD GĐ5 §5.8); nothing reconnects.
+      return signedIn ? 'locked' : 'unavailable'
     case 'unsupported':
       return 'unavailable'
     default:
@@ -169,7 +173,8 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
         clearTimer(err.ref)
         const body = bodies.current.get(err.ref)
         bodies.current.delete(err.ref)
-        if (body) setReturned({ body, nonce: Date.now() })
+        // A line refused by auto-mod stays in the list; the input is not refilled with it.
+        if (body && !effect.blocked) setReturned({ body, nonce: Date.now() })
         if (effect.login) gated({ type: 'chat', params: { streamId } })
         dispatch({ type: 'rejected', clientMsgId: err.ref, effect })
 
@@ -194,7 +199,7 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
     onError,
   })
 
-  const connection: ConnectionView = endedOnArrival ? 'open' : connectionView(realtimeStatus, subscribed)
+  const connection: ConnectionView = endedOnArrival ? 'open' : connectionView(realtimeStatus, subscribed, signedIn)
   const needsClock = state.cooldownUntil !== null || state.lock?.kind === 'timeout'
   const now = useNow(needsClock ? 500 : 60_000)
   const view = composerView({
@@ -240,6 +245,7 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
         type: 'NORMAL',
         createdAt: new Date().toISOString(),
         deleted: false,
+        pinned: false,
         clientMsgId,
       }
       const slowSec = exemptFromSlow(snapshotMe?.role) ? 0 : (state.room?.mode.slowSec ?? 0)
@@ -266,6 +272,7 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
   )
 
   const setPaused = useCallback((paused: boolean) => dispatch({ type: 'scroll', paused }), [])
+  const modLost = useCallback(() => dispatch({ type: 'modLost' }), [])
   const clearNotice = useCallback(() => dispatch({ type: 'clearNotice' }), [])
   const reconnect = useCallback(() => {
     realtime().retry()
@@ -274,5 +281,5 @@ export function useChatRoom({ streamId, channelId, status, endedOnArrival }: Opt
 
   const chatters = useMemo(() => recentChatters(state.items, me?.id ?? null), [state.items, me?.id])
 
-  return { streamId, channelId, state, connection, view, me, chatters, returned, send, retry, setPaused, clearNotice, reconnect }
+  return { streamId, channelId, state, connection, view, me, chatters, returned, send, retry, setPaused, clearNotice, reconnect, modLost }
 }

@@ -63,7 +63,7 @@ function SettingsForm({ channelId, mode, large }: { channelId: string; mode: Cha
   const update = useMutation({
     mutationFn: ({ next }: { next: ChatMode; prev: ChatMode }) => chatApi.updateSettings(channelId, next),
     onSuccess: (res, { next, prev }) => {
-      setSaved({ base: mode, value: { slowSec: res.slowSec, followersMin: res.followersMin, subsOnly: res.subsOnly } })
+      setSaved({ base: mode, value: { slowSec: res.slowSec, followersMin: res.followersMin, subsOnly: res.subsOnly, blockLinks: res.blockLinks } })
       for (const line of text.toasts(next, prev)) toast.success(line)
     },
     onError: () => toast.error(t('settings.failed')),

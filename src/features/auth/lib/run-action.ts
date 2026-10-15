@@ -3,6 +3,7 @@ import { queryClient } from '@/lib/query-client'
 import { followAfterSignIn } from '@/features/channels/lib/follow-cache'
 import { remindAfterSignIn } from '@/features/channels/hooks/use-reminder'
 import { goLiveTarget } from '@/features/auth/lib/roles'
+import { openReportFromParams } from '@/features/moderation/stores/report-store'
 import { sanitizeReturnTo, type PendingAction } from '@/features/auth/lib/pending-action'
 import type { Me } from '@/features/auth/types'
 
@@ -43,6 +44,13 @@ export function runAction(action: Pick<PendingAction, 'type' | 'params' | 'retur
       const back = sanitizeReturnTo(action.returnTo, currentPath)
       if (back !== currentPath) navigate(back)
       useUiStore.getState().requestChatFocus()
+
+      return
+    }
+    case 'report': {
+      const back = sanitizeReturnTo(action.returnTo, currentPath)
+      if (back !== currentPath) navigate(back)
+      openReportFromParams(action.params)
 
       return
     }

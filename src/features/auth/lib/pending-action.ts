@@ -21,6 +21,8 @@ export type PendingActionType =
   | 'navigate'
   /** Chat in a live room (NXL-B AF10): back to the stream with the chat input focused. */
   | 'chat'
+  /** Report something (NXL-F §3.7): the report modal opens again after sign-in (`target` = JSON). */
+  | 'report'
 
 export type PendingAction = {
   type: PendingActionType
@@ -32,7 +34,7 @@ export type PendingAction = {
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
-const TYPES: readonly PendingActionType[] = ['goLive', 'becomeCreator', 'follow', 'remind', 'navigate', 'chat']
+const TYPES: readonly PendingActionType[] = ['goLive', 'becomeCreator', 'follow', 'remind', 'navigate', 'chat', 'report']
 
 function defaultStorage(): StorageLike | null {
   try {

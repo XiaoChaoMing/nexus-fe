@@ -1,5 +1,5 @@
 import { CHAT_LIMITS } from '@/features/chat/lib/constants'
-import { effectFromMe, type ChatLock, type ErrorEffect, type InputNotice } from '@/features/chat/lib/errors'
+import { effectFromMe, type BlockedReason, type ChatLock, type ErrorEffect, type InputNotice } from '@/features/chat/lib/errors'
 import type { ChatMe, ChatMessage, ChatMode, ChatRoomState, ChatSnapshot, RoomStatus } from '@/features/chat/types'
 
 /**
@@ -8,11 +8,14 @@ import type { ChatMe, ChatMessage, ChatMode, ChatRoomState, ChatSnapshot, RoomSt
  * is unit-tested; the hook feeds it socket events in batches.
  */
 
-/** NXL-B §7C, client side. REJECTED messages leave the list and go back to the draft. */
-export type Delivery = 'PENDING' | 'DELIVERED' | 'FAILED'
+/**
+ * NXL-B §7C, client side. REJECTED messages leave the list and go back to the draft; BLOCKED ones (auto-mod,
+ * GĐ5) stay for their sender only, marked, without "Gửi lại".
+ */
+export type Delivery = 'PENDING' | 'DELIVERED' | 'FAILED' | 'BLOCKED'
 
 export type ChatItem =
-  | { kind: 'message'; key: string; message: ChatMessage; delivery: Delivery; clientMsgId: string | null }
+  | { kind: 'message'; key: string; message: ChatMessage; delivery: Delivery; clientMsgId: string | null; blockedReason?: BlockedReason }
   | { kind: 'notice'; key: string; notice: Notice }
   | { kind: 'divider'; key: string }
 
@@ -26,6 +29,11 @@ export type IncomingEvent =
   | { type: 'mode_change'; mode: ChatMode }
   | { type: 'room_state'; status: RoomStatus }
   | { type: 'sampling'; active: boolean }
+  | { type: 'delete'; messageId: string }
+  | { type: 'user_cleared'; userId: string; reason: 'timeout' | 'ban'; until: string | null }
+  | { type: 'user_restored'; userId: string }
+  | { type: 'pin'; message: ChatMessage }
+  | { type: 'unpin' }
 
 export type ChatState = {
   /** History over REST: shown as a skeleton until it answers. */
@@ -59,6 +67,8 @@ export type ChatAction =
   | { type: 'rejected'; clientMsgId: string | null; effect: ErrorEffect }
   | { type: 'scroll'; paused: boolean }
   | { type: 'clearNotice' }
+  /** A moderation call answered FORBIDDEN: the role is gone, the tools hide (design 03e cell 13). */
+  | { type: 'modLost' }
   | { type: 'reset' }
 
 export const initialChatState: ChatState = {
@@ -106,6 +116,38 @@ function countMessages(items: readonly ChatItem[]): number {
 
 function sameMode(a: ChatMode, b: ChatMode): boolean {
   return a.slowSec === b.slowSec && a.followersMin === b.followersMin && a.subsOnly === b.subsOnly
+}
+
+/** Applies `fn` to every message line (list and buffer) that matches. */
+function mapMessages(state: ChatState, match: (m: ChatMessage) => boolean, fn: (m: ChatMessage) => ChatMessage): ChatState {
+  let changed = false
+  const map = (items: ChatItem[]) =>
+    items.map((i) => {
+      if (i.kind !== 'message' || !match(i.message)) return i
+      changed = true
+
+      return { ...i, message: fn(i.message) }
+    })
+  const items = map(state.items)
+  const buffer = map(state.buffer)
+
+  return changed ? { ...state, items, buffer } : state
+}
+
+/** Deleted lines keep their place and author; the text is gone for everyone (BR-F27, design 03e). */
+function asDeleted(m: ChatMessage): ChatMessage {
+  return { ...m, deleted: true, pinned: false, body: '', fragments: [] }
+}
+
+function withPinned(state: ChatState, pinned: ChatMessage | null): ChatState {
+  if (!state.room) return state
+
+  return { ...state, room: { ...state.room, pinned } }
+}
+
+/** A user's restriction ended (lifted, or cleared from the snapshot): their own lock goes. */
+function unlockRestriction(lock: ChatLock | null): ChatLock | null {
+  return lock?.kind === 'timeout' || lock?.kind === 'banned' ? null : lock
 }
 
 /** A mode that is switched off cannot keep its lock; the server says again if something else still applies. */
@@ -215,8 +257,9 @@ function applyEvent(state: ChatState, ev: IncomingEvent, myId: string | null, my
     }
     case 'mode_change': {
       const previous = state.room?.mode ?? null
-      if (previous && sameMode(previous, ev.mode)) return state
-      const room: ChatRoomState = { status: state.room?.status ?? 'OPEN', mode: ev.mode }
+      // Only "block links" changed: no line in the chat, the moderators see it in their settings.
+      if (previous && sameMode(previous, ev.mode)) return state.room && previous.blockLinks !== ev.mode.blockLinks ? { ...state, room: { ...state.room, mode: ev.mode } } : state
+      const room: ChatRoomState = { status: state.room?.status ?? 'OPEN', mode: ev.mode, pinned: state.room?.pinned ?? null }
       const s: ChatState = {
         ...state,
         room,
@@ -228,7 +271,11 @@ function applyEvent(state: ChatState, ev: IncomingEvent, myId: string | null, my
       return appendLines(s, [noticeItem(s, { type: 'mode', mode: ev.mode, previous })])
     }
     case 'room_state': {
-      const room: ChatRoomState = { status: ev.status, mode: state.room?.mode ?? { slowSec: 0, followersMin: null, subsOnly: false } }
+      const room: ChatRoomState = {
+        status: ev.status,
+        mode: state.room?.mode ?? { slowSec: 0, followersMin: null, subsOnly: false, blockLinks: false },
+        pinned: state.room?.pinned ?? null,
+      }
       // Back to OPEN ends a kill switch (E18: recovers by itself).
       const lock = ev.status === 'OPEN' && (state.lock?.kind === 'disabled' || state.lock?.kind === 'readOnly' || state.lock?.kind === 'closed') ? null : state.lock
 
@@ -236,6 +283,31 @@ function applyEvent(state: ChatState, ev: IncomingEvent, myId: string | null, my
     }
     case 'sampling':
       return { ...state, sampling: ev.active }
+    case 'delete': {
+      const s = mapMessages(state, (m) => m.id === ev.messageId, asDeleted)
+
+      return s.room?.pinned?.id === ev.messageId ? withPinned(s, null) : s
+    }
+    case 'user_cleared': {
+      let s = mapMessages(state, (m) => m.user.id === ev.userId && m.type === 'NORMAL' && !m.deleted, asDeleted)
+      if (s.room?.pinned?.user.id === ev.userId) s = withPinned(s, null)
+      if (ev.userId !== myId) return s
+      const lock: ChatLock = ev.reason === 'ban' ? { kind: 'banned' } : { kind: 'timeout', until: ev.until }
+
+      return { ...s, lock, cooldownUntil: null }
+    }
+    case 'user_restored':
+      return ev.userId === myId ? { ...state, lock: unlockRestriction(state.lock) } : state
+    case 'pin': {
+      const s = mapMessages(state, (m) => m.pinned || m.id === ev.message.id, (m) => ({ ...m, pinned: m.id === ev.message.id }))
+
+      return withPinned(s, { ...ev.message, pinned: true })
+    }
+    case 'unpin': {
+      const s = mapMessages(state, (m) => m.pinned, (m) => ({ ...m, pinned: false }))
+
+      return withPinned(s, null)
+    }
   }
 }
 
@@ -304,6 +376,18 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       )
     case 'rejected': {
       const id = action.clientMsgId
+      const reason = action.effect.blocked
+      if (id && reason) {
+        // Auto-mod refusal: the line stays, marked, for its sender only (design 03f cells 4–5).
+        const marked =
+          replaceWhere(
+            state,
+            (i) => i.kind === 'message' && i.clientMsgId === id && i.delivery !== 'DELIVERED',
+            (i) => (i.kind === 'message' ? { ...i, delivery: 'BLOCKED', blockedReason: reason } : i),
+          ) ?? state
+
+        return applyEffect({ ...marked, cooldownUntil: action.effect.cooldownUntil ?? null }, action.effect)
+      }
       const without = id
         ? { ...state, items: state.items.filter((i) => !(i.kind === 'message' && i.clientMsgId === id && i.delivery !== 'DELIVERED')) }
         : state
@@ -321,6 +405,8 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
     }
     case 'clearNotice':
       return state.notice ? { ...state, notice: null } : state
+    case 'modLost':
+      return state.me ? { ...state, me: { ...state.me, canModerate: false, role: state.me.role === 'MODERATOR' ? 'VIEWER' : state.me.role } } : state
     case 'reset':
       return initialChatState
   }
