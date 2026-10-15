@@ -1,15 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router'
-import { BellIcon, PlusIcon, RadioIcon, SearchIcon } from 'lucide-react'
+import { PlusIcon, RadioIcon, SearchIcon } from 'lucide-react'
 import { LanguageMenu } from '@/app/shell/language-menu'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { UserMenu } from '@/features/auth/components/user-menu'
 import { useGatedAction } from '@/features/auth/hooks/use-gated-action'
-import { unreadBadge } from '@/features/auth/lib/roles'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { useAuthModal } from '@/features/auth/stores/auth-modal-store'
+import { NotificationBell } from '@/features/notifications/components/notification-bell'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/ui-store'
 
@@ -23,31 +22,6 @@ export function Logo() {
         Nexus<span className="text-primary">Live</span>
       </span>
     </Link>
-  )
-}
-
-/** Notifications arrive in GĐ5; the bell already shows the count from `/v1/me` (0 until then). */
-function NotificationBell() {
-  const { t } = useTranslation()
-  const unread = useAuthStore((s) => s.me?.unreadNotifications ?? 0)
-  const badge = unreadBadge(unread)
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative max-md:size-11" aria-label={badge ? t('notifications.labelCount', { count: unread }) : t('notifications.label')}>
-          <BellIcon className="size-5.5" />
-          {badge && (
-            <span className="absolute top-1 right-1 min-w-4 rounded-full bg-live px-1 text-[10px] leading-4 font-bold text-white" aria-hidden>
-              {badge}
-            </span>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-72 text-body-sm text-muted-foreground">
-        {t('notifications.empty')}
-      </PopoverContent>
-    </Popover>
   )
 }
 

@@ -273,11 +273,13 @@ export function SettingsAccountPage() {
   if (!user) return null
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-8">
-      <h1 className="font-heading text-headline-lg">{t('title')}</h1>
+    <div className="flex w-full max-w-2xl flex-col gap-5">
+      <h2 className="sr-only">{t('title')}</h2>
       <ProfileSection key={user.id} user={user} />
-      <EmailSection user={user} />
-      <PasswordSection />
+      <div id="security" className="flex scroll-mt-24 flex-col gap-5">
+        <EmailSection user={user} />
+        <PasswordSection />
+      </div>
     </div>
   )
 }
