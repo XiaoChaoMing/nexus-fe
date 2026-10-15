@@ -50,7 +50,8 @@ test('creator goes live, viewer watches, creator ends, replay is offered', async
     // Viewer: home grid → watch page.
     const viewer = await page.context().newPage()
     await viewer.goto('/')
-    const manifestResponse = viewer.waitForResponse((r) => r.url().includes('/hls/streams/') && r.url().includes('master.m3u8'))
+    // GĐ5: signed URLs live under /hls/t/{expires}/{md5}/streams/{id}/.
+    const manifestResponse = viewer.waitForResponse((r) => r.url().includes('/hls/') && r.url().includes('/streams/') && r.url().includes('master.m3u8'))
     await openLiveFromHome(viewer, title)
     await expect(viewer.getByRole('heading', { name: title })).toBeVisible()
     await expect(viewer).toHaveURL(/\/live\/[0-9a-f-]{36}$/)
