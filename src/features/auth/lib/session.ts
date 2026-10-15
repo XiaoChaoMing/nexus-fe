@@ -55,10 +55,12 @@ export function refreshSession(): Promise<boolean> {
     })
     .catch((err: unknown) => {
       const store = useAuthStore.getState()
-      if (errorCode(err) === 'ACCOUNT_LOCKED') store.setLocked(detailString(err, 'lockedUntil'))
+      // An admin lock answers ACCOUNT_LOCKED (not SESSION_EXPIRED): the locked page replaces the "signed out" toast.
+      const locked = errorCode(err) === 'ACCOUNT_LOCKED'
+      if (locked) store.setLocked(detailString(err, 'lockedUntil'))
       // A network failure is not a lost session: keep the user signed in and let the next call retry.
       if (errorCode(err) === 'NETWORK_ERROR' && store.status === 'authenticated') return false
-      store.clear({ expired: true })
+      store.clear({ expired: !locked })
 
       return false
     })

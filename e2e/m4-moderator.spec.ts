@@ -210,10 +210,13 @@ test('M4 Moderator: roles, delete, pin, timeout, ban, blocked terms, report, acc
     // B: the socket closes with 4003 → banner + locked input on the live page, video keeps playing.
     await expect(b.getByTestId('chat-banner')).toContainText('Tài khoản của bạn đã bị khóa', { timeout: 10_000 })
     await expect(b.getByTestId('chat-input')).toHaveAttribute('placeholder', 'Tài khoản của bạn đã bị khóa')
-    // Leaving the live page inside the app opens the locked page (a reload signs out: the session is revoked).
+    // Leaving the live page inside the app opens the locked page; a reload keeps it (refresh → 403 ACCOUNT_LOCKED).
     await b.locator('header a[href="/"]').first().click()
     await expect(b).toHaveURL(/\/account-locked/)
     await expect(b.getByTestId('account-locked')).toBeVisible()
+    await b.goto('/')
+    await expect(b).toHaveURL(/\/account-locked\?until=/)
+    await expect(b.getByTestId('account-locked')).toContainText(/Tài khoản tạm khóa tới \d{2}:\d{2}/)
     const fresh = await browser.newContext({ baseURL: APP_URL, locale: 'vi-VN' })
     contexts.push(fresh)
     const login = await fresh.newPage()
