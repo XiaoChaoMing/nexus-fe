@@ -60,9 +60,9 @@ tài khoản (vào khung mới), Studio nav, E2E GĐ1–GĐ4.
 
 ## 4. Kiểm tra
 
-- [ ] `pnpm lint`, `tsc -b`, `vitest`, `pnpm build`.
-- [ ] Stack cục bộ (`FRESH=1 /home/claude/stack/up.sh`) + E2E mới + toàn bộ E2E cũ, chạy lại spec chập chờn 2–3 lần.
-- [ ] Ảnh chụp 1440 / 375 các màn chính so với outline pen.dev.
+- [x] `pnpm lint`, `tsc -b`, `vitest`, `pnpm build`.
+- [x] Stack cục bộ (`FRESH=1 /home/claude/stack/up.sh`) + E2E mới + toàn bộ E2E cũ, chạy lại spec chập chờn 2–3 lần.
+- [x] Ảnh chụp 1440 / 375 các màn chính so với outline pen.dev.
 
 ## 5. Tiêu chí hoàn thành
 
