@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { useAuthModal } from '@/features/auth/stores/auth-modal-store'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useRealtimeStatus } from '@/lib/realtime'
 
 /**
  * Reacts to session changes made outside React: a lost session (refresh failed) becomes a toast with a sign-in
@@ -24,6 +25,17 @@ export function SessionWatcher() {
       action: { label: t('sessionExpired.login'), onClick: () => show('login') },
     })
   }, [expired, show, t])
+
+  // 4003 on the realtime socket: the account was locked while signed in (TSD GĐ5 §5.8). The live page keeps
+  // playing and shows it in the chat (design 03f); anywhere else the locked page opens.
+  const realtimeStatus = useRealtimeStatus()
+  const signedIn = useAuthStore((s) => s.status === 'authenticated')
+  const { pathname } = useLocation()
+  useEffect(() => {
+    if (realtimeStatus !== 'forbidden' || !signedIn) return
+    if (pathname.startsWith('/live/') || pathname === '/account-locked') return
+    navigate('/account-locked', { replace: true })
+  }, [realtimeStatus, signedIn, pathname, navigate])
 
   useEffect(() => {
     if (!locked) return

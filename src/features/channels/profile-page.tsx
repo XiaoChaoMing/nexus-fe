@@ -26,6 +26,7 @@ import { channelsApi } from '@/features/channels/api/channels-api'
 import { FollowButton } from '@/features/channels/components/follow-button'
 import { ScheduleCard } from '@/features/channels/components/schedule-card'
 import { ShareButton } from '@/features/channels/components/share-button'
+import { ReportMenu } from '@/features/moderation/components/report-menu'
 import { liveThumbnail } from '@/features/channels/hooks/use-following'
 import { channelInitials } from '@/features/channels/lib/channel-display'
 import { handleFromSegment, profilePath } from '@/features/channels/lib/handle'
@@ -41,7 +42,7 @@ import { useChannelProfile } from '@/features/streams/hooks/use-streams'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { MEDIA, useMediaQuery } from '@/hooks/use-media-query'
 import { useNow } from '@/hooks/use-now'
-import { isApiError } from '@/lib/api-error'
+import { errorCode, isApiError } from '@/lib/api-error'
 import { compactCount, formatDate, formatDuration, formatNumber, relativeTime } from '@/lib/format'
 import { browserTimeZone, gmtLabel } from '@/lib/timezone'
 import { cn } from '@/lib/utils'
@@ -134,6 +135,7 @@ function ChannelHeader({ profile: p }: { profile: ChannelProfileFull }) {
             className="max-md:flex-1"
           />
           <ShareButton path={profilePath(p.handle)} />
+          <ReportMenu channelId={p.id} target={{ type: 'CHANNEL', id: p.id, displayName: p.displayName || p.handle, handle: p.handle, avatarUrl: p.avatarUrl }} />
         </div>
       </div>
     </header>
@@ -410,6 +412,45 @@ function ProfileNotFound() {
  * the tabs Trang chủ · Video · Giới thiệu · Lịch (`?tab=`, switching does not reload). App routes win over
  * handles; reserved words resolve to a channel only under `/c/`.
  */
+/**
+ * 04 · Trang Creator — Kênh tạm ngưng: the profile answers 403 CHANNEL_SUSPENDED (no data), so only the handle is
+ * shown, faded; no Follow, no tabs, no reason.
+ */
+function ChannelSuspended({ handle }: { handle: string }) {
+  const { t } = useTranslation(['channel', 'common'])
+
+  return (
+    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 py-8 md:px-12 md:py-10" data-testid="channel-suspended">
+      <header className="flex items-center gap-5 border-b pb-6">
+        <Avatar className="size-18 opacity-40 outline outline-border md:size-24">
+          <AvatarFallback className="text-[22px] md:text-[28px]" aria-hidden>
+            {handle.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex min-w-0 flex-col gap-1">
+          <h1 className="truncate font-heading text-[22px] leading-8 font-bold text-muted-foreground md:text-[28px] md:leading-9">{handle}</h1>
+          <p className="text-body-md text-subtle-foreground">@{handle}</p>
+        </div>
+      </header>
+      <div className="flex justify-center">
+        <div className="flex w-full max-w-120 flex-col items-center gap-3 px-6 py-8 text-center">
+          <span className="grid size-14 place-items-center rounded-xl border bg-card text-muted-foreground" aria-hidden>
+            <UsersIcon className="size-7" />
+          </span>
+          <h2 className="text-base leading-5.5 font-semibold text-foreground">{t('channel:profile.suspendedTitle')}</h2>
+          <p className="text-body-md text-muted-foreground">{t('channel:profile.suspendedBody')}</p>
+          <Button asChild variant="secondary" className="mt-1 font-medium">
+            <Link to="/">
+              <HouseIcon />
+              {t('common:actions.backHome')}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function ProfilePage() {
   const { t } = useTranslation('channel')
   const { handle: segment } = useParams()
@@ -422,6 +463,7 @@ export function ProfilePage() {
   const setTab = (next: Tab) => setSp(next === 'home' ? new URLSearchParams() : new URLSearchParams({ tab: next }), { replace: false })
 
   if (!handle || (query.isError && isApiError(query.error) && query.error.status === 404)) return <ProfileNotFound />
+  if (query.isError && errorCode(query.error) === 'CHANNEL_SUSPENDED') return <ChannelSuspended handle={handle} />
   if (query.isError) {
     return (
       <div className="mx-auto max-w-[1200px] px-4 py-16">

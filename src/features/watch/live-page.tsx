@@ -14,7 +14,7 @@ import { useStreamRealtime } from '@/features/streams/hooks/use-stream-realtime'
 import { useStream } from '@/features/streams/hooks/use-streams'
 import { AboutTabs } from '@/features/watch/components/about-tabs'
 import { ChannelInfo } from '@/features/watch/components/channel-info'
-import { LiveEndedContent } from '@/features/watch/components/ended-content'
+import { LiveEndedContent, LiveUnavailable } from '@/features/watch/components/ended-content'
 import { ChatNotOpen, UpcomingInfo, UpcomingStage } from '@/features/watch/components/upcoming'
 import { useOccurrence } from '@/features/watch/hooks/use-occurrence'
 import { isRegularStream, type Stream, type StreamDetail } from '@/features/streams/types'
@@ -147,6 +147,9 @@ export function LivePage() {
   if (isPending) return <LivePageSkeleton />
   if (error || !stream) return <LiveNotAvailable notFound={isApiError(error) && error.status === 404} />
   if (!isRegularStream(stream)) return <UpcomingPage stream={stream} wide={wide} tablet={tablet} now={now} />
+  // GĐ5: a broadcast taken down before the visit, or the channel suspended (playback refused): no reason given.
+  const takenDown = stream.status === 'ENDED' && stream.endReason === 'admin_takedown'
+  if ((takenDown && endedOnArrival) || playback.errorCode === 'CHANNEL_SUSPENDED') return <LiveUnavailable excludeId={stream.id} />
 
   const layout = wide ? 'desktop' : tablet ? 'tablet' : 'mobile'
   const decision = playback.decision
@@ -157,7 +160,7 @@ export function LivePage() {
       {wide && !theater && !chatCollapsed && <SkipToChat />}
       <div className="flex min-w-0 flex-1 flex-col md:gap-4 xl:gap-5">
         <div className="bg-black max-md:sticky max-md:top-0 max-md:z-20 md:bg-transparent">
-          {showPlayer ? (
+          {showPlayer && !takenDown ? (
             <HlsPlayer
               src={decision?.kind === 'ready' ? decision.manifestUrl : null}
               mode="live"
@@ -167,6 +170,7 @@ export function LivePage() {
                 failed: playback.failed || decision?.kind === 'unavailable',
                 onAcceptMature: playback.acknowledge,
                 onRetry: playback.retry,
+                onExpired: playback.renew,
               }}
               theater={theater}
               onTheaterChange={setTheater}

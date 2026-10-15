@@ -1,38 +1,29 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
 import { LockIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/lib/format'
+import { lockedUntilText } from '@/features/auth/lib/locked'
 
 type LockedNoticeProps = {
-  /** RFC 3339 end of a temporary lock; null for a lock set by an administrator. */
+  /** RFC 3339 end of a temporary lock (failed sign-ins or an Admin lock); null for a lock without an end. */
   until: string | null
   onRetry?: () => void
-  onNavigate?: () => void
 }
 
-/** "Tài khoản tạm khóa" (NXL-D BR-D09, E-D04/E-D05) with the unlock time when there is one. */
-export function LockedNotice({ until, onRetry, onNavigate }: LockedNoticeProps) {
+/**
+ * "Tài khoản bị khóa" (12 · Trang hệ thống, NXL-D BR-D09, NXL-F §3.10): until a time, or by an administrator
+ * without an end. Used by the sign-in form and the /account-locked page.
+ */
+export function LockedNotice({ until, onRetry }: LockedNoticeProps) {
   const { t } = useTranslation('auth')
   const valid = until !== null && !Number.isNaN(Date.parse(until))
 
   return (
-    <div role="alert" data-testid="account-locked" className="flex flex-col items-center gap-3 text-center">
-      <span className="grid size-12 place-items-center rounded-full bg-warning/15 text-warning" aria-hidden>
-        <LockIcon className="size-6" />
+    <div role="alert" data-testid="account-locked" className="flex flex-col items-center gap-4 text-center">
+      <span className="grid size-14 place-items-center rounded-full bg-destructive/15 text-destructive" aria-hidden>
+        <LockIcon className="size-7" />
       </span>
-      <h2 className="font-heading text-headline-sm">{valid ? t('locked.titleTemporary') : t('locked.title')}</h2>
-      <p className="text-body-sm text-muted-foreground">
-        {valid ? t('locked.bodyTemporary', { time: formatDate(until, { dateStyle: 'medium', timeStyle: 'short' }) }) : t('locked.body')}
-      </p>
-      {valid && (
-        <p className="text-body-sm text-muted-foreground">
-          {t('locked.resetHint')}{' '}
-          <Link to="/forgot-password" onClick={onNavigate} className="font-semibold text-primary hover:underline">
-            {t('login.forgot')}
-          </Link>
-        </p>
-      )}
+      <h2 className="text-headline-md leading-6.75 font-bold text-foreground">{valid ? t('locked.titleUntil', { time: lockedUntilText(until) }) : t('locked.titleAdmin')}</h2>
+      {valid && <p className="text-body-md text-muted-foreground">{t('locked.bodyUntil')}</p>}
       {onRetry && (
         <Button variant="secondary" onClick={onRetry}>
           {t('locked.back')}

@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { errorCode } from '@/lib/api-error'
 import { streamsApi, type PlaybackKind } from '@/features/streams/api/streams-api'
 import { anonId, rememberAnonId } from '@/features/streams/lib/anon-id'
 import { acknowledgesAutomatically, playbackDecision, playbackRequest, type PlaybackDecision } from '@/features/streams/lib/playback'
@@ -12,6 +13,10 @@ export type PlaybackState = {
   retry: () => void
   /** The viewer confirmed the 18+ gate: open the session again with the acknowledgement. */
   acknowledge: () => void
+  /** The signed manifest URL expired (403): open a new session once per URL; false when already tried. */
+  renew: () => boolean
+  /** API error code of a refused session (`CHANNEL_SUSPENDED`…), '' otherwise. */
+  errorCode: string
 }
 
 /**
@@ -40,11 +45,22 @@ export function usePlayback(kind: PlaybackKind, id: string, enabled = true): Pla
   })
 
   const { refetch } = query
+  const currentUrl = query.data?.manifestUrl ?? null
+  const renewedFor = useRef<string | null>(null)
+  const renew = useCallback(() => {
+    if (!currentUrl || renewedFor.current === currentUrl) return false
+    renewedFor.current = currentUrl
+    void refetch()
+
+    return true
+  }, [currentUrl, refetch])
 
   return {
     decision: query.data ? playbackDecision(query.data) : undefined,
     failed: query.isError,
     retry: useCallback(() => void refetch(), [refetch]),
     acknowledge: useCallback(() => setAcknowledged(true), []),
+    renew,
+    errorCode: errorCode(query.error),
   }
 }

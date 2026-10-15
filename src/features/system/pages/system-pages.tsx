@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useRouteError, useSearchParams } from 'react-router'
-import { CompassIcon, RotateCwIcon, TimerOffIcon } from 'lucide-react'
+import { CompassIcon, HouseIcon, RotateCwIcon, TimerOffIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LockedNotice } from '@/features/auth/components/locked-notice'
 import { sanitizeReturnTo, savePendingAction } from '@/features/auth/lib/pending-action'
@@ -102,11 +102,14 @@ export function AccountLockedPage() {
   const [params] = useSearchParams()
 
   return (
-    <section className="grid place-items-center px-4 py-20" data-testid="account-locked-page">
-      <div className="flex w-full max-w-md flex-col gap-4 rounded-xl border bg-surface p-6">
+    <section className="grid place-items-center px-4 py-20 max-md:py-10" data-testid="account-locked-page">
+      <div className="flex w-full max-w-130 flex-col items-center gap-4 rounded-xl border bg-surface p-8 max-md:p-6">
         <LockedNotice until={params.get('until')} />
-        <Button asChild variant="secondary" className="self-center">
-          <Link to="/">{t('actions.backHome')}</Link>
+        <Button asChild variant="secondary" className="font-medium max-md:h-12 max-md:w-full">
+          <Link to="/">
+            <HouseIcon />
+            {t('actions.backHome')}
+          </Link>
         </Button>
       </div>
     </section>

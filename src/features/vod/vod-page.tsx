@@ -194,6 +194,7 @@ function VodWatch({ vod }: { vod: Vod }) {
                 failed: playback.failed || decision?.kind === 'unavailable',
                 onAcceptMature: playback.acknowledge,
                 onRetry: playback.retry,
+                onExpired: playback.renew,
               }}
               theater={theater}
               onTheaterChange={setTheater}

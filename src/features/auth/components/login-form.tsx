@@ -35,7 +35,7 @@ export function LoginForm({ onSuccess, onNavigate, autoFocus = true }: LoginForm
   })
 
   if (errorCode(login.error) === 'ACCOUNT_LOCKED') {
-    return <LockedNotice until={detailString(login.error, 'lockedUntil')} onRetry={() => login.reset()} onNavigate={onNavigate} />
+    return <LockedNotice until={detailString(login.error, 'lockedUntil')} onRetry={() => login.reset()} />
   }
 
   // 429 is announced by the global toast with the wait time.

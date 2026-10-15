@@ -33,6 +33,11 @@ export type PlayerSession = {
   failed: boolean
   onAcceptMature: () => void
   onRetry: () => void
+  /**
+   * The signed manifest URL was refused (403: the playback session expired, TSD GĐ5 S13). Returns true when a new
+   * session is being opened (the player waits for the new URL); false lets the player fail as usual.
+   */
+  onExpired?: () => boolean
 }
 
 export type HlsPlayerProps = {
@@ -125,7 +130,7 @@ export function HlsPlayer({
 
   const matureBlocked = session?.matureBlocked ?? false
   const sourceFailed = session?.failed ?? false
-  const hls = useHls({ videoRef, store, src: matureBlocked ? null : src, mode, autoPlay, startAt })
+  const hls = useHls({ videoRef, store, src: matureBlocked ? null : src, mode, autoPlay, startAt, onForbidden: session?.onExpired })
 
   const behind = mode === 'live' ? behindLive(s.liveSync, s.currentTime) : 0
   const atLive = isAtLiveEdge(behind)

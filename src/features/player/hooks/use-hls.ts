@@ -25,6 +25,8 @@ type Options = {
   mode: PlayerMode
   autoPlay: boolean
   startAt?: number
+  /** A 403 on a playlist or segment (signed URL expired): true when the owner fetches a new URL. */
+  onForbidden?: () => boolean
 }
 
 function toLevels(levels: Level[]) {
@@ -37,10 +39,14 @@ function toLevels(levels: Level[]) {
  * Owns the hls.js instance for one <video>: loading, ABR level list, error recovery with backoff,
  * and mirroring video element state into the player store. Safari plays HLS natively (Auto only).
  */
-export function useHls({ videoRef, store, src, mode, autoPlay, startAt }: Options): HlsControls {
+export function useHls({ videoRef, store, src, mode, autoPlay, startAt, onForbidden }: Options): HlsControls {
   const hlsRef = useRef<Hls | null>(null)
   const retryRef = useRef(0)
   const generation = useRef(0)
+  const onForbiddenRef = useRef(onForbidden)
+  useEffect(() => {
+    onForbiddenRef.current = onForbidden
+  })
 
   const set = store.getState().set
 
@@ -118,8 +124,20 @@ export function useHls({ videoRef, store, src, mode, autoPlay, startAt }: Option
       retryRef.current = 0
     })
 
+    let renewing = false
     hls.on(Hls.Events.ERROR, (_e, data: ErrorData) => {
-      if (!data.fatal || gen !== generation.current) return
+      if (gen !== generation.current) return
+      // Signed URL refused (expired session): ask the page for a new one once, instead of retrying a dead URL.
+      if (data.response?.code === 403 && !renewing) {
+        if (onForbiddenRef.current?.()) {
+          renewing = true
+          hls.stopLoad()
+          set({ phase: 'reconnecting' })
+
+          return
+        }
+      }
+      if (!data.fatal || renewing) return
 
       if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR && Date.now() - startedAt < MANIFEST_WAIT_MS) {
         window.setTimeout(() => gen === generation.current && hls.loadSource(src), MANIFEST_RETRY_MS)
