@@ -16,6 +16,37 @@ import { adminUrl, isAdmin, isCreator } from '@/features/auth/lib/roles'
 import { useAuthModal } from '@/features/auth/stores/auth-modal-store'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { channelInitial } from '@/features/channels/lib/channel-display'
+import { ChannelAvatar } from '@/features/channels/components/channel-avatar'
+import { useMyChannelRoles } from '@/features/moderation/hooks/use-channel-roles'
+
+/** "Kênh tôi kiểm duyệt" (design 21): only when the account moderates at least one channel. */
+function ModeratedChannels() {
+  const { t } = useTranslation('moderation')
+  const roles = useMyChannelRoles()
+  const mods = (roles.data ?? []).filter((r) => r.role === 'MODERATOR')
+  if (mods.length === 0) return null
+
+  return (
+    <>
+      <DropdownMenuLabel className="px-2.5 pt-1.5 pb-0.5 text-[11px] font-semibold tracking-wide text-subtle-foreground uppercase">{t('modPage.menuSection')}</DropdownMenuLabel>
+      {mods.map((m) => (
+        <DropdownMenuItem key={m.channel.id} asChild className="h-12 gap-2.5">
+          <Link to={`/moderation/${encodeURIComponent(m.channel.handle)}`} data-testid="moderated-channel">
+            <span className="relative inline-flex shrink-0">
+              <ChannelAvatar channel={m.channel} size="md" className="size-8 outline outline-border" />
+              {m.channel.isLive && <span className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full bg-live ring-2 ring-popover" aria-label={t('modPage.live')} />}
+            </span>
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate text-[13px] font-semibold text-foreground">{m.channel.displayName}</span>
+              <span className="truncate text-label-sm font-normal text-muted-foreground">{t('modPage.roleModerator')}</span>
+            </span>
+          </Link>
+        </DropdownMenuItem>
+      ))}
+      <DropdownMenuSeparator />
+    </>
+  )
+}
 
 /** Pages that make no sense signed out; logging out there goes home instead of to a login prompt. */
 const PRIVATE_PREFIXES = ['/studio', '/settings', '/creator']
@@ -73,6 +104,7 @@ export function UserMenu() {
             </Link>
           </DropdownMenuItem>
         )}
+        <ModeratedChannels />
         <DropdownMenuItem asChild>
           <Link to="/settings/account">
             <SettingsIcon />

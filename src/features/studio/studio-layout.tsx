@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { CalendarDaysIcon, ExternalLinkIcon, FilmIcon, LayoutDashboardIcon, RadioIcon, UserRoundCogIcon, type LucideIcon } from 'lucide-react'
+import { CalendarDaysIcon, ExternalLinkIcon, FilmIcon, LayoutDashboardIcon, RadioIcon, TriangleAlertIcon, UserRoundCogIcon, UsersIcon, type LucideIcon } from 'lucide-react'
 import { ChannelAvatar } from '@/features/channels/components/channel-avatar'
 import { profilePath } from '@/features/channels/lib/handle'
 import { useStudioChannel } from '@/features/studio/hooks/use-studio-data'
 import { cn } from '@/lib/utils'
 
-type Item = { to: string; label: 'nav.dashboard' | 'nav.stream' | 'nav.content' | 'nav.schedule' | 'nav.channel'; icon: LucideIcon }
+type Item = { to: string; label: 'nav.dashboard' | 'nav.stream' | 'nav.content' | 'nav.schedule' | 'nav.channel' | 'nav.community'; icon: LucideIcon }
 
 const ITEMS: Item[] = [
   { to: '/studio', label: 'nav.dashboard', icon: LayoutDashboardIcon },
@@ -14,6 +14,7 @@ const ITEMS: Item[] = [
   { to: '/studio/content', label: 'nav.content', icon: FilmIcon },
   { to: '/studio/schedule', label: 'nav.schedule', icon: CalendarDaysIcon },
   { to: '/studio/channel', label: 'nav.channel', icon: UserRoundCogIcon },
+  { to: '/studio/community', label: 'nav.community', icon: UsersIcon },
 ]
 
 /**
@@ -21,7 +22,7 @@ const ITEMS: Item[] = [
  * strip under the header on smaller screens. Each page handles NOT_CREATOR itself.
  */
 export function StudioLayout() {
-  const { t } = useTranslation('studio')
+  const { t } = useTranslation(['studio', 'moderation'])
   const channel = useStudioChannel()
   const { pathname } = useLocation()
   const c = channel.data
@@ -65,6 +66,12 @@ export function StudioLayout() {
         </nav>
       </aside>
       <div className="min-w-0 flex-1">
+        {c?.status === 'SUSPENDED' && (
+          <div className="mx-4 mt-4 flex items-start gap-3 rounded-lg border border-warning/40 bg-warning/15 px-4 py-3 md:mx-10" role="status" data-testid="studio-suspended">
+            <TriangleAlertIcon className="mt-px size-5 shrink-0 text-warning" aria-hidden />
+            <p className="text-body-md text-foreground">{t('moderation:community.suspendedBanner')}</p>
+          </div>
+        )}
         <Outlet />
       </div>
     </div>

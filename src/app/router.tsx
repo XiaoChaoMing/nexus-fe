@@ -14,6 +14,12 @@ import { BrowsePage } from '@/features/discover/browse-page'
 import { CategoryPage } from '@/features/discover/category-page'
 import { FollowingPage } from '@/features/discover/following-page'
 import { SearchPage } from '@/features/search/search-page'
+import { ModerationPage } from '@/features/moderation/pages/moderation-page'
+import { PrivacySettingsPage } from '@/features/moderation/pages/privacy-page'
+import { NotificationSettingsPage } from '@/features/notifications/notification-settings-page'
+import { NotificationsPage } from '@/features/notifications/notifications-page'
+import { UnsubscribePage } from '@/features/notifications/unsubscribe-page'
+import { SettingsLayout } from '@/features/settings/settings-layout'
 import { AccountLockedPage, NotFoundPage, ServerErrorPage, SessionExpiredPage } from '@/features/system/pages/system-pages'
 
 // No admin routes here: administration is the separate nexuslive-admin app (VITE_ADMIN_URL).
@@ -31,6 +37,8 @@ export const router = createBrowserRouter([
       // Token links from emails: usable signed in or not.
       { path: '/forgot-password', element: <ForgotPasswordPage /> },
       { path: '/reset-password', element: <ResetPasswordPage /> },
+      // E-mail unsubscribe link (NXL-E): no account needed, no app frame (frame 25).
+      { path: '/notifications/unsubscribe', element: <UnsubscribePage /> },
       {
         element: <AppShell />,
         // Lazy player routes: shown while their chunk loads on a direct visit.
@@ -55,7 +63,18 @@ export const router = createBrowserRouter([
             element: <RequireAuth />,
             children: [
               { path: '/account', element: <Navigate to="/settings/account" replace /> },
-              { path: '/settings/account', element: <SettingsAccountPage /> },
+              {
+                path: '/settings',
+                element: <SettingsLayout />,
+                children: [
+                  { index: true, element: <Navigate to="/settings/account" replace /> },
+                  { path: 'account', element: <SettingsAccountPage /> },
+                  { path: 'notifications', element: <NotificationSettingsPage /> },
+                  { path: 'privacy', element: <PrivacySettingsPage /> },
+                ],
+              },
+              { path: '/notifications', element: <NotificationsPage /> },
+              { path: '/moderation/:channel', element: <ModerationPage /> },
               { path: '/creator/apply', element: <CreatorApplyPage /> },
               {
                 path: '/studio',
@@ -66,6 +85,9 @@ export const router = createBrowserRouter([
                   { path: 'content', lazy: async () => ({ Component: (await import('@/features/studio/content-page')).StudioContentPage }) },
                   { path: 'schedule', lazy: async () => ({ Component: (await import('@/features/studio/schedule-page')).StudioSchedulePage }) },
                   { path: 'channel', lazy: async () => ({ Component: (await import('@/features/studio/channel-page')).StudioChannelPage }) },
+                  { path: 'community', lazy: async () => ({ Component: (await import('@/features/studio/community-page')).StudioCommunityPage }) },
+                  // Older links (notification-svc NEW_FOLLOWER) name the overview "dashboard".
+                  { path: 'dashboard', element: <Navigate to="/studio" replace /> },
                 ],
               },
             ],
