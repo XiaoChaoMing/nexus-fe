@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ClockIcon, HeartIcon, PanelRightCloseIcon, PanelRightOpenIcon, SettingsIcon, StarIcon, MessageSquareOffIcon, WifiOffIcon } from 'lucide-react'
+import { ClockIcon, HeartIcon, LockIcon, PanelRightCloseIcon, PanelRightOpenIcon, SettingsIcon, StarIcon, MessageSquareOffIcon, WifiOffIcon } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 import { ChatInput } from '@/features/chat/components/chat-input'
 import { ChatSettings } from '@/features/chat/components/chat-settings'
 import { MessageList } from '@/features/chat/components/message-list'
+import { ChatModProvider } from '@/features/chat/components/mod/mod-context'
+import { PinnedBar, ShowPinnedButton } from '@/features/chat/components/mod/pinned-bar'
 import type { ChatRoom } from '@/features/chat/hooks/use-chat-room'
 import { useModeText } from '@/features/chat/hooks/use-mode-text'
 import { canManageChat } from '@/features/chat/lib/errors'
@@ -58,6 +60,9 @@ function ConnectionBanner({ room }: { room: ChatRoom }) {
     </button>
   )
 
+  if (connection === 'locked') {
+    return <ChatBanner icon={<LockIcon className="size-5 text-warning" aria-hidden />}>{t('banner.accountLocked')}</ChatBanner>
+  }
   if (state.lock?.kind === 'disabled') {
     return <ChatBanner icon={<MessageSquareOffIcon className="size-5 text-warning" aria-hidden />}>{t('banner.disabled')}</ChatBanner>
   }
@@ -131,7 +136,10 @@ export function ChatPanel({ room, channel, inTab = false, className }: PanelProp
   const manage = canManageChat(room.state.me?.role) && mode
 
   return (
+    <ChatModProvider room={room}>
     <div className={cn('flex min-h-0 flex-1 flex-col', className)} data-testid="chat-panel" id="chat">
+      {inTab && <ShowPinnedRow room={room} />}
+      <PinnedBar room={room} />
       <ConnectionBanner room={room} />
       <MessageList room={room} />
       <ChatInput
@@ -142,6 +150,16 @@ export function ChatPanel({ room, channel, inTab = false, className }: PanelProp
         leading={inTab && manage ? <ChatSettings channelId={room.channelId} mode={mode} trigger={<SettingsTrigger large />} /> : null}
       />
       <Announcer room={room} />
+    </div>
+    </ChatModProvider>
+  )
+}
+
+/** Tablet/mobile tab has no header: "Hiện tin ghim" sits on its own row. */
+function ShowPinnedRow({ room }: { room: ChatRoom }) {
+  return (
+    <div className="flex justify-end px-2 pt-1 empty:hidden">
+      <ShowPinnedButton room={room} />
     </div>
   )
 }
@@ -183,6 +201,7 @@ export function ChatColumn({ room, channel, onCollapse }: { room: ChatRoom; chan
           {t('title')}
         </h2>
         <div className="flex items-center gap-0.5">
+          <ShowPinnedButton room={room} />
           {canManageChat(room.state.me?.role) && mode && <ChatSettings channelId={room.channelId} mode={mode} trigger={<SettingsTrigger />} />}
           <button
             type="button"

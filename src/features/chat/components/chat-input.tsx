@@ -15,6 +15,7 @@ import { isTypingTarget } from '@/features/player/lib/shortcut-target'
 import type { ChannelSummary } from '@/features/streams/types'
 import { useNow } from '@/hooks/use-now'
 import { formatDate } from '@/lib/format'
+import { timeLeft } from '@/features/moderation/lib/duration'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/ui-store'
 
@@ -25,9 +26,15 @@ let handledFocusRequest = 0
 const NOTICE_HIDE_MS = 6000
 
 /** BR30: the reason sending is closed, written in the input itself (§9B table, brief C2). */
-function usePlaceholder(view: ComposerView): string {
+function usePlaceholder(view: ComposerView, now: number): string {
   const { t } = useTranslation('chat')
   const { duration } = useModeText()
+  const { t: tm } = useTranslation('moderation')
+  const left = (until: string) => {
+    const l = timeLeft(until, now)
+
+    return !l ? '' : 'clock' in l ? l.clock : tm('duration.day', { count: l.days })
+  }
 
   switch (view.kind) {
     case 'ready':
@@ -37,18 +44,19 @@ function usePlaceholder(view: ComposerView): string {
     case 'offline':
       return t(`input.${view.reason}`)
     case 'locked':
-      return lockText(view.lock, t, duration)
+      return lockText(view.lock, t, duration, left)
   }
 }
 
 type T = ReturnType<typeof useTranslation<'chat'>>['t']
 
-function lockText(lock: ChatLock, t: T, duration: (min: number) => string): string {
+function lockText(lock: ChatLock, t: T, duration: (min: number) => string, left: (until: string) => string): string {
   switch (lock.kind) {
     case 'followers':
       return lock.requiredMin ? t('input.followers', { duration: duration(lock.requiredMin) }) : t('input.followersAny')
     case 'timeout':
-      return lock.until ? t('input.timeout', { time: formatDate(lock.until, { hour: '2-digit', minute: '2-digit' }) }) : t('input.timeoutNoEnd')
+      // "Bạn bị tạm khóa chat đến 21:30 · còn 9:41", counting down every second (design 03f cell 2).
+      return lock.until ? t('input.timeoutLeft', { time: formatDate(lock.until, { hour: '2-digit', minute: '2-digit' }), left: left(lock.until) }) : t('input.timeoutNoEnd')
     default:
       return t(`input.${lock.kind}`)
   }
@@ -58,7 +66,11 @@ function lockText(lock: ChatLock, t: T, duration: (min: number) => string): stri
 function InlineNotice({ id, notice, now, onClose }: { id: string; notice: InputNotice; now: number; onClose: () => void }) {
   const { t } = useTranslation('chat')
   const wait = notice.kind === 'slow' || notice.kind === 'rateLimited'
-  const text = wait ? t(`error.${notice.kind}`, { count: Math.max(1, Math.ceil((notice.untilMs - now) / 1000)) }) : t(`error.${notice.kind}`)
+  const text = wait
+    ? t(`error.${notice.kind}`, { count: Math.max(1, Math.ceil((notice.untilMs - now) / 1000)) })
+    : notice.kind === 'contentBlocked' && notice.reason === 'LINK'
+      ? t('error.contentBlockedLink')
+      : t(`error.${notice.kind}`)
   const Icon = wait ? ClockIcon : BanIcon
 
   return (
@@ -161,13 +173,14 @@ export function ChatInput({ room, channel, modeBar, leading, inTab = false }: In
   const [active, setActive] = useState(0)
   const [dismissedAt, setDismissedAt] = useState<number | null>(null)
   const ref = useRef<HTMLTextAreaElement>(null)
-  const placeholder = usePlaceholder(view)
   const listId = useId()
   const helpId = useId()
   const focusRequest = useUiStore((s) => s.chatFocusRequest)
   const notice = state.notice
   const ticking = (notice && 'untilMs' in notice) || (view.kind === 'ready' && view.cooldownSec > 0)
-  const now = useNow(ticking ? 500 : 60_000)
+  const timedOut = view.kind === 'locked' && view.lock.kind === 'timeout'
+  const now = useNow(ticking || timedOut ? 500 : 60_000)
+  const placeholder = usePlaceholder(view, now)
 
   const enabled = view.kind === 'ready'
   const mention = enabled ? mentionAt(draft, caret) : null
@@ -315,8 +328,14 @@ export function ChatInput({ room, channel, modeBar, leading, inTab = false }: In
     ) : null
   const button = inTab ? 'size-11' : 'size-8'
 
+  // Locks are read out once when they change (not every countdown tick): aria-live="polite" (design 03f).
+  const lockAnnouncement = lock ? (lock.kind === 'timeout' && lock.until ? t('input.timeout', { time: formatDate(lock.until, { hour: '2-digit', minute: '2-digit' }) }) : lock.kind === 'timeout' ? t('input.timeoutNoEnd') : placeholder) : ''
+
   return footer(
     <>
+      <span className="sr-only" aria-live="polite" data-testid="chat-lock-status">
+        {lockAnnouncement}
+      </span>
       {notice ? <InlineNotice id={helpId} notice={notice} now={now} onClose={room.clearNotice} /> : hint && <DraftHint id={helpId} warn={tooLong || tooManyLines}>{hint}</DraftHint>}
       {modeBar}
       <div className="flex items-end gap-2">
@@ -354,7 +373,7 @@ export function ChatInput({ room, channel, modeBar, leading, inTab = false }: In
               aria-activedescendant={open ? `${listId}-${Math.min(active, suggestions.length - 1)}` : undefined}
               rows={1}
               className={cn(
-                'field-sizing-content max-h-[5.25rem] min-w-0 flex-1 resize-none bg-transparent text-body-sm leading-4.5 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed',
+                'field-sizing-content max-h-[5.25rem] min-w-0 flex-1 resize-none bg-transparent text-body-sm leading-4.5 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:text-muted-foreground/50',
                 inTab ? 'py-3.25' : 'py-1.75',
                 !enabled && 'pl-1',
               )}

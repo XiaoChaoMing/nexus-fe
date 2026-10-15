@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { HandIcon, ZapIcon } from 'lucide-react'
@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ChatLine } from '@/features/chat/components/chat-message'
 import type { ChatRoom } from '@/features/chat/hooks/use-chat-room'
 import { CHAT_LIMITS } from '@/features/chat/lib/constants'
+import { useBlockedIds, useMuted } from '@/features/moderation/hooks/use-blocks'
 
 const SKELETON_LINE2 = ['w-45', 'w-30', 'w-45', 'w-30', 'w-45', 'w-30']
 
@@ -54,7 +55,17 @@ function EmptyRoom() {
 export function MessageList({ room }: { room: ChatRoom }) {
   const { t } = useTranslation('chat')
   const { state, setPaused, retry, me } = room
-  const items = state.items
+  const blocked = useBlockedIds()
+  const { ids: muted } = useMuted()
+  const myIdForFilter = me?.id ?? null
+  // Blocked (account) and hidden (this tab) people disappear from the list, old lines included (design 03f).
+  const items = useMemo(
+    () =>
+      blocked.size === 0 && muted.size === 0
+        ? state.items
+        : state.items.filter((i) => i.kind !== 'message' || i.message.user.id === myIdForFilter || (!blocked.has(i.message.user.id) && !muted.has(i.message.user.id))),
+    [state.items, blocked, muted, myIdForFilter],
+  )
   const scrollRef = useRef<HTMLDivElement>(null)
   const pausedRef = useRef(state.paused)
   const lastTop = useRef(0)

@@ -7,6 +7,8 @@ import { TopBar } from '@/app/shell/top-bar'
 import { EmailVerifyBanner } from '@/features/account/components/email-verify-banner'
 import { AuthModal } from '@/features/auth/components/auth-modal'
 import { PendingActionRunner } from '@/features/auth/components/pending-action-runner'
+import { ReportDialog } from '@/features/moderation/components/report-dialog'
+import { NotificationCenter } from '@/features/notifications/components/notification-center'
 import { SearchPalette } from '@/features/search/components/search-palette'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { OfflineBanner } from '@/features/system/components/offline-banner'
@@ -51,6 +53,8 @@ export function AppShell() {
       <SearchPalette />
       <PendingActionRunner />
       <SessionWatcher />
+      <NotificationCenter />
+      <ReportDialog />
     </div>
   )
 }

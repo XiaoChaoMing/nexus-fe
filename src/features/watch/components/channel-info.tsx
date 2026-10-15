@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { ChannelAvatar } from '@/features/channels/components/channel-avatar'
 import { FollowButton } from '@/features/channels/components/follow-button'
 import { ShareButton } from '@/features/channels/components/share-button'
+import { ReportMenu } from '@/features/moderation/components/report-menu'
 import { channelName } from '@/features/channels/lib/channel-display'
 import { StreamStatusBadge, StreamTags } from '@/features/streams/components/stream-meta'
 import { ViewerCount } from '@/features/streams/components/viewer-count'
@@ -27,6 +28,13 @@ export function ChannelInfo({ stream: s, now, layout, compact = false }: Props) 
   const started = relativeTime(s.startedAt, now)
   const viewers = s.status !== 'ENDED' && typeof s.viewerCount === 'number' ? <ViewerCount count={s.viewerCount} /> : null
   const tags = <StreamTags language={s.language} tags={s.tags} mature={s.isMature} />
+  const more = (
+    <ReportMenu
+      channelId={s.channelId}
+      target={{ type: 'STREAM', id: s.id, title: s.title, channelName: name ?? '', thumbnailUrl: s.thumbnailUrl || null }}
+      className={layout === 'tablet' ? 'size-11' : undefined}
+    />
+  )
 
   if (layout === 'desktop') {
     return (
@@ -56,6 +64,7 @@ export function ChannelInfo({ stream: s, now, layout, compact = false }: Props) 
           <div className="flex shrink-0 items-center gap-2">
             <FollowButton channel={s.channel} />
             <ShareButton />
+            {more}
           </div>
         </div>
         {tags}
@@ -78,6 +87,7 @@ export function ChannelInfo({ stream: s, now, layout, compact = false }: Props) 
           </div>
           <FollowButton channel={s.channel} className="h-11" />
           <ShareButton className="size-11" />
+          {more}
         </div>
         <h1 className="text-body-lg font-medium break-words text-foreground">{s.title}</h1>
         <div className="flex flex-wrap items-center gap-2">
@@ -101,6 +111,7 @@ export function ChannelInfo({ stream: s, now, layout, compact = false }: Props) 
           )}
         </div>
         <FollowButton channel={s.channel} className="h-11 px-3.5 text-body-sm" />
+        {more}
       </div>
       {/* With the Chat tab open the title block gives the chat its space; the heading stays for screen readers. */}
       <div className={compact ? 'sr-only' : 'flex flex-col gap-2.5 px-4 pb-3'}>
