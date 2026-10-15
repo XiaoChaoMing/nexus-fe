@@ -51,10 +51,13 @@ export async function goLive(creator: CreatorV4, prefix: string, seconds = 420):
 
 /** The seed admin through the API, as nexuslive-admin would call it. */
 export class AdminApi {
-  private constructor(
-    readonly api: APIRequestContext,
-    private readonly token: string,
-  ) {}
+  readonly api: APIRequestContext
+  private readonly token: string
+
+  private constructor(api: APIRequestContext, token: string) {
+    this.api = api
+    this.token = token
+  }
 
   static async open(): Promise<AdminApi> {
     const api = await apiContext()
