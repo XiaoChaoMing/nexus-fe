@@ -165,16 +165,17 @@ test('M3: realtime chat between a viewer and a guest, login gate, slow mode, rea
     await b.keyboard.press('Escape')
     await expect(b.getByTestId('auth-modal')).toHaveCount(0)
 
-    // The creator turns on slow mode (10 s) from the chat column: applied at once, everyone sees it.
+    // The creator turns on slow mode (30 s: a loaded 2-CPU runner can spend 10 s on the steps below) from the chat
+    // column: applied at once, everyone sees it.
     const c = await creatorCtx.newPage()
     await openRoom(c, stream.id)
     await c.getByTestId('chat-settings').click()
-    await c.getByTestId('chat-settings-form').getByRole('radio', { name: '10 giây' }).click()
-    await expect(c.getByTestId('chat-settings-form').getByRole('radio', { name: '10 giây' })).toHaveAttribute('aria-checked', 'true')
-    await expect(c.getByText('Đã bật chế độ chậm 10 giây')).toBeVisible()
+    await c.getByTestId('chat-settings-form').getByRole('radio', { name: '30 giây' }).click()
+    await expect(c.getByTestId('chat-settings-form').getByRole('radio', { name: '30 giây' })).toHaveAttribute('aria-checked', 'true')
+    await expect(c.getByText('Đã bật chế độ chậm 30 giây')).toBeVisible()
     await c.keyboard.press('Escape')
-    await expect(a.getByTestId('chat-mode-bar')).toContainText('Chậm 10 giây')
-    await expect(b.getByText('Chế độ chậm đã bật: 10 giây')).toBeVisible()
+    await expect(a.getByTestId('chat-mode-bar')).toContainText('Chậm 30 giây')
+    await expect(b.getByText('Chế độ chậm đã bật: 30 giây')).toBeVisible()
 
     // A second tab of A is opened now: opening a page can take longer than the slow-mode window.
     const a2 = await aCtx.newPage()
@@ -203,7 +204,7 @@ test('M3: realtime chat between a viewer and a guest, login gate, slow mode, rea
     await expect(b.getByTestId('chat-message').filter({ hasText: third })).toHaveCount(0)
 
     // After the countdown the waiting message can be sent.
-    await expect(a.getByTestId('chat-send')).toBeEnabled({ timeout: 15_000 })
+    await expect(a.getByTestId('chat-send')).toBeEnabled({ timeout: 40_000 })
     await a.getByTestId('chat-input').press('Enter')
     await expect(b.getByTestId('chat-message').filter({ hasText: second })).toBeVisible({ timeout: 10_000 })
 
